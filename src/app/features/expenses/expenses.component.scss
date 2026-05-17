@@ -1,0 +1,28 @@
+.price {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #198754;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .pdf-hide {
+    display: none !important;
+  }
+  .page-break {
+    page-break-after: always;
+  }
+}
+.col-id {
+  width: 50px;
+  min-width: 50px;
+  max-width: 50px;
+  text-align: center;
+}
+
+select {
+  border-radius: 10px;
+}

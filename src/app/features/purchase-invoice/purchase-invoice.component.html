@@ -1,0 +1,297 @@
+<div class="card border border-2 mt-5">
+
+  <div class="container-fluid" *ngIf="!showInvoiceFlag">
+    <!-- Card start -->
+
+    <!-- Search by PO -->
+    <div class="mb-5">
+
+      <div class="row g-3">
+        <div class="col-12 col-md-2 col-lg-2">
+          <label class="form-label">PO No:</label>
+          <input type="search" [(ngModel)]="poNumber" placeholder="Search By PO Number" class="form-control"
+            (keyup)="poSearchEnter($event)">
+        </div>
+        <div class="col-12 col-md-1 col-lg-1">
+
+          <button class="btn btn-info " (click)="searchByPo()">Search</button>
+        </div>
+
+        <div class="col-12 col-md-2 col-lg-2">
+          <label class="form-label">Receive No:</label>
+          <input type="number" [(ngModel)]="rcvNumber" class="form-control">
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+<div id="invoiceArea" *ngIf="showInvoiceFlag">
+    <!-- your invoice HTML here -->
+
+    <div class="container-fluid invoice-container p-3 mt-5">
+
+        <!-- HEADER -->
+        <div class="row align-items-center mb-3">
+            <h5 class="mb-0">{{appName}}</h5>
+
+            <div class="col-12 col-md-6">
+                <h4 class="fw-bold mb-0">Receiving Invoice</h4>
+                <small class="text-muted">Goods Receiving Invoice</small>
+            </div>
+            <div class="col-12 col-md-6 text-md-end">
+                <div><b>PO No:</b> {{ purchaseOrder.poNumber }}</div>
+                <div><b>PO Date:</b> {{ purchaseOrder.poDate | date:'yyyy-MM-dd' }}</div>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="row g-3">
+
+            <!-- SUPPLIER -->
+            <div class="col-12 col-md-6">
+                <div class="border rounded p-3 h-100">
+                    <h6 class="fw-bold mb-2">Supplier Details</h6>
+                    <div><b>Name:</b> {{ mySupplier.supplierName }}</div>
+                    <div><b>Phone:</b> {{ mySupplier.supplierContact }}</div>
+                    <div><b>Email:</b> {{ mySupplier.supplierEmail }}</div>
+                    <div><b>Contact:</b> {{ receiveProduct.contactPerson }}</div>
+                </div>
+            </div>
+
+            <!-- RECEIVING INFO -->
+            <div class="col-12 col-md-6">
+                <div class="border rounded p-3 h-100">
+                    <h6 class="fw-bold mb-2">Receiving Info</h6>
+                    <div><b>Status:</b> {{ receiveProduct.rcvStatus }}</div>
+                    <div><b>Currency:</b> {{ receiveProduct.currency }}</div>
+                    <div><b>Type:</b> {{ receiveProduct.rcvType }}</div>
+
+                    <div class="mt-2">
+                        <label class="fw-bold"><b>Receiving Date:</b></label>
+                        <input type="date" class="form-control d-md-none" [(ngModel)]="receiveProduct.rcvDate">
+                        <span class="print-value">{{ receiveProduct.rcvDate }}</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <hr>
+        <div class="table-responsive d-none d-md-block">
+            <table class="table table-bordered align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Item</th>
+                        <th width="80">Qty</th>
+                        <th width="120">Unit Price</th>
+                        <th width="100">Discount</th>
+                        <th width="120">Amount</th>
+                        <th width="80">Tax %</th>
+                        <th width="140">Total</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let item of receiveItemList; let row = index">
+                        <td> {{ item.productName }}</td>
+
+                        <td>
+                            {{item.quantity}}
+                        </td>
+
+                        <td>
+                            {{item.unitPrice | number:'1.2-2'}}
+                        </td>
+
+                        <td>
+                            {{item.discount}}
+                        </td>
+
+                        <td class="text-end">
+                            {{ item.total | number:'1.2-2' }}
+                        </td>
+
+                        <td>
+                            {{item.tax}}
+
+                        </td>
+
+                        <td class="fw-bold text-end">
+                            {{ item.total| number:'1.2-2' }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="d-block d-md-none">
+            <div class="border rounded p-2 mb-2" *ngFor="let item of receiveItemList; let row = index">
+
+                <div class="fw-bold">{{ item.productName }}</div>
+                <!-- <small class="text-muted">{{ item.upc }}</small> -->
+
+                <div class="row g-2 mt-1">
+                    <div class="col-6">
+                        <label>Qty</label>
+                        <input type="number" class="form-control" [(ngModel)]="item.quantity">
+                        <span class="print-value">{{ item.quantity }}</span>
+                    </div>
+
+                    <div class="col-6">
+                        <label>Price</label>
+                        <input type="number" class="form-control" [(ngModel)]="item.unitPrice">
+                        <span class="print-value">{{ item.unitPrice }}</span>
+                    </div>
+
+                    <div class="col-6">
+                        <label>Discount</label>
+                        <input type="number" class="form-control" [(ngModel)]="item.discount">
+                        <span class="print-value">{{ item.discount }}</span>
+                    </div>
+
+                    <div class="col-6">
+                        <label>Tax %</label>
+                        <input type="number" class="form-control" [(ngModel)]="item.tax">
+                        <span class="print-value">{{ item.tax }}</span>
+                    </div>
+
+                    <div class="col-12 text-end fw-bold">
+                        Total:({{currency}}) {{ item.total | number:'1.2-2' }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-end mt-3">
+            <div class="col-12 col-md-5">
+                <table class="table table-borderless">
+                    <tr>
+                        <th>Sub Total</th>
+                        <td class="text-end">{{currency}}: {{ receiveProduct.subTotal | number:'1.2-2' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Discount</th>
+                        <td>
+                            <input type="number" class="form-control text-end d-md-none" [(ngModel)]="receiveProduct.discount"
+                                (change)="totalDiscountChange()">
+                            <span class="print-value">{{ receiveProduct.discount }}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Total Qty</th>
+                        <td class="text-end fw-bold">{{ receiveProduct.quantity }}</td>
+                    </tr>
+                    <tr class="border-top">
+                        <th class="fs-5">Total Payable</th>
+                        <td class="fs-5 fw-bold text-end">
+                            {{currency}}: {{ receiveProduct.total | number:'1.2-2' }}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 col-lg-4">
+                <label class="fw-bold">Remarks</label>
+                <textarea class="form-control d-md-none" rows="3" [(ngModel)]="receiveProduct.remarks">
+                </textarea>
+                <span class="print-value">{{ receiveProduct.remarks }}</span>
+
+            </div>
+            <div class="col-12 col-lg-4">
+                <qrcode class="thermal-qr" [qrdata]="invoiceUrl" [width]="20" [errorCorrectionLevel]="'L'">
+                </qrcode>
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+</div>
+
+<div  *ngIf="showInvoiceFlag">
+<button class="btn btn-primary" (click)="exportPDF()">
+    Export PDF <fa-icon [icon]="faFilePdf"></fa-icon>
+</button>
+&nbsp;&nbsp;
+<button class="btn btn-secondary no-print" (click)="printRcpt()">
+    Print Invoice <fa-icon [icon]="faPrint"></fa-icon>
+</button>
+&nbsp;&nbsp;
+<button class="btn btn-success no-print" (click)="printThermal()">
+    Print Thermal <fa-icon [icon]="faPrint"></fa-icon>
+</button>
+
+</div>
+
+<!-- QR Code -->
+<!-- <div class="col-2 col-lg-2">
+<qrcode
+  class="thermal-qr"
+  [qrdata]="invoiceUrl"
+  [width]="20"
+  [errorCorrectionLevel]="'L'">
+</qrcode>
+
+</div> -->
+
+
+
+<!-- THERMAL RCPT -->
+
+<div class="receipt" id="thermalReceipt" *ngIf="thermalTag">
+
+    <div class="text-center">
+        <h5 class="mb-0">{{appName}}</h5>
+        <small>Goods Receiving Invoice</small>
+    </div>
+
+    <hr>
+
+    <div>
+        <b>PO:</b> {{ purchaseOrder.poNumber }}<br>
+        <b>Date:</b> {{ receiveProduct.rcvDate | date:'yyyy-MM-dd HH:mm' }}
+    </div>
+
+    <hr>
+
+    <div *ngFor="let item of receiveItemList">
+        {{ item.productName }}<br>
+        {{ item.quantity }} x {{ item.unitPrice | number:'1.2-2' }}
+        <span class="float-end">
+            {{ item.total | number:'1.2-2' }}
+        </span>
+    </div>
+
+    <hr>
+
+    <div>
+        Subtotal
+        <span class="float-end">{{currency}}: {{ receiveProduct.subTotal | number:'1.2-2' }}</span>
+    </div>
+
+    <div>
+        Discount
+        <span class="float-end"> {{currency}}: {{ receiveProduct.discount | number:'1.2-2' }}</span>
+    </div>
+    <div>
+        Tax
+        <span class="float-end">{{currency}}: {{ receiveProduct.tax | number:'1.2-2' }}</span>
+    </div>
+
+    <div class="fw-bold">
+        TOTAL
+        <span class="float-end">{{currency}}: {{ receiveProduct.total | number:'1.2-2' }}</span>
+    </div>
+
+    <hr>
+
+    <div class="text-center">
+        Thank you
+    </div>
+
+</div>

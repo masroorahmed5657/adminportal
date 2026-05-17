@@ -1,0 +1,328 @@
+<!-- Card Start -->
+<div class="card border border-2 shadow-sm rounded-4 p-4">
+    <div class="card-body p-4">
+        <!-- ========== Search & Buttons Row ========== -->
+        <div *ngIf="!addFlag">
+            <!-- Search Inputs Row -->
+            <div class="mb-4">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label for="searchCode" class="form-label">Search Code</label>
+                        <div class="input-group w-100">
+                            <span class="input-group-text bg-light">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" class="form-control" placeholder="Search By Code"
+                                [(ngModel)]="searchCode" (input)="supplierSearch()" id="searchCode" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="searchName" class="form-label">Search Name</label>
+                        <div class="input-group w-100">
+                            <span class="input-group-text bg-light">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" class="form-control" placeholder="Search By Name"
+                                [(ngModel)]="searchName" (input)="supplierSearch()" id="searchName" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Buttons Row -->
+            <!-- <div class="mb-4">
+                <div class="row g-3">
+                    <div class="col d-flex justify-content-center gap-2">
+                        <button class="btn btn-add" style="min-width: 160px;" (click)="addSupplier()">
+                            Add Supplier
+                        </button>
+                        <label for="documents" class="btn btn-upload fw-bold " style="min-width: 160px;">
+                            Upload Suppliers
+                        </label>
+                        <input type="file" id="documents" class="d-none" accept=".xlsx, .xls"
+                            (change)="uploadSuppliers($event)" multiple />
+                    </div>
+                </div>
+            </div> -->
+
+<div class="mb-4">
+  <div class="d-flex flex-wrap justify-content-center gap-3">
+
+    <button class="btn btn-add"
+            
+            (click)="addSupplier()">
+      Add Supplier
+    </button>
+
+    <label for="documents"
+           class="btn btn-upload " >
+      Upload Suppliers
+    </label>
+
+    <input type="file"
+           id="documents"
+           class="d-none"
+           accept=".xlsx,.xls,.csv"
+           (change)="uploadSuppliers($event)"
+           multiple />
+
+  </div>
+</div>
+
+
+
+            <!-- Actual Content -->
+            <div *ngIf="!spinnerDataLoad">
+                <!-- Table -->
+                <div class="d-none d-md-block" *ngIf="suppliertList.length > 0; else notFound">
+                    <p-table [value]="suppliertList" [paginator]="true" [rows]="5" [sortMode]="'multiple'"
+                        sortField="supplierId" [rowsPerPageOptions]="[5, 10, 20]" responsiveLayout="scroll">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th style="width: 10%; min-width: 80px;" pSortableColumn="supplierId">
+                                    ID <p-sortIcon field="supplierId"></p-sortIcon>
+                                </th>
+                                <th style="width: 15%; min-width: 120px;" pSortableColumn="supplierCode">
+                                    Code <p-sortIcon field="supplierCode"></p-sortIcon>
+                                </th>
+                                <th style="width: 20%; min-width: 140px;" pSortableColumn="supplierName">
+                                    Name <p-sortIcon field="supplierName"></p-sortIcon>
+                                </th>
+                                <th style="width: 15%; min-width: 120px;" pSortableColumn="supplierContact">
+                                    Phone <p-sortIcon field="supplierContact"></p-sortIcon>
+                                </th>
+                                <th style="width: 22%; min-width: 140px;" pSortableColumn="supplierAddress">
+                                    Address <p-sortIcon field="supplierAddress"></p-sortIcon>
+                                </th>
+                                <th style="width: 18%; min-width: 140px;" pSortableColumn="supplierEmail">
+                                    Email <p-sortIcon field="supplierEmail"></p-sortIcon>
+                                </th>
+                                <th style="width: 10%; min-width: 100px;" class="text-center">
+                                    Actions</th>
+                            </tr>
+                        </ng-template>
+
+                        <ng-template pTemplate="body" let-supplier let-row="rowIndex">
+                            <tr [ngClass]="{'table-active': activeRow === row}">
+                                <td>{{ supplier.supplierId }}</td>
+                                <td>
+                                    <input type="text" class="form-control" id="supplierCode-{{ row }}"
+                                        [(ngModel)]="supplier.supplierCode" [disabled]="!enabledEdit[row]" />
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" style="width: 200px;"
+                                        id="supplierName-{{ row }}" [(ngModel)]="supplier.supplierName"
+                                        [disabled]="!enabledEdit[row]" />
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" id="supplierContact-{{ row }}"
+                                        [(ngModel)]="supplier.supplierContact" [disabled]="!enabledEdit[row]" />
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" style="width: 250px;"
+                                        id="supplierAddress-{{ row }}" [(ngModel)]="supplier.supplierAddress"
+                                        [disabled]="!enabledEdit[row]" />
+                                </td>
+                                <td>
+                                    <input type="email" class="form-control" style="width: 200px;"
+                                        id="supplierEmail-{{ row }}" [(ngModel)]="supplier.supplierEmail"
+                                        [disabled]="!enabledEdit[row]" />
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group">
+                                        <!-- Edit -->
+                                        <button *ngIf="!enabledEdit[row]" class="btn btn-edit me-1"
+                                            (click)="startEdit(row)">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <!-- Save -->
+                                        <button *ngIf="enabledEdit[row]" class="btn btn-save me-1"
+                                            (click)="onSave(supplier.supplierId,row)">
+                                            <i class="bi bi-check"></i>
+                                        </button>
+                                        <!-- Delete -->
+                                        <button class="btn btn-delete" (click)="onDelete(supplier.supplierId, row)">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+
+<!-- Mobile View Starts -->
+<div class="container-fluid d-block d-md-none" *ngIf="suppliertList.length > 0; else notFound">
+
+  <div class="row g-3">
+
+    <div class="col-12"
+         *ngFor="let supplier of suppliertList; let row = index">
+
+      <div class="card shadow-sm"
+           [ngClass]="{'border-primary': activeRow === row}">
+
+        <div class="card-body">
+
+          <!-- Supplier ID -->
+          <div class="d-flex justify-content-between mb-2">
+            <span class="fw-bold">ID</span>
+            <span>{{ supplier.supplierId }}</span>
+          </div>
+
+          <!-- Supplier Code -->
+          <div class="mb-2">
+            <label class="fw-bold">Code</label>
+            <input type="text"
+                   class="form-control form-control-sm"
+                   [(ngModel)]="supplier.supplierCode"
+                   [disabled]="!enabledEdit[row]" />
+          </div>
+
+          <!-- Supplier Name -->
+          <div class="mb-2">
+            <label class="fw-bold">Name</label>
+            <input type="text"
+                   class="form-control form-control-sm"
+                   [(ngModel)]="supplier.supplierName"
+                   [disabled]="!enabledEdit[row]" />
+          </div>
+
+          <!-- Phone -->
+          <div class="mb-2">
+            <label class="fw-bold">Phone</label>
+            <input type="number"
+                   class="form-control form-control-sm"
+                   [(ngModel)]="supplier.supplierContact"
+                   [disabled]="!enabledEdit[row]" />
+          </div>
+
+          <!-- Address -->
+          <div class="mb-2">
+            <label class="fw-bold">Address</label>
+            <input type="text"
+                   class="form-control form-control-sm"
+                   [(ngModel)]="supplier.supplierAddress"
+                   [disabled]="!enabledEdit[row]" />
+          </div>
+
+          <!-- Email -->
+          <div class="mb-3">
+            <label class="fw-bold">Email</label>
+            <input type="email"
+                   class="form-control form-control-sm"
+                   [(ngModel)]="supplier.supplierEmail"
+                   [disabled]="!enabledEdit[row]" />
+          </div>
+
+          <!-- Actions -->
+          <div class="d-flex justify-content-end gap-2 flex-wrap">
+
+            <button *ngIf="!enabledEdit[row]"
+                    class="btn btn-sm btn-primary"
+                    (click)="startEdit(row)">
+              <i class="bi bi-pencil"></i>
+            </button>
+
+            <button *ngIf="enabledEdit[row]"
+                    class="btn btn-sm btn-success"
+                    (click)="onSave(supplier.supplierId, row)">
+              <i class="bi bi-check"></i>
+            </button>
+
+            <button class="btn btn-sm btn-danger"
+                    (click)="onDelete(supplier.supplierId, row)">
+              <i class="bi bi-trash"></i>
+            </button>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- Mobile View Ends -->
+                <ng-template #notFound>
+                    <div class="text-center py-3">
+                        <h5 class="text-muted">Supplier Not Found</h5>
+                    </div>
+                </ng-template>
+            </div>
+
+            <!-- Loader -->
+            <div *ngIf="spinnerDataLoad" class="d-flex justify-content-center align-items-center py-3">
+                <div class="spinner-border text-primary" role="status" style="width: 1.75rem; height: 1.75rem;">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== Add Form Row ========== -->
+        <div *ngIf="addFlag" >
+            <div class="mb-4">
+                <h2 class="section-title">Add Supplier</h2>
+                <div class="row g-3 mb-3">
+                    <div class="col d-flex justify-content-center flex-wrap gap-2">
+                        <button class="btn btn-back" style="min-width: 160px;" (click)="backToList()">
+                            <i class="bi bi-arrow-left"></i> Back to Supplier List
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div >
+                <p-table responsiveLayout="scroll">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <!-- <th style="width: 10%; min-width: 80px;">ID</th> -->
+                            <th style="width: 15%; min-width: 120px;">Code</th>
+                            <th style="width: 20%; min-width: 140px;">Name</th>
+                            <th style="width: 15%; min-width: 120px;">Phone</th>
+                            <th style="width: 22%; min-width: 140px;">Address</th>
+                            <th style="width: 18%; min-width: 140px;">Email</th>
+                            <th style="width: 10%; min-width: 100px;">Action</th>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <input type="text" class="form-control" id="supplierCode-new"
+                                    placeholder="Supplier Code" />
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" id="supplierName-new"
+                                    placeholder="Supplier Name" />
+                            </td>
+                            <td>
+                                <input type="number" class="form-control" id="supplierContact-new"
+                                    placeholder="Supplier Phone" />
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" id="supplierAddress-new"
+                                    placeholder="Supplier Address" />
+                            </td>
+                            <td>
+                                <input type="email" class="form-control" id="supplierEmail-new"
+                                    placeholder="Supplier Email" />
+                            </td>
+                            <td>
+                                <button class="btn btn-save" (click)="onSave(-1, -1)">
+                                    <i class="bi bi-save"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                    </ng-template>
+
+                </p-table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Card End -->

@@ -1,0 +1,135 @@
+.admin-sidebar {
+  width: 280px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  /* Light theme background */
+  background-color: #ffffff;
+  color: #1e293b;
+  display: flex;
+  flex-direction: column;
+  // box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
+  border-right: 1px solid rgba(128, 128, 128, 0.403);
+  z-index: 1000;
+  transition: all 0.3s ease;
+
+}
+
+.admin-sidebar.collapsed {
+  width: 80px;
+  /* jitna chhota chahiye sidebar */
+}
+
+.admin-sidebar.collapsed .admin-sidebar__link span,
+.admin-sidebar.collapsed .admin-sidebar__title,
+.admin-sidebar.collapsed .admin-sidebar__search,
+.admin-sidebar.collapsed .admin-sidebar__user h5,
+.admin-sidebar.collapsed .admin-sidebar__user small {
+  display: none;
+  /* text hide ho jayega */
+}
+
+/* jab collapse ho to avatar ko chhota karna ho */
+.admin-sidebar.collapsed .admin-sidebar__avatar {
+  width: 40px;
+  height: 40px;
+}
+
+.admin-sidebar__avatar {
+  margin: auto;
+  height: 60px;
+  border-radius: 10px;
+  object-fit: cover;
+  // border: 2px solid #e2e8f0;
+}
+
+.admin-sidebar__searchbox {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #1e293b;
+}
+
+.admin-sidebar__searchbox::placeholder {
+  color: #94a3b8;
+}
+
+.admin-sidebar__menu {
+  max-height: calc(100vh - 280px);
+  /* adjust for header + search + footer */
+}
+
+.admin-sidebar__section {
+  margin-top: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-sidebar__title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #64748ba2;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  letter-spacing: 1px;
+}
+
+.admin-sidebar__link {
+  display: flex;
+  align-items: center;
+  color: #334155;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.admin-sidebar__link:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+
+.admin-sidebar__link.active {
+
+  background: #e3edfa;
+  color: #465FFF;
+
+
+}
+
+// .admin-sidebar__footer .admin-sidebar__link {
+//   background: transparent;
+//   border: none;
+//   color: #475569;
+// }
+
+// .admin-sidebar__footer .admin-sidebar__link:hover {
+//   background: #e2e8f0;
+//   color: #1e293b;
+// }
+
+
+/* Scrollbar Transparent Styling */
+.admin-sidebar__menu::-webkit-scrollbar {
+  width: 7px;
+  /* scrollbar ki width */
+}
+
+.admin-sidebar__menu::-webkit-scrollbar-track {
+  background: transparent;
+  /* background transparent */
+}
+
+.admin-sidebar__menu::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 116, 139, 0.5);
+  /* thoda grey with transparency */
+  border-radius: 10px;
+}
+
+.admin-sidebar__menu::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(100, 116, 139, 0.8);
+  /* hover pe thoda dark */
+}

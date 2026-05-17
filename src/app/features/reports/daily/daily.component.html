@@ -1,0 +1,290 @@
+<div class="container mb-3 mt-3">
+    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+
+        <button type="button" (click)="changeReports('yearly')" class="btn btn-outline-primary">yearly</button>
+        <button type="button" (click)="changeReports('monthly')" class="btn btn-outline-secondary">monthly</button>
+        <button type="button" (click)="changeReports('weekly')" class="btn btn-outline-success">weekly</button>
+        <button type="button" (click)="changeReports('daily')" class="btn btn-outline-danger">daily</button>
+
+    </div>
+</div>
+
+
+
+
+<div class="container" *ngIf="yearlyFlag">
+    <div class="container">
+        <h3 class="h3">Yearly Sales</h3>
+    </div>
+    <div class="container mb-3">
+        <div class="row">
+            <div class="col-3">
+                <label for="order">Order Date</label>
+                <input type="text" class="form-control" placeholder="-10 years">
+            </div>
+
+            <div class="col-3">
+
+                <label for="order">And</label>
+                <input type="text" class="form-control" placeholder="last day of this year">
+            </div>
+
+            <div class="col-3">
+
+                <label for="order">Sort By</label>
+                <select name="" id="" class="form-control" style="width: 100%;height: 50px;">
+                    <option value="">Asc</option>
+                    <option value="">Dsc</option>
+                </select>
+            </div>
+
+
+            <div class="col-3">
+
+                <label for="order">Order</label>
+                <select name="" id="" class="form-control" style="width: 100%;height: 50px;">
+                    <option value="">Asc</option>
+                    <option value="">Dsc</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">DATE</th>
+                <th scope="col"># OF ORDERS </th>
+                <th scope="col">TOTAL REVENUE</th>
+                <th scope="col">AVERAGE ORDER</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">1</th>
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>mdo</td>
+            </tr>
+            <tr>
+                <th scope="row">2</th>
+                <td>Jacob</td>
+                <td>Thornton</td>
+                <td>fat</td>
+            </tr>
+            <tr>
+                <th scope="row">3</th>
+                <td>Larry</td>
+                <td>the Bird</td>
+                <td>twitter</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="container" *ngIf="monthlyFlag">
+    <div class="container">
+        <h3 class="h3">Monthly Sales</h3>
+    </div>
+    <div class="container mb-3">
+        <div class="row">
+            <div class="col-3">
+                <label for="order">Order Date</label>
+                <input type="text" class="form-control" placeholder="-10 months">
+            </div>
+
+            <div class="col-3">
+
+                <label for="order">And</label>
+                <input type="text" class="form-control" placeholder="last day of this month">
+            </div>
+
+            <div class="col-3">
+
+                <label for="order">Sort By</label>
+                <select name="" id="" class="form-control" style="width: 100%;height: 50px;">
+                    <option value="">Asc</option>
+                    <option value="">Dsc</option>
+                </select>
+            </div>
+
+
+            <div class="col-3">
+
+                <label for="order">Order</label>
+                <select name="" id="" class="form-control" style="width: 100%;height: 50px;">
+                    <option value="">Asc</option>
+                    <option value="">Dsc</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">DATE</th>
+                <th scope="col"># OF ORDERS </th>
+                <th scope="col">TOTAL REVENUE</th>
+                <th scope="col">AVERAGE ORDER</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">1</th>
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>mdo</td>
+            </tr>
+            <tr>
+                <th scope="row">2</th>
+                <td>Jacob</td>
+                <td>Thornton</td>
+                <td>fat</td>
+            </tr>
+            <tr>
+                <th scope="row">3</th>
+                <td>Larry</td>
+                <td>the Bird</td>
+                <td>twitter</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+<div class="container" *ngIf="weeklyflage">
+    <div class="container">
+        <h3 class="h3">Weekly Sales</h3>
+    </div>
+    <div class="container mb-3">
+        <div class="row">
+            <div class="col-3">
+                <label for="order">Order Date</label>
+                <input type="text" class="form-control" placeholder="-10 weeks">
+            </div>
+
+            <div class="col-3">
+
+                <label for="order">And</label>
+                <input type="text" class="form-control" placeholder="last day of this week">
+            </div>
+
+            <div class="col-3">
+
+                <label for="order">Sort By</label>
+                <select name="" id="" class="form-control" style="width: 100%;height: 50px;">
+                    <option value="">Asc</option>
+                    <option value="">Dsc</option>
+                </select>
+            </div>
+
+
+            <div class="col-3">
+
+                <label for="order">Order</label>
+                <select name="" id="" class="form-control" style="width: 100%;height: 50px;">
+                    <option value="">Asc</option>
+                    <option value="">Dsc</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">DATE</th>
+                <th scope="col"># OF ORDERS </th>
+                <th scope="col">TOTAL REVENUE</th>
+                <th scope="col">AVERAGE ORDER</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">1</th>
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>mdo</td>
+            </tr>
+            <tr>
+                <th scope="row">2</th>
+                <td>Jacob</td>
+                <td>Thornton</td>
+                <td>fat</td>
+            </tr>
+            <tr>
+                <th scope="row">3</th>
+                <td>Larry</td>
+                <td>the Bird</td>
+                <td>twitter</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="container" *ngIf="dailyFlage">
+    <div class="container">
+        <h3 class="h3">Yearly Sales</h3>
+    </div>
+    <div class="container mb-3">
+        <div class="row">
+            <div class="col-3">
+                <label for="order">Order Date</label>
+                <input type="text" class="form-control" placeholder="-10 daily">
+            </div>
+
+            <div class="col-3">
+
+                <label for="order">And</label>
+                <input type="text" class="form-control" placeholder="last day of this year">
+            </div>
+
+            <div class="col-3">
+
+                <label for="order">Sort By</label>
+                <select name="" id="" class="form-control" style="width: 100%;height: 50px;">
+                    <option value="">Asc</option>
+                    <option value="">Dsc</option>
+                </select>
+            </div>
+
+
+            <div class="col-3">
+
+                <label for="order">Order</label>
+                <select name="" id="" class="form-control" style="width: 100%;height: 50px;">
+                    <option value="">Asc</option>
+                    <option value="">Dsc</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">DATE</th>
+                <th scope="col"># OF ORDERS </th>
+                <th scope="col">TOTAL REVENUE</th>
+                <th scope="col">AVERAGE ORDER</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">1</th>
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>mdo</td>
+            </tr>
+            <tr>
+                <th scope="row">2</th>
+                <td>Jacob</td>
+                <td>Thornton</td>
+                <td>fat</td>
+            </tr>
+            <tr>
+                <th scope="row">3</th>
+                <td>Larry</td>
+                <td>the Bird</td>
+                <td>twitter</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

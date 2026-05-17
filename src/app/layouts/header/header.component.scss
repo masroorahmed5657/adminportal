@@ -1,0 +1,49 @@
+/* Admin Header */
+.admin-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 70px;
+  z-index: 999;
+  color: #1e293b;
+  background-color: white;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.403);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  transition: all 0.3s ease;
+
+  margin-left: 280px;             /* default open sidebar */
+  width: calc(100% - 280px);
+}
+
+/* jab sidebar collapse ho */
+.admin-header.sidebar-collapsed {
+  margin-left: 80px;
+  width: calc(100% - 80px);
+}
+
+/* header ke andar ke elements */
+.admin-header__container {
+  width: 100%;
+  height: 100%;
+}
+
+.admin-header__title span {
+  font-size: 1.25rem;
+}
+
+.admin-header__brand {
+  text-align: center;
+}
+
+.admin-header__toggle {
+  background: transparent;
+  border-radius: 8px;
+  border: 1px solid rgba(128, 128, 128, 0.403);
+  transition: transform 0.2s;
+}
+
+.admin-header__toggle:hover {
+  transform: scale(1.04);
+}

@@ -1,0 +1,196 @@
+<!-- <app-header></app-header> -->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-2"><app-header></app-header></div>
+
+        <div class="col-10 col-lg-10 col-md-6 col-sm-12 mt-5">
+            <!-- <div class="card-body"> -->
+            <div class="container">
+                <div>
+                    <form>
+                        <!-- #invoiceForm='ngForm' -->
+                        <div class=" row mb-3">
+                            <div class=" col-md-6">
+                                <h4 class=" Invoice-Id mb-0">Invoice Id : # <span name="id">
+                                    </span></h4>
+                            </div>
+                            <div class="col-md-6 mt-3 mt-md-0">
+                                <div class="row justify-content-end">
+                                    <div class="col-lg-3 col-md-4 col-6">
+                                        <a routerLink='/apps/invoice'
+                                            class="btn btn-outline-danger shadow-sm font-medium d-block w-100">
+                                            Cancel
+                                        </a>
+                                    </div>
+                                    <div class="col-lg-3 col-md-4 col-6">
+                                        <button type="button" (click)="onSave()"
+                                            class="btn btn-outline-success shadow-sm font-medium d-block w-100">Save</button>
+                                    </div>
+                                    <div class="col-lg-3 col-md-4 col-6">
+                                        <button type="button" (click)="onPrint()"
+                                            class="btn btn-outline-warning shadow-sm font-medium d-block w-100">Print</button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <div class="order d-flex align-items-center border-top pt-1 pb-3 border-bottom"
+                        style="text-align:center ;background-color:#be0b31; font-weight:bolder ; color: white; font-size: x-large; padding: 1rem 2rem;font-size: 1rem;">
+                        <div class="order">
+                            <h5 class="fs-1 text">Order Status : </h5>
+                            <select class="form-select mt-2" name="satus">
+                                <option value="Pending">Pending</option>
+                                <option value="Shipped">Shipped</option>
+                                <option value="Delivered">Delivered</option>
+                            </select>
+                        </div>
+                        <div class="order ms-auto">
+                            <h5>Order Date</h5>
+                        </div>
+                    </div> -->
+                        <div class="row mt-2">
+                            <!-- Invoice Creator Info -->
+                            <div class="col-md-6">
+                                <div class="row">
+                                    <img src="assets/images/logos/ubt-logo.png" style="height:25%; width:25%">
+
+                                </div>
+                                <div class="row">
+                                    <label>Universal Business Trends</label>
+                                </div>
+                                <div class="row">
+                                    <label>Ground Floor, Bungalow #16, Plot# 43/1-Q, Razi Road, PECHS, Block-6, Karachi,
+                                        Pakistan</label>
+                                </div>
+
+                            </div>
+                            <!-- Invoice Bill To Info -->
+                            <div class="col-md-6">
+                                <div class="row">
+                                    <input type="text" class="form-control" placeholder="Bill To" name="to">
+                                </div>
+                                <div class="row">
+                                    <textarea class="fs-1 form-control" placeholder="Enter To Address"
+                                        name="toAddress"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <hr>
+                <div class="col-lg-8 col-md-8 col-sm-12" style="position: relative;top: -30px;left: 15px;">
+                    <div class="row">
+                        <!-- /////////search by name ///////// -->
+                        <div class="col-3 mt-3">
+                            <!-- <form action="#" class="search-wrap"> -->
+                            <div class="search-wrap input-group">
+                                <input type="search" class="form-control" placeholder="Search By Name" id="name-search"
+                                    name="name-search" (keyup)="nameSearch($event)">
+                                <div class="input-group-append">
+                                </div>
+                            </div>
+                            <!-- </form> -->
+                        </div>
+                        <!-- /////////search by UPC ///////// -->
+                        <div class="col-3 mt-3">
+                            <!-- <form action="#" class="search-wrap"> -->
+                            <div class="search-wrap input-group">
+                                <input type="search" autofocus id="upc-search" name="upc-search" class="form-control"
+                                    placeholder="Search By UPC" (keyup)="upcSearch($event)">
+                                <div class="input-group-append">
+                                </div>
+                            </div>
+                            <!-- </form> -->
+                        </div>
+                        <!-- /////////search by SKU ///////// -->
+                        <div class="col-3 mt-3">
+                            <!-- <form action="#" class="search-wrap"> -->
+                            <div class="search-wrap input-group">
+                                <input type="search" autofocus id="sku-search" name="sku-search" class="form-control"
+                                    placeholder="Search By SKU" (keyup)="skuSearch($event)">
+                                <div class="input-group-append">
+                                </div>
+                            </div>
+                            <!-- </form> -->
+                        </div>
+
+                    </div>
+                    <!-- search-wrap .end// -->
+                </div> <!-- col.// -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-bordered no-wrap align-middle">
+                                <thead>
+                                    <tr class="fs-0">
+                                        <th scope="col" class="text-left">Delete</th>
+                                        <th class="border-bottom-0">S. No.</th>
+                                        <th class="border-bottom-0">Description</th>
+                                        <th class="border-bottom-0">Quantity</th>
+                                        <th class="border-bottom-0">Unit Price</th>
+                                        <th class="border-bottom-0">Total</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of cartDataList.product let i = index"
+                                        style="border: 1px solid black;">
+                                        <td><a (click)="removeItem(item.productId, i)" class="btn btn-outline-danger">
+                                                <i class="fa fa-trash"></i></a></td>
+                                        <td><var class="price">{{item.productName}}</var></td>
+                                        <td><var class="price">{{item.upc}}</var></td>
+                                        <td><input type="number" name="Qty_{{i}}" id="Qty_{{i}}" (keyup)="chkNumber1(i)"
+                                                class="form-control" value="{{item.quantity}}" (change)="qtyChange(i)"
+                                                style="width:50%;height: 10px !important;"></td>
+                                        <td>
+                                            <var class="price" *ngIf="item.salePrice">{{item.salePrice |
+                                                number:'1.0-0'}}</var>
+                                            <var class="price" *ngIf="!item.salePrice">{{item.unitPrice |
+                                                number:'1.0-0'}}</var>
+                                        </td>
+                                        <td><var class="price">{{ toFixDecimalNumbera(item) }}</var></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">&nbsp;</div>
+                    <div class="col-3">
+                        <h4 style="text-align: right;">Sub Total:</h4>
+                        <h4 style="text-align: right;">Tax:</h4>
+                        <h4 style="text-align: right;color: black;">Discount:</h4>
+                        <h4 style="text-align: right;color: black;">Invoice Total:</h4>
+                    </div>
+                    <div class="col-3">
+                        <!-- Subtotal -->
+
+                        <h4 style="color: black;">Rs
+                            {{priceSummary.total | number: '1.0-0'}}</h4>
+                        <!-- Tax -->
+
+                        <h4 style="color: black;">Rs
+                            {{priceSummary.tax}}</h4>
+                        <!-- Discount -->
+
+                        <h4 style="color: black;">
+                            <input placeholder="Discount:" [(ngModel)]="totalDiscount" value="0"
+                                (input)="calculateBalance()" />
+                        </h4>
+                        <!-- Invoice Total -->
+
+                        <h4 style="color: black;">Rs
+                            {{priceSummary.grandTotal | number: '1.0-0'}}</h4>
+
+
+                    </div>
+
+                </div>
+            </div>
+            <!-- </div> -->
+        </div>
+    </div>
+</div>
+<!-- </div> -->
+<app-footer></app-footer>

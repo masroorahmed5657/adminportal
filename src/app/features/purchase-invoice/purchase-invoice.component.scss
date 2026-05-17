@@ -1,0 +1,157 @@
+.receipt {
+  width: 80mm;
+  font-family: monospace;
+  font-size: 12px;
+}
+
+hr {
+  border-top: 1px dashed #000;
+  margin: 6px 0;
+}
+
+
+/* ================================
+   PRINT ONLY STYLES
+   ================================ */
+
+
+@media print {
+  .d-md-none {
+    display: none !important;
+  }
+
+  /* Page setup */
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+
+  body {
+    font-family: "Times New Roman", serif;
+    font-size: 12px;
+    color: #000;
+    background: #fff;
+  }
+
+  /* Hide non-print elements */
+  button,
+  .btn,
+  .no-print,
+  input,
+  textarea,
+  select,
+  .form-control {
+    display: none !important;
+  }
+
+  /* Show read-only print values */
+  .print-value {
+    display: inline-block !important;
+  }
+
+  /* Invoice container */
+  .invoice-container {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* Headers */
+  h1, h2, h3, h4, h5 {
+    margin: 0 0 6px 0;
+    font-weight: bold;
+  }
+
+  /* Table styling */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    page-break-inside: auto;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tfoot {
+    display: table-footer-group;
+  }
+
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  th, td {
+    border: 1px solid #000;
+    padding: 4px;
+    text-align: left;
+  }
+
+  th {
+    background: #f2f2f2 !important;
+  }
+
+  /* Totals emphasis */
+  .total-row td {
+    font-weight: bold;
+    font-size: 13px;
+  }
+
+  /* Alignments */
+  .text-end {
+    text-align: right !important;
+  }
+
+  .text-center {
+    text-align: center !important;
+  }
+
+  /* QR code print fix */
+// qrcode {
+//   display: block;
+//   margin: 0 auto; /* center it */
+//   max-width: 80px;
+//   height: auto;
+// }
+
+
+
+  qrcode,
+  canvas,
+  img {
+    display: block;
+    margin: 0 auto; /* center it */
+    max-width: 3.5rem;
+    height: 3.5rem;
+  }
+
+  /* Footer */
+  .invoice-footer {
+    margin-top: 12px;
+    text-align: center;
+    font-size: 11px;
+  }
+
+}
+
+
+.small-qr {
+  border: 1px solid #333;
+  border-radius: 4px;
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+  display: block;
+  margin: 5px auto; /* center horizontally */
+}
+
+.small-qr canvas,
+.small-qr img {
+  width: 80px !important;
+  height: 80px !important;
+  border: 1px solid #666;
+}
+.thermal-qr canvas {
+  width: 10px !important;
+  height: 10px !important;
+  margin: 2px auto;
+}

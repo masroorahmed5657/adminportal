@@ -1,0 +1,137 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300&family=Roboto+Condensed&display=swap');
+
+.container, .container-lg, .container-md, .container-sm, .container-xl {
+  max-width: 90%;
+}
+
+
+/* **************** NAV *********************** */
+nav{
+  padding: 10px 0px;
+  font-size: 1.0rem;
+  background-color: #002866 !important;
+  // position: fixed;
+  // z-index: 1;
+  // width: 100%;
+}
+
+ul li a{
+  font-size: 1.0rem;
+  color: white;
+  margin-right: 2rem;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 800;
+//   background: linear-gradient(to right, #be0b31, #be0b31 50%, rgb(255, 255, 255) 50%);
+// background-clip: text;
+// -webkit-background-clip: text;
+// -webkit-text-fill-color: transparent;
+// background-size: 200% 100%;
+// background-position: 100%;
+// transition: background-position 1000ms ease;
+}
+
+ul li a:hover{
+  color: #be0b31;
+transition: all 0.3s cubic-bezier(0.000, 0.000, 0.230, 1);
+transition:.8s;
+background-position: 0 100%;
+
+}
+.mem-logo{
+  width: 8rem;
+  border-radius: 100px;
+
+}
+.navbar-expand-lg .navbar-nav .dropdown-menu {
+  position: absolute;
+  background-color: #002866 !important;
+}
+.navbar-light .navbar-toggler {
+color: rgb(255, 255, 255);
+border-color: rgb(255, 255, 255);
+background-color: white;
+}
+
+.dropdown-menu>li>a {
+color: #fff !important;
+}
+
+.dropdown-menu>li>a:hover {
+color: #ff0000 !important;
+}
+
+/* *********** Ticker **************** */
+* { box-sizing: border-box; }
+$duration: 30s;
+
+@-webkit-keyframes ticker {
+  0% {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    visibility: visible;
+  }
+
+  100% {
+    -webkit-transform: translate3d(-100%, 0, 0);
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+
+@keyframes ticker {
+  0% {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    visibility: visible;
+  }
+
+  100% {
+    -webkit-transform: translate3d(-100%, 0, 0);
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+
+.ticker-wrap {
+  
+  position: relative;
+  top:0px;
+ // width: 100%;
+  overflow: hidden;
+  height: 4rem;
+  background-color: #86eeba; 
+  padding-left: 100%;
+  box-sizing: content-box;
+  z-index: 20;
+  font-size: 20px; 
+  color: black;
+
+  .ticker {
+
+    display: inline-block;
+    height: 4rem;
+    line-height: 4rem;  
+    white-space: nowrap;
+    padding-right: 100%;
+    box-sizing: content-box;
+
+    -webkit-animation-iteration-count: infinite; 
+            animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
+            animation-timing-function: linear;
+   -webkit-animation-name: ticker;
+           animation-name: ticker;
+    -webkit-animation-duration: $duration;
+            animation-duration: $duration;
+
+    &__item {
+
+      display: inline-block;
+
+      padding: 0 2rem;
+      font-size: 2rem;
+      color: black;   
+
+    }
+
+  }
+
+}

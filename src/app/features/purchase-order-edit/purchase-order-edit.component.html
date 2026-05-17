@@ -1,0 +1,264 @@
+<div class="container-fluid " style="margin-top: 3rem;">
+    <div class="row">
+        <div id="po_id" class="col-12 col-lg-12 col-md-12 col-sm-12 mt-1">
+            <p style="background-color: brown; color:white;font-size: larger;"><b>Edit PO #: {{po.poId}}</b></p>
+            <!-- SUPPLIER SECTION -->
+
+            <div class="row ">
+
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                    <label><strong>Supplier:</strong></label>
+                    <!-- <input type="text" class="form-control" [(ngModel)]="selectedSupplierName"
+                        (keyup)="supplierName($event)"> -->
+
+                    <select class="form-select mt-2" [(ngModel)]="selectedSupplier" id="supplierForList" disabled="disablePO"
+                        (change)="supplierChange()">
+                        <option *ngFor="let supplier of suppliertList" [value]="supplier.supplierCode">
+                            {{supplier.supplierCode}} - {{supplier.supplierName}}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-sm-6 col-md-2">
+                    <label><strong>Name</strong></label>
+                    <input type="text" class="form-control" disabled [value]="mySupplier.supplierName">
+                </div>
+
+                <div class="col-12 col-sm-6 col-md-2">
+                    <label><strong>Phone</strong></label>
+                    <input type="text" class="form-control" disabled [value]="mySupplier.supplierContact">
+                </div>
+
+                <div class="col-12 col-sm-6 col-md-2">
+                    <label><strong>Email</strong></label>
+                    <input type="text" class="form-control" disabled [value]="mySupplier.supplierEmail">
+                </div>
+
+                <div class="col-12 col-sm-6 col-md-2">
+                    <label><strong>Contact Person</strong></label>
+                    <input type="text" class="form-control bg-light" [(ngModel)]="supplierContactPerson">
+                </div>
+
+            </div>
+
+
+
+            <!-- PO DETAILS SECTION -->
+
+            <div class="row g-3">
+
+                <div class="col-12 col-sm-6 col-md-2">
+                    <label>PO No:</label>
+                    <input type="text" class="form-control" style="font-weight:bold;font-size:larger;" disabled
+                        [(ngModel)]="po.poNumber">
+                </div>
+
+                <div class="col-12 col-sm-6 col-md-2">
+                    <label>PO Ref No:</label>
+                    <input type="text" class="form-control" style="font-weight:bold;font-size:larger;" disabled="disablePO"
+                        [(ngModel)]="po.poRef">
+                </div>
+
+                <div class="col-12 col-sm-6 col-md-2">
+                    <label>Status:</label>
+                    <div class="form-control-plaintext">{{ po.poStatus }}</div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-md-2">
+                    <label>PO Date:</label>
+                    <input type="date" class="form-control" style="font-weight:bold;font-size:larger;" disabled="disablePO"
+                        [(ngModel)]="po.poDate">
+                </div>
+
+                <div class="col-12 col-sm-6 col-md-2">
+                    <label>Currency:</label>
+                    <select class="form-select" [(ngModel)]="selectedCurrency" (ngModelChange)="currencyChange()" disabled="disablePO">
+                        <option value="USD">USD</option>
+                        <option value="CAD">CAD</option>
+                        <option value="PKR" selected>PKR</option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-sm-6 col-md-2">
+                    <label>PO Type:</label>
+                    <div class="form-control-plaintext">{{ po.poType }}</div>
+                </div>
+
+            </div>
+
+
+
+            <!-- BARCODE SECTION -->
+
+            <div class="row g-3">
+                <div class="col-12 col-md-4">
+                    <label><strong>Barcode:</strong></label>
+                    <input type="text" class="form-control" autofocus [(ngModel)]="upc" (keyup)="upcSearch($event)">
+                </div>
+                <div class="col-12 col-md-4 position-relative">
+                    <label class="fw-bold">Name</label>
+
+                    <input type="search" class="form-control" placeholder="Search By Name"
+                        (keyup)="onNameSearch($event)" [(ngModel)]="searchText" autocomplete="off" />
+
+                    <!-- Search result list -->
+                    <ul class="list-group position-absolute w-100" *ngIf="productList.length > 0"
+                        style="z-index: 1000; max-height: 250px; overflow-y: auto;">
+                        <li class="list-group-item list-group-item-action" *ngFor="let product of productList"
+                            (click)="selectProduct(product)">
+                            {{ product.productName }}
+                            <small class="text-muted d-block">
+                                {{ product.sku }} | {{(product.salePrice===null?product.unitPrice:product.salePrice) |
+                                number:'1.2-2'}}
+                            </small>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+            <hr>
+
+
+
+            <table class="table dept-table mb-0 teble-responsive">
+                <thead style="border: 1px solid black;">
+                    <tr style="width: 100%; font-size: 15px; text-transform: capitalize;">
+
+                        <th scope="col" style="width: 40%;" class="border-1 text-capitalize font-medium">Item</th>
+                        <th scope="col" style="width: 10%;" class="border-1 text-capitalize font-medium">Qty</th>
+                        <th scope="col" style="width: 10%;" class="border-1 text-capitalize font-medium">Unit Price
+                        </th>
+                        <th scope="col" style="width: 10%;" class="border-1 text-capitalize font-medium">Discount
+                        </th>
+                        <th scope="col" style="width: 10%;" class="border-1 text-capitalize font-medium">Amount
+                            After Discount </th>
+                        <th scope="col" style="width: 10%;" class="border-1 text-capitalize font-medium">Tax %</th>
+                        <th scope="col" style="width: 10%;" class="border-1 text-capitalize font-medium">Total</th>
+                    </tr>
+                </thead>
+                <tbody
+                    style="border: 1px solid black; font-family: 'Times New Roman', Times, serif; font-weight: bold;">
+                    <tr *ngFor="let item of poItemsViewList let row = index;">
+                        <td>
+                            <button class="btn btn-danger" (click)="onDelete(row)">
+                                <fa-icon [icon]="faTrash"></fa-icon>
+
+                            </button>&nbsp;
+                            {{item.upc}} - {{item.productName}}
+                        </td>
+
+                        <td class="border-1 text-capitalize font-medium">
+                            <!--<input type="number"  class="form-control" [(ngModel)]="product.quantity"  [value]="product.quantity" (change)="qtyChange(row)">-->
+
+                            <input type="number" name="Qty_{{row}}" id="Qty_{{row}}" (keypress)="chkNumber(row)" disabled="disablePO"
+                                class="input-number qty number" step="1" size="5" value="{{item.quantity}}"
+                                (change)="qtyChange(row)" />
+
+
+                        </td>
+                        <td class="border-1 text-capitalize font-medium">
+                            <input type="number" name="price_{{row}}" id="price_{{row}}" (keypress)="chkPrice(row)" disabled="disablePO"
+                                class="input-number qty number" value="{{item.unitPrice}}" size="5"
+                                (change)="priceChange(row)" />
+                        </td>
+                        <td class="border-1 text-capitalize font-medium">
+                            <input type="number" class="form-control" id="discount_{{row}}" size="4" disabled="disablePO"
+                                [(ngModel)]="item.discount" [value]="item.discount" (change)="discountChange(row)">
+                        </td>
+                        <td class="border-1 text-capitalize font-medium">
+                            <input type="number" class="form-control" id="itemTotal_{{row}}" [(ngModel)]="item.total" disabled="disablePO"
+                                size="5">
+                        </td>
+                        <td class="border-1 text-capitalize font-medium">
+                            <input type="number" class="form-control" id="tax_{{row}}" (change)="taxChange(row)" disabled="disablePO"
+                                [(ngModel)]="item.tax" size="3">
+                        </td>
+                        <td class="border-1 text-capitalize "
+                            style="font-family:'Times New Roman', Times, serif ; font-weight: bold;">
+                            <input type="number" class="form-control" id="itemTotal_{{row}}" disabled="disablePO"
+                                [(ngModel)]="item.grandTotal" size="5">
+                        </td>
+
+                    </tr>
+
+
+                </tbody>
+                <tfoot style="border: 1px solid;">
+                    <tr class="mt-3 mb-3">
+                        <td style="border:none"></td>
+                        <!--<td style="border:none"></td>-->
+                        <td style="border:none"></td>
+                        <td style="border:none"></td>
+                        <td style="border:none"></td>
+
+                        <td style="border:none; text-align:right; font-weight: bold;" colspan="2">Sub Total(<fa-icon
+                                [icon]="faDollar"></fa-icon>):
+                        </td>
+                        <td class="border-1" style="font-weight: bold;"> {{po.subTotal}}</td>
+                    </tr>
+                    <tr class="mt-3 mb-3">
+                        <td style="border:none"></td>
+                        <td style="border:none"></td>
+                        <td style="border:none"></td>
+                        <td style="border:none"></td>
+
+                        <td style="border:none;text-align:right; font-weight: bold;" colspan="2">Discount(<fa-icon
+                                [icon]="faDollar"></fa-icon>):
+                        </td>
+                        <td class=" border-1" contenteditable="true">
+                            <input type="number" class="form-control" [(ngModel)]="po.discount" disabled="disablePO"
+                                (change)="totalDiscountChange()">
+                        </td>
+                    </tr>
+                    <tr class="mt-3 mb-3">
+                        <td style="border:none"></td>
+                        <td style="border:none"></td>
+                        <td style="border:none"></td>
+                        <td style="border:none"></td>
+                        <td style="border:none;text-align:right; font-weight: bold;" colspan="2">Total Qty:</td>
+                        <td class="amount border-1" contenteditable="true" style="font-weight: bold;">
+                            {{po.totalQty}} </td>
+                    </tr>
+                    <tr class="mt-3 mb-3">
+                        <td style="border:none"></td>
+                        <!--<td style="border:none"></td>-->
+                        <td style="border:none"></td>
+                        <td style="border:none"></td>
+                        <td style="border:none"></td>
+
+                        <td style="border:none;text-align:right; font-weight: bold;" colspan="2">Total Payment
+                            Due(<fa-icon [icon]="faDollar"></fa-icon>):</td>
+                        <td class="border-1" contenteditable="true" style="font-weight: bold;"> {{po.total}} </td>
+                    </tr>
+                </tfoot>
+            </table>
+
+
+            <div class="row">
+                <div class="col-12 col-md-4 col-lg-4 col-sm-4">
+                    <label><b>Notes:</b></label>
+                    <input type="textarea" cols="5" rows="3" class="form-control" [(ngModel)]="po.remarks" disabled="disablePO">
+                    &nbsp;
+
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <button type="button" class="btn btn-secondary m-3" (click)="save()"> <fa-icon
+                            [icon]="faSave"></fa-icon> Save</button>
+                    <!-- <button type="button" class="btn btn-danger m-3"  (click)="close()">Cancel</button> -->
+                    <button type="button" class="btn btn-warning m-3" (click)="print()">
+                        <fa-icon [icon]="faPrint"></fa-icon> Print</button>
+                    <button type="button" class="btn btn-success m-3" (click)="poList()">
+                        <fa-icon [icon]="faList"></fa-icon> Purchase Order List</button>
+                </div>
+            </div>
+            
+            <hr>
+
+        </div><!-- div class=col-12-->
+    </div>
+</div>

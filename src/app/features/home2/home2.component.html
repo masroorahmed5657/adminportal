@@ -1,0 +1,139 @@
+<app-header2></app-header2>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-3 col-sm-12 col-md-6" *ngIf="orderFlag">
+            <fieldset>
+                <legend>Sales</legend>
+                <a [routerLink]="'/order'" class="btn mb-5"><button class="glow-on-hover order-btn" type="button">Sales
+                        List </button></a>&nbsp;&nbsp;&nbsp;
+            </fieldset>
+        </div>
+        <div class="col-lg-3 col-sm-12 col-md-6" *ngIf="warehouseFlag"> <!--*ngIf= "posFlag">-->
+            <fieldset *ngIf="appName!=='ZUBAIDA'">
+                <legend>POS</legend>
+                <a [routerLink]="'/countersale'" class="btn mb-5 "><button class="glow-on-hover "
+                        style="background-color: brown; " type="button">Counter Sale</button></a>&nbsp;&nbsp;&nbsp;
+            </fieldset>
+            <!-- <div class="col-lg-12 col-sm-12 col-md-6"  *ngIf= "warehouseFlag"> -->
+            <fieldset *ngIf="warehouseFlag">
+                <legend>Warehouse</legend>
+                <a [routerLink]="'/warehouse'" class="btn mb-5"><button class="glow-on-hover hr-btn"
+                        type="button">Warehouse/SupplyChain</button></a>&nbsp;&nbsp;&nbsp;
+            </fieldset>
+            <!-- </div> -->
+
+        </div>
+        <div class="col-lg-3 col-sm-12 col-md-3" *ngIf="newsAlertFlag">
+            <fieldset>
+                <legend>News and Alerts</legend>
+                <a [routerLink]="'/newsTracker'" class="btn mb-5 "><button class="glow-on-hover news-btn"
+                        type="button">NewsTicker</button></a>&nbsp;&nbsp;&nbsp;
+                <a *ngIf="appName!=='ZUBAIDA'" [routerLink]="'/review'" class="btn mb-5 "><button
+                        class="glow-on-hover news-btn" type="button">Review</button></a>&nbsp;&nbsp;&nbsp;
+                <a *ngIf="appName!=='ZUBAIDA'" [routerLink]="'/subscribtion'" class="btn mb-5 "><button
+                        class="glow-on-hover news-btn" type="button">Subscribtion</button></a>&nbsp;&nbsp;&nbsp;
+            </fieldset>
+        </div>
+        <div class="col-lg-3 col-sm-12 col-md-3" *ngIf="financeFlag">
+            <fieldset>
+                <legend>Finance</legend>
+                <a *ngIf="appName!=='ZUBAIDA'" [routerLink]="'/expenses'" class="btn mb-5"><button
+                        class="glow-on-hover finance-btn" type="button">Expenses</button></a>&nbsp;&nbsp;&nbsp;
+                <a [routerLink]="'/ordersPayment'" class="btn mb-5"><button class="glow-on-hover finance-btn"
+                        type="button">Payment Status</button></a>&nbsp;&nbsp;&nbsp;
+            </fieldset>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-12" *ngIf="reportsFlag">
+            <fieldset>
+                <legend>Reports</legend>
+                <!-- <a [routerLink]="'/qurbaniReport'" class="btn mb-5"><button class="glow-on-hover report-btn" type="button">Qurbani Sale</button></a>&nbsp;&nbsp; -->
+                <a [routerLink]="'/ledger'" class="btn mb-5"><button class="glow-on-hover report-btn"
+                        type="button">Customer Sales & Expense Reports</button></a>&nbsp;&nbsp;
+                <a [routerLink]="'/vendor'" class="btn mb-5"><button class="glow-on-hover report-btn"
+                        type="button">Supplier / Vendor Reports</button></a>&nbsp;&nbsp;
+                <a [routerLink]="'/profitLoss'" class="btn mb-5"><button class="glow-on-hover report-btn"
+                        type="button">Profit & Loss Reports</button></a>&nbsp;&nbsp;
+                <a [routerLink]="'/reports'" class="btn mb-5"><button class="glow-on-hover report-btn"
+                        type="button">Sales Reports</button></a>&nbsp;&nbsp;
+                <a [routerLink]="'/catReports'" class="btn mb-5"><button class="glow-on-hover report-btn"
+                        type="button">Sales By Category</button></a>&nbsp;&nbsp;
+                <!-- <a [routerLink]="'/subReports'" class="btn mb-5"><button class="glow-on-hover report-btn" type="button">Sales By Sub-Category</button></a>&nbsp;&nbsp; -->
+                <a [routerLink]="'/productReports'" class="btn mb-5"><button class="glow-on-hover report-btn"
+                        type="button">Sales By Product</button></a>&nbsp;&nbsp;
+                <a [routerLink]="'/reports'" class="btn mb-5"><button class="glow-on-hover report-btn"
+                        type="button">Back Orders</button></a>&nbsp;&nbsp;
+            </fieldset>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12" *ngIf="inventoryFlag">
+            <fieldset>
+                <legend>Inventory</legend>
+                <a [routerLink]="'/products'" class="btn mb-5"><button class="glow-on-hover inventory-btn"
+                        type="button">Product</button></a>&nbsp;&nbsp;&nbsp;
+                <a *ngIf="appName!=='ZUBAIDA'" routerLink="/expiredPoducts" class="btn mb-5"><button
+                        class="glow-on-hover inventory-btn" type="button">Expired Product</button></a>&nbsp;&nbsp;&nbsp;
+                <a [routerLink]="'/category'" class="btn mb-5"><button class="glow-on-hover inventory-btn"
+                        type="button">Category</button></a>&nbsp;&nbsp;&nbsp;
+                <a [routerLink]="'/brands'" class="btn mb-5"><button class="glow-on-hover inventory-btn"
+                        type="button">Brands</button></a>&nbsp;&nbsp;&nbsp;
+                <a [routerLink]="'/purchaseorder'" class="btn mb-5"><button class="glow-on-hover inventory-btn"
+                        type="button">Purchase Order</button></a>&nbsp;&nbsp;&nbsp;
+                <a [routerLink]="'/receiveProduct'" class="btn mb-5"><button class="glow-on-hover inventory-btn"
+                        type="button">Receive Order</button></a>&nbsp;&nbsp;&nbsp;
+                <a [routerLink]="'/inventoryAdjustment'" class="btn mb-5"><button class="glow-on-hover inventory-btn"
+                        type="button">Inventory Adjustment</button></a>&nbsp;&nbsp;&nbsp;
+                <a [routerLink]="'/listInvoice'" class="btn mb-5"><button class="glow-on-hover inventory-btn"
+                        type="button">List Invoice</button></a>&nbsp;&nbsp;&nbsp;
+                <a [routerLink]="'/invoice'" class="btn mb-5"><button class="glow-on-hover inventory-btn"
+                        type="button">Invoice</button></a>&nbsp;&nbsp;&nbsp;
+                <a [routerLink]="'/supplier'" class="btn mb-5"><button class="glow-on-hover inventory-btn"
+                        type="button">Supplier</button></a>&nbsp;&nbsp;&nbsp;
+                <a routerLink="/barcode" class="btn mb-5">
+                    <button class="glow-on-hover finance-btn" type="button">BarCode</button>
+
+                </a>&nbsp;&nbsp;&nbsp;
+            </fieldset>
+        </div>
+    </div>
+    <div class="row">
+        <!-- <div class="col-lg-4 col-sm-12 col-md-6" *ngIf= "financeFlag">
+          <fieldset>
+              <legend>Finance</legend>
+              <a *ngIf="appName!=='ZUBAIDA'" [routerLink]="'/expenses'" class="btn mb-5"><button class="glow-on-hover finance-btn" type="button">Expenses</button></a>&nbsp;&nbsp;&nbsp;
+              <a [routerLink]="'/ordersPayment'" class="btn mb-5"><button class="glow-on-hover finance-btn" type="button">Payment Status</button></a>&nbsp;&nbsp;&nbsp;
+          </fieldset>
+      </div> -->
+        <div class="col-lg-12 col-sm-12 col-md-12" *ngIf="hrFlag">
+            <fieldset>
+                <legend>HR</legend>
+                <a [routerLink]="'/departments'" class="btn mb-5"><button class="glow-on-hover hr-btn"
+                        type="button">Department</button></a>&nbsp;&nbsp;&nbsp;
+                <a [routerLink]="'/storeHours'" class="btn mb-5"><button class="glow-on-hover hr-btn"
+                        type="button">Store Hours</button></a>&nbsp;&nbsp;&nbsp;
+                <a *ngIf="appName!=='ZUBAIDA'" [routerLink]="'/salaries'" class="btn mb-5"><button
+                        class="glow-on-hover hr-btn" type="button">Salaries</button></a>&nbsp;&nbsp;&nbsp;
+                <a *ngIf="appName!=='ZUBAIDA'" [routerLink]="'/employees'" class="btn mb-5"><button
+                        class="glow-on-hover hr-btn" type="button">Employee</button></a>&nbsp;&nbsp;&nbsp;
+                <a [routerLink]="'/listUser'" class="btn mb-5"><button class="glow-on-hover hr-btn" type="button">User
+                        Admin</button></a>&nbsp;&nbsp;&nbsp;
+                <a [routerLink]="'/customer'" class="btn mb-5"><button class="glow-on-hover hr-btn"
+                        type="button">Customer</button></a>&nbsp;&nbsp;&nbsp;
+            </fieldset>
+        </div>
+    </div>
+    <!-- <div class="row" >
+    <div class="col-lg-12 col-sm-12 col-md-6"  *ngIf= "warehouseFlag">
+        <fieldset>
+            <legend>Warehouse</legend>
+            <a [routerLink]="'/warehouse'" class="btn mb-5"><button class="glow-on-hover hr-btn" type="button">Warehouse/SupplyChain</button></a>&nbsp;&nbsp;&nbsp;
+        </fieldset>
+    </div>
+  </div> -->
+</div>
+
+
+<app-footer></app-footer>

@@ -1,0 +1,921 @@
+<div class="container-fluid" style="margin-top: 3rem;">
+  <div class="row">
+    <!-- <div class="col-2"><app-header></app-header></div> -->
+
+    <div class="col-12 col-lg-12 col-md-12 col-sm-12 mt-3">
+
+      <!-- ********************************************************* EDIT SECTION ******************************************-->
+      <div class="container-fluid bg-white">
+
+        <form [formGroup]="productForm">
+
+          <div class="row ">
+            <div class="col-12">
+              <h3 class="h1"
+                style="text-align:center ;background-color:grey; font-weight:bolder ; color: white; font-size: medium; ">
+                Edit: ID-{{editProduct.productId}} &nbsp;&nbsp; - {{editProduct.productName}} </h3>
+
+            </div>
+
+
+            <div class="row">
+              <!-- <div class="col-lg-2 col-md-2">&nbsp;</div> -->
+              <div class="col-lg-12 col-md-12" style="margin-bottom: 5px; margin-right: 10px;">
+
+                <button type="button" class="btn btn-success " style="font-size: large;margin-right: 10px;"
+                  (click)="onSubmit()">
+                  <fa-icon [icon]="faSave"></fa-icon> &nbsp;Save
+                </button>
+
+                <button type="button" class="btn btn-danger" style="font-size: large;margin-right: 10px;"
+                  (click)="deleteProduct(editProduct.productId)">
+                  <i class="fa fa-delete"></i>
+                  <fa-icon [icon]="faRemove"></fa-icon>&nbsp;Delete
+                </button>
+
+                <button type="button" class="btn btn-primary" style="font-size: large;margin-right: 10px;"
+                  (click)="backToList()">
+                  <fa-icon [icon]="faHome"></fa-icon>&nbsp;Back to List
+                </button>
+                <button type="button" class="btn btn-warning" style="font-size: large;"
+                  (click)="onCloneSubmit()">Clone</button>
+              </div>
+              <!-- <div class="col-lg-2 col-md-2">&nbsp;</div> -->
+
+            </div>
+
+            <!--<div class="container bg-white">-->
+            <div class="row">
+
+              <!-- ******************** DATA DIV ********************** -->
+              <div class="col-lg-12 col-md-12">
+
+                <div class="col-lg-12 col-md-12">
+                  <div class="row">
+                    <!-- Column -->
+                    <div class="col-lg-12">
+
+                      <div class="card">
+                        <div class="card-body">
+
+                          <div class="form-body">
+                            <div class="row">
+                              <!-- Product Name -->
+                              <div class="col-md-5">
+                                <label class="form-label">Name:</label>
+                                <div class="mb-3">
+                                  <div class="input-group mb-3" tabindex="0">
+                                    <input type="text" class="form-control" formControlName="productName"
+                                      placeholder="Product Name" aria-describedby="basic-addon2"
+                                      [ngClass]="{ 'is-invalid': submitted && f['productName'].errors }" required>
+                                  </div>
+                                  <div *ngIf="submitted && f['productName'].errors"
+                                    style="color: red; font-weight: bold;">
+                                    <div *ngIf="f['productName'].errors['required']">Product Name is required</div>
+                                  </div>
+                                </div>
+                              </div>
+                              <!-- Product Category -->
+                              <div class="col-md-4">
+                                <label class="form-label">Category:</label>
+                                <div class="mb-3" tabindex="1">
+                                  <select class="form-select" formControlName="categoryId"
+                                    (change)="categoryProductChange()" data-placeholder="Choose a Category"
+                                    [ngClass]="{ 'is-invalid': submitted && f['categoryId'].errors }" required>
+                                    <option *ngFor="let category of categoryList" [value]="category.categoryId">
+                                      {{category.category}}-{{category.subCategory}}
+                                    </option>
+                                  </select>
+                                  <div *ngIf="submitted && f['categoryId'].errors"
+                                    style="color: red; font-weight: bold;">
+                                    <div *ngIf="f['categoryId'].errors['required']">Category is required</div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="col-md-3">
+                                <label class="form-label">Brands:</label>
+                                <div class="mb-3" tabindex="2">
+                                  <select class="form-select" formControlName="brandId"
+                                    data-placeholder="Choose a Brand"
+                                    [ngClass]="{ 'is-invalid': submitted && f['brandId'].errors }" required>
+                                    <option *ngFor="let brands of brandsList" [value]="brands.brandId">
+                                      {{brands.brandName}}
+                                    </option>
+                                  </select>
+                                  <div *ngIf="submitted && f['brandId'].errors" style="color: red; font-weight: bold;">
+                                    <div *ngIf="f['brandId'].errors['required']">Brands is required</div>
+                                  </div>
+                                </div>
+                              </div>
+
+                            </div> <!--ROW-->
+
+                            <div class="row">
+                              <!-- Product Price -->
+                              <div class="col-md-2">
+                                <label class="form-label">Price: </label>
+                                <div class="mb-3">
+                                  <div class="input-group mb-3" tabindex="3">
+                                    <span class="input-group-text" id="basic-addon1">
+                                      <i class="ti-money"></i>
+                                      <fa-icon [icon]="faDollar"></fa-icon>
+                                    </span>
+                                    <input type="number" class="form-control" formControlName="unitPrice" step="1"
+                                      min="0" max="500000" size="4" (keypress)="chkNumber('unitPrice')"
+                                      placeholder="Price" aria-label="Price" aria-describedby="basic-addon1"
+                                      [ngClass]="{ 'is-invalid': submitted && f['unitPrice'].errors }" required>
+                                  </div>
+                                  <div *ngIf="submitted && f['unitPrice'].errors"
+                                    style="color: red; font-weight: bold;">
+                                    <div *ngIf="f['unitPrice'].errors['required']">Price is required</div>
+                                  </div>
+
+                                </div>
+                              </div>
+                              <!-- Product Wholesale: -->
+                              <!-- <div class="col-md-2">
+                                <label class="form-label"  >Wholesale:</label>
+                                <div class="mb-2">
+                                  <div class="input-group mb-3">
+                                    <span class="input-group-text" id="basic-addon2">
+                                      <i class="ti-cut"></i>
+                                      <fa-icon [icon]="faDollar"></fa-icon>
+                                    </span>
+                                    <input type="number" class="form-control" formControlName="wholesalePrice" step="1"
+                                      min="0" max="500000" size="4" (keypress)="chkNumber('wholesalePrice')"
+                                      placeholder="wholesalePrice" aria-label="wholesalePrice"
+                                      aria-describedby="basic-addon2">
+                                  </div>
+                                </div>
+                              </div> -->
+                              <!-- Product salePrice: -->
+                              <div class="col-md-2">
+                                <label class="form-label">Sale/Cut
+                                  Price:</label>
+                                <div class="mb-2">
+                                  <div class="input-group mb-3" tabindex="4">
+                                    <span class="input-group-text" id="basic-addon2">
+                                      <i class="ti-cut"></i>
+                                      <fa-icon [icon]="faDollar"></fa-icon>
+                                    </span>
+                                    <input type="number" class="form-control" formControlName="salePrice" step="1"
+                                      min="0" max="500000" size="4" (keypress)="chkNumber('salePrice')"
+                                      placeholder="salePrice" aria-label="salePrice" aria-describedby="basic-addon2">
+                                  </div>
+                                </div>
+                              </div>
+
+                              <!-- Product Purchase Price: -->
+                              <div class="col-md-2">
+                                <label class="form-label">Purchase
+                                  Price:</label>
+                                <div class="mb-2">
+                                  <div class="input-group mb-3" tabindex="5">
+                                    <span class="input-group-text" id="basic-addon2">
+                                      <i class="ti-cut"></i>
+                                      <fa-icon [icon]="faDollar"></fa-icon>
+                                    </span>
+                                    <input type="number" class="form-control" formControlName="purchasePrice" step="1"
+                                      min="0" max="500000" size="4" (keypress)="chkNumber('purchasePrice')"
+                                      placeholder="Purchase" aria-label="Discount" aria-describedby="basic-addon2">
+                                  </div>
+                                </div>
+                              </div>
+                              <!-- Product Discount -->
+                              <div class="col-md-2">
+                                <label class="form-label">Discount:</label>
+                                <div class="mb-3">
+                                  <div class="input-group mb-3" tabindex="6">
+                                    <span class="input-group-text" id="basic-addon2">
+                                      <i class="ti-cut"></i>
+                                      <fa-icon [icon]="faDollar"></fa-icon>
+                                    </span>
+                                    <input type="number" class="form-control" formControlName="discount" step="1"
+                                      min="0" max="500000" size="4" (keypress)="chkNumber('discount')"
+                                      placeholder="Discount" aria-label="Discount" aria-describedby="basic-addon2">
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-md-2">
+                                <label class="form-label">Tax:</label>
+                                <div class="mb-3">
+                                  <div class="input-group mb-3" tabindex="7">
+                                    <span class="input-group-text" id="basic-addon2">
+                                      <i class="ti-cut"></i>
+                                      <fa-icon [icon]="faDollar"></fa-icon>
+                                    </span>
+                                    <input type="text" class="form-control" formControlName="tax" step="1" min="0"
+                                      max="100" size="4" (keypress)="chkNumber('tax')" placeholder="Tax"
+                                      aria-label="Discount" aria-describedby="basic-addon2">
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-md-2">
+                                <label class="form-label">HSN:</label>
+                                <div class="mb-2">
+                                  <div class="input-group mb-3" tabindex="8">
+                                    <span class="input-group-text" id="basic-addon2">
+                                      <i class="ti-cut"></i>
+                                      <!-- <fa-icon [icon]="faDollar"></fa-icon> -->
+                                    </span>
+                                    <input type="text" class="form-control" formControlName="hsn" placeholder="hsn"
+                                      aria-label="hsn" aria-describedby="basic-addon2">
+                                  </div>
+                                </div>
+                              </div>
+
+
+                            </div>
+                            <div class="row">
+                              <!-- Product Quantity -->
+                              <div class="col-md-2">
+                                <label class="form-label">Quantity:</label>
+                                <div class="mb-2">
+                                  <div class="input-group mb-3" tabindex="9">
+
+                                    <input type="number" class="form-control" formControlName="quantity" step="1"
+                                      min="0" max="500000" size="4" (keypress)="chkNumber('quantity')"
+                                      placeholder="quantity" aria-label="Discount" aria-describedby="basic-addon2">
+                                  </div>
+                                </div>
+                              </div>
+
+
+                              <!-- made in  -->
+
+                              <div class="col-md-2 ">
+                                <label class="form-label">Madein:</label>
+
+                                <div class="mb-4" tabindex="10">
+                                  <input class="form-control" formControlName="madein" rows="3" cols="20">
+                                </div>
+
+                              </div>
+                              <!--  Product Physicaldimension -->
+                              <div class="col-md-3">
+                                <label class="form-label">Dimension:</label>
+
+                                <div class="mb-2" tabindex="11">
+                                  <input class="form-control" formControlName="physicalDimension">
+                                </div>
+                              </div>
+
+                              <!-- UPC -->
+                              <div class="col-md-3 ">
+                                <label class="form-label">BarCode </label>
+                                <div class="mb-2" tabindex="12">
+                                  <input class="form-control" formControlName="upc" rows="3" cols="20">
+
+                                </div>
+                              </div>
+                              <!-- SKU -->
+
+
+                              <div class="col-md-2 ">
+                                <label class="form-label">SKU:</label>
+                                <div class="mb-4" tabindex="13">
+                                  <input class="form-control" formControlName="sku" rows="3" cols="20">
+                                </div>
+                              </div>
+
+                            </div>
+                            <div class="row">
+                              <!-- Abbr Name -->
+                              <div class="col-md-3 " *ngIf="appName!=='ZUBAIDA'">
+                                <label class="form-label">Abbreviated
+                                  Name:</label>
+
+                                <div class="mb-3" tabindex="14">
+                                  <div class="input-group mb-3">
+                                    <input type="text" class="form-control" formControlName="abbrName" style="width:90%"
+                                      placeholder="Abbreviated Name" aria-describedby="basic-addon2">
+                                  </div>
+                                </div>
+                              </div>
+                              <!-- Product Weight -->
+                              <div class="col-md-3" *ngIf="appName!=='ZUBAIDA'">
+                                <label class="form-label">Weight:</label>
+                                <div class="mb-3">
+                                  <div class="input-group mb-3" tabindex="15">
+
+                                    <input type="number" class="form-control" formControlName="weight"
+                                      placeholder="weight" step="1" min="0" max="500000" size="4"
+                                      (keypress)="chkNumber('weight')" aria-label="Discount"
+                                      aria-describedby="basic-addon2">
+                                  </div>
+                                </div>
+                              </div>
+                              <!-- Product Measure of Unit -->
+                              <div class="col-md-2" *ngIf="appName!=='ZUBAIDA'">
+                                <label class="form-label"> Unit:</label>
+                                <div class="mb-3">
+                                  <div class="input-group mb-3" tabindex="16">
+                                    <select class="form-select" formControlName="unitName" data-placeholder="unitName">
+                                      <option value="lbs">lbs</option>
+                                      <option value="gm">gm</option>
+                                      <option value="kg">kg</option>
+                                      <option value="liter">liter</option>
+                                      <option value="ft">ft</option>
+                                      <option value="inch">inch</option>
+                                      <option value="pcs">pcs</option>
+                                    </select>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-md-3" *ngIf="appName!=='ZUBAIDA'">
+                                <label class="form-label">Expiry
+                                  Date:</label>
+                                <div class="mb-3">
+                                  <div class="input-group mb-3" tabindex="17">
+
+                                    <input type="date" class="form-control" formControlName="expiryDate"
+                                      placeholder="Expiry Date" aria-label="Expiry Date"
+                                      aria-describedby="basic-addon2">
+                                  </div>
+                                </div>
+                              </div>
+
+
+
+                              <div class="col-md-2" *ngIf="appName!=='ZUBAIDA'">
+                                <label class="form-label">Case
+                                  Quantity:</label>
+                                <div class="mb-2">
+                                  <div class="input-group mb-3" tabindex="18">
+
+                                    <input type="number" class="form-control" formControlName="qtyCase" step="1" min="0"
+                                      max="500000" size="4" (keypress)="chkNumber('caseQuantity')"
+                                      placeholder="Case Quantity" aria-label="Case Quantity"
+                                      aria-describedby="basic-addon2">
+                                  </div>
+                                </div>
+                              </div>
+
+                              <!--  Product Description -->
+                              <div class="col-md-8 ">
+                                <label class="form-label">Description:</label>
+                                <div class="mb-3" tabindex="19">
+                                  <textarea class="form-control" formControlName="productDetails" rows="1"
+                                    [ngClass]="{ 'is-invalid': submitted && f['productDetails'].errors }" required>
+                                  </textarea>
+                                  <div *ngIf="submitted && f['productDetails'].errors"
+                                    style="color: red; font-weight: bold;">
+                                    <div *ngIf="f['productDetails'].errors['required']">Product Description is required
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-md-4 ">
+                                BarCode:
+                                <!-- <img class="card-img-top"
+                                  src='data:"image/png";base64,{{productImageViewList[0].firstImage}}'
+                                  alt="Card image cap" style="width: 100px !important;height: 50px;padding-right: 2px;"> -->
+                              </div>
+
+                            </div>
+
+                            <div class="row">
+                              <!-- Popular Flag -->
+                              <div class="col-md-2">
+                                <div class="form-check" tabindex="20">
+                                  <input class="form-check-input" type="checkbox" formControlName="popularFlag">
+                                  <label class="form-check-label" for="popularFlag">
+                                    <b>Popular</b>
+                                  </label>
+                                </div>
+                              </div>
+                              <!--Status Flag -->
+                              <div class="col-md-2">
+                                <div class="form-check" tabindex="21">
+                                  <input class="form-check-input" type="checkbox" formControlName="productStatus">
+                                  <label class="form-check-label" for="productStatus">
+                                    <b>Active</b>
+                                  </label>
+                                </div>
+                              </div>
+                              <!-- Sell In Pcs -->
+                              <div class="col-md-2 ">
+                                <div class="form-check" tabindex="22">
+                                  <input class="form-check-input" type="checkbox" formControlName="sellinPcs">
+                                  <label class="form-check-label" for="sellinPcs">
+                                    <b>Sellin Pieces</b>
+                                  </label>
+                                </div>
+                              </div>
+                              <!-- </div> -->
+                              <!-- <div class="col-md-2 ">
+                                <div class="form-check">
+                                  <input class="form-check-input" type="checkbox" formControlName="sellinPcs"
+                                    (change)="onCheckboxChange($event)">
+                                  <label class="form-check-label" for="sellinPcs">
+                                    <b  >CUTPRICE</b>
+                                  </label>
+                                </div>
+                              </div>
+ -->
+
+                              <!-- <div class="col-md-2 ">
+                                <div class="form-check">
+                                  <input class="form-check-input" type="checkbox" formControlName="sellinPcs"
+                                    (change)="onCheckboxChange1($event)">
+                                  <label class="form-check-label" for="sellinPcs">
+                                    <b  >HOTTREND</b>
+                                  </label>
+                                </div>
+                              </div> -->
+
+                            </div>
+
+
+                          </div>
+
+
+                          <!-- <div class="form-actions mt-4 pt-3 button-group">
+                        <button type="submit" class="btn btn-success" (click)="onSubmit()">
+                          <i class="fa fa-check"></i> Save</button>
+                        &nbsp;&nbsp;
+                        <button type="button" class="btn btn-danger" (click)="deleteProduct(editProduct.productId)">
+                          <i class="fa fa-delete"></i> Delete</button>
+                        &nbsp;&nbsp;
+
+
+                        <button type="button" class="btn btn-primary"
+                          (click)="onCancel()">Back to List</button>
+                      </div> -->
+
+
+
+
+
+                          <br>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Column -->
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+
+
+            <!--</div>  ROW DIV ENDS FOR DATA-->
+            <!--Attributes Start-->
+            <div class="row">
+              <div class="col"
+                style="text-align:center ;background-color:#002866; font-weight:bolder ; color: white; font-size: medium; padding: 0.5rem;">
+                <label style="color: white;" style="font-size:16px;font-weight:bolder;">Attributes</label>
+              </div>
+
+              <div class="row">
+
+                <!-- Packaging Attributes -->
+                <div class="col-md-3">
+                  <label class="form-label">Sizes</label>
+                  <div class="mb-3">
+                    <div class="form-input">
+                      <input class="form-control" type="text" value="" formControlName="packagingAttributes1">
+                    </div>
+                    <div class="form-input">
+                      <input class="form-control" type="text" value="" formControlName="packagingAttributes2">
+                    </div>
+                    <div class="form-input">
+                      <input class="form-control" type="text" value="" formControlName="packagingAttributes3">
+                    </div>
+                    <div class="form-input">
+                      <input class="form-control" type="text" value="" formControlName="packagingAttributes4">
+                    </div>
+                    <div class="form-input">
+                      <input class="form-control" type="text" value="" formControlName="packagingAttributes5">
+                    </div>
+                    <div class="form-input">
+                      <input class="form-control" type="text" value="" formControlName="packagingAttributes6">
+                    </div>
+                    <div class="form-input">
+                      <input class="form-control" type="text" value="" formControlName="packagingAttributes7">
+                    </div>
+
+                  </div>
+                </div>
+
+                <!-- Option Attributes -->
+                <div class="col-md-3">
+                  <label class="form-label">Additional </label>
+                  <div class="mb-3">
+                    <div class="form-input">
+                      <input class="form-control" type="text" value="" formControlName="optionsAttributes1">
+                      <!-- [(ngModel)]="inputValue"> -->
+                    </div>
+                    <div class="form-input">
+                      <input class="form-control" type="text" value="" formControlName="optionsAttributes2">
+                      <!-- [(ngModel)]="inputValue1"> -->
+                    </div>
+                    <div class="form-input">
+                      <input class="form-control" type="text" value="" formControlName="optionsAttributes3">
+                    </div>
+                    <div class="form-input">
+                      <input class="form-control" type="text" value="" formControlName="optionsAttributes4">
+                    </div>
+                    <div class="form-input">
+                      <input class="form-control" type="text" value="" formControlName="optionsAttributes5">
+                    </div>
+                    <div class="form-input">
+                      <input class="form-control" type="text" value="" formControlName="optionsAttributes6">
+                    </div>
+                    <div class="form-input">
+                      <input class="form-control" type="text" value="" formControlName="optionsAttributes7">
+                    </div>
+
+                  </div>
+                </div>
+
+                <!-- Extra Attributes -->
+                <div class="col-md-3">
+                  <label class="form-label">Colors </label>
+                  <div class="mb-3">
+                    <div class="form-input">
+                      <input class="form-control" type="text" value="" formControlName="extraAttributes1">
+                    </div>
+                    <div class="form-input">
+                      <input class="form-control" type="text" value="" formControlName="extraAttributes2">
+                    </div>
+                    <div class="form-input">
+                      <input class="form-control" type="text" value="" formControlName="extraAttributes3">
+                    </div>
+                    <div class="form-input">
+                      <input class="form-control" type="text" value="" formControlName="extraAttributes4">
+                    </div>
+                    <div class="form-input">
+                      <input class="form-control" type="text" value="" formControlName="extraAttributes5">
+                    </div>
+                    <div class="form-input">
+                      <input class="form-control" type="text" value="" formControlName="extraAttributes6">
+                    </div>
+                    <div class="form-input">
+                      <input class="form-control" type="text" value="" formControlName="extraAttributes7">
+                    </div>
+
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">Extra </label>
+                  <div class="mb-3">
+                    <div class="form-input">
+                      <input class="form-control" type="text" value="" formControlName="cuttingAttributes1">
+                    </div>
+                    <div class="form-input">
+                      <input class="form-control" type="text" value="" formControlName="cuttingAttributes2">
+                    </div>
+                    <div class="form-input">
+                      <input class="form-control" type="text" value="" formControlName="cuttingAttributes3">
+                    </div>
+                    <div class="form-input">
+                      <input class="form-control" type="text" value="" formControlName="cuttingAttributes4">
+                    </div>
+                    <div class="form-input">
+                      <input class="form-control" type="text" value="" formControlName="cuttingAttributes5">
+                    </div>
+                    <div class="form-input">
+                      <input class="form-control" type="text" value="" formControlName="cuttingAttributes6">
+                    </div>
+                    <div class="form-input">
+                      <input class="form-control" type="text" value="" formControlName="cuttingAttributes7">
+                    </div>
+
+                  </div>
+                </div>
+
+
+              </div> <!--ROW-->
+
+            </div>
+
+            <!--Attributes End-->
+
+
+
+            <!-- **************** IMAGE ATTACH *********************************************** -->
+
+            <div class="row" *ngIf="showImageFlag">
+              <div class="col-lg-12 col-md-12"
+                style="text-align:center ;background-color:#002866; font-weight:bolder ; color: white; font-size: medium; padding: 0.5rem;">
+                <label style="color: white;" style="font-size:25px;font-weight:bolder;">Images Attachment</label>
+              </div>
+              <div class="col-5 p-3" *ngFor="let preview of previewList index as i">
+                <div class="card" style="box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 4px;" class="view overlay"
+                  id="myRemoveButton-{{i}}">
+                  <img class="preview" [src]="preview" style="width:100%;height:400px !important;">
+
+                  <button class="btn btn-danger btn-sm d-flex justify-content-center"
+                    (click)="removeImage(editProduct.productId, i)"><fa-icon [icon]="faRemove"></fa-icon> Remove
+                    Image
+                  </button>
+                </div>
+              </div>
+              <div class="col-5">
+                <div class="card" style="box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 4px;" class="view overlay"
+                  *ngIf="editProduct.productImage" id="myRemoveButton-{{editProduct.productId}}">
+                  <img class="card-img-top" src='data:{{editProduct.imageMimeType}};base64,{{editProduct.productImage}}'
+                    alt="Card image cap" style="padding-right: 2px;">
+
+                  <button class="btn btn-danger btn-sm d-flex " style="margin: 0px auto;margin-top: 5px;"
+                    (click)="removeImage(editProduct.productId, -1)"><fa-icon [icon]="faRemove"></fa-icon>
+                    Remove
+                    Image</button>
+                </div>
+              </div>
+              <div class="col-5 " *ngFor="let product of productImageViewList index as i">
+                <div class="card" style="box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 4px;" class="view overlay"
+                  *ngIf="product.finalImage" id="myRemoveButton-{{i}}">
+                  <img class="card-img-top" src='data:{{product.fileType}};base64,{{product.finalImage}}'
+                    alt="Card image cap" style="padding-right: 2px;">
+
+                  <button class="btn btn-danger btn-sm d-flex " style="margin: 0px auto;margin-top: 5px;"
+                    (click)="removeImage(editProduct.productId, product.imageId)"><fa-icon [icon]="faRemove"></fa-icon>
+                    Remove
+                    Image</button>
+                </div>
+              </div>
+
+
+
+              <div class="col-lg-12 col-md-12">
+                <div class="tab-pane fade show active" id="product-image" role="tabpanel">
+                  <div class="row " style="background-color: transparent;font-size: 90%; font-weight:bold; ">
+                    <div>
+                      <label for="files" class="btn btn-primary" style="color:white;
+                font-size: 18px;
+                font-weight: bold;
+                text-transform: uppercase;letter-spacing: 1px; ">Attach Image</label>
+                      <input type="file" id="files" name="files" style="visibility:hidden;" accept="image/*"
+                        (change)="selectFile($event)" />
+
+                    </div>
+                    <div>
+
+
+
+
+
+                      <!-- <div *ngFor="let product of productImageViewList index as i">
+                <div class="el-card-avatar mb-3 el-overlay-1 overflow-hidden w-100 position-relative text-center" *ngIf="product.productImage" id="myRemoveButton-{{i}}">
+                  <img style="width: 200px;" src='data:{{product.imageMimeType}};base64,{{product.productImage}}' />
+                  <br>
+                  <button class="btn btn-danger btn-sm d-flex justify-content-center"
+                    (click)="removeImage(editProduct.productId, i)"><fa-icon [icon]="faRemove"></fa-icon> Remove
+                    Image</button>
+                </div>
+              </div> -->
+
+
+                    </div>
+                  </div><!--row-->
+                </div>
+
+
+              </div>
+
+            </div>
+            <!-- Image Section Ends -->
+            <!-- Video Section -->
+
+            <div class="row" *ngIf="showProductVideoFlag">
+              <div class="col-lg-12 col-md-12 col-sm-12 mt-3"
+                style="text-align:center ;background-color:#002866; font-weight:bolder ; color: white; font-size: medium; padding: 0.5rem;">
+                <label style="color: white;" class="form-label">Select Video
+                  File:</label>
+              </div>
+              <div class="col-lg-4 col-md-4 col-sm-4 mt-3" *ngIf="videoUrl">
+                <video controls width="400">
+                  <source [src]="videoUrl" type="video/mp4">
+                  Your browser does not support HTML5 video.
+                </video><br>
+                <button class="btn btn-danger d-flex mt-3" style="margin: 0px auto;" (click)="removeVideo()">Remove
+                  Video</button>
+              </div>
+              <div class="col-lg-12 col-md-12 col-sm-12 mt-3">
+                <input type="file" id="videoUpload" (change)="onFileSelected($event)">
+                <div *ngIf="errorMessage" class="text-danger">{{ errorMessage }}</div>
+              </div>
+            </div>
+
+            <!-- Video Section Ends -->
+
+
+
+            <div class="row" *ngIf="showProductDocumentFlag">
+              <div class="col-lg-12 col-md-12"
+                style="text-align:center ;background-color:#002866; font-weight:bolder ; color: white; font-size: medium; padding: 0.5rem;">
+                <label style="color: white;" style="font-size:25px;font-weight:bolder;">Document Attachment</label>
+              </div>
+
+
+              <div class="col-lg-12 col-md-12" *ngIf="showProductDocumentFlag">
+                <!-- ******************** IMAGE DIV ********************** -->
+                <div class="tab-pane fade show active" id="product-doc" role="tabpanel">
+                  <div class="row " style="background-color: transparent;font-size: 90%; font-weight:bold; ">
+                    <div *ngIf="selectedDocumentList.length > 0">
+                      <h2>Selected Documents:</h2>
+                      <ul>
+                        <li *ngFor="let file of selectedDocumentList">
+                          {{ file.name }}
+
+                          <div
+                            class="el-card-avatar mb-3 el-overlay-1 overflow-hidden w-100 position-relative text-center">
+                            <label>{{file.name}}</label>
+                            <br>
+                            <button class="btn btn-danger" *ngIf="file.name" id="myRemoveButton-{{file.name}}"
+                              (click)="removeDocument(editProduct.productId, file.name)"><fa-icon
+                                [icon]="faRemove"></fa-icon>
+                              Remove
+                              Image</button>
+                          </div>
+
+                        </li>
+                      </ul>
+                      <button class="btn btn-primary" (click)="uploadDocuments()">Upload Documents</button>
+                    </div>
+                    <div *ngIf="documentUrls.length > 0">
+                      <h2>Uploaded Documents:</h2>
+                      <ul>
+                        <li *ngFor="let url of documentUrls">
+                          <iframe [src]="url" width="100%" height="200px"></iframe>
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      <label for="documents" class="btn btn-primary" class="btn btn-primary" style="color:white;
+                                  font-size: 18px;
+                                  font-weight: bold;
+                                  text-transform: uppercase;letter-spacing: 1px; ">Attach Document</label>
+                      <input type="file" id="documents" name="documents" style="visibility:hidden;"
+                        accept=".pdf,.doc,.docx,.xls" (change)="onDocumentSelected($event)" multiple />
+
+                    </div>
+                    <div>
+
+
+                      <!-- <div *ngFor="let preview of previewList">
+                <img [src]="preview" class="preview" style="width: 200px; margin-left: 25%;">
+              </div> -->
+
+                    </div>
+                  </div>
+                </div><!--row-->
+              </div>
+            </div>
+
+
+            <!-- </div> -->
+          </div>
+        </form>
+
+        <form [formGroup]="warehouseForm" *ngIf="showWarehouseFlag">
+          <div class="row">
+            <!-- ******************** DATA DIV ********************** -->
+            <!-- Column -->
+            <div class="col-lg-12">
+
+              <div class="card">
+                <div class="card-body">
+                  <div class="form-body">
+                    <div class="row">
+                      <!-- Product WareHouse -->
+                      <div class="col-md-4">
+                        <label class="form-label" style="font-size:25px;font-weight:bolder;">Warehouse:</label>
+                        <div class="mb-3">
+                          <select class="form-select" formControlName="warehouseId" data-placeholder="Warehouse"
+                            tabindex="1">
+                            <option *ngFor="let warehouse of warehouseList" [value]="warehouse.warehouseId">
+                              {{warehouse.warehouseName}}
+                            </option>
+                          </select>
+
+                        </div>
+                      </div>
+                    </div> <!--ROW-->
+
+                    <div class="row">
+                      <!-- Product Floor -->
+                      <div class="col-md-3">
+                        <label class="form-label" style="font-size:25px;font-weight:bolder;">Floor:</label>
+                        <div class="mb-3">
+                          <div class="input-group mb-3">
+                            <input type="text" class="form-control" formControlName="wFloor" placeholder="Floor"
+                              aria-describedby="basic-addon2">
+                          </div>
+                        </div>
+                      </div>
+                      <!-- Product Aisle: -->
+                      <div class="col-md-3">
+                        <label class="form-label" style="font-size:25px;font-weight:bolder;">Aisle:</label>
+                        <div class="mb-3">
+                          <div class="input-group mb-3">
+                            <input type="text" class="form-control" formControlName="wAisle" placeholder="Aisle"
+                              aria-describedby="basic-addon2">
+                          </div>
+
+                        </div>
+                      </div>
+                      <!-- Product Row: -->
+                      <div class="col-md-3">
+                        <label class="form-label" style="font-size:25px;font-weight:bolder;">Row:</label>
+                        <div class="mb-3">
+                          <div class="input-group mb-3">
+                            <input type="text" class="form-control" formControlName="wRow" placeholder="Row"
+                              aria-describedby="basic-addon2">
+                          </div>
+
+                        </div>
+                      </div>
+
+                      <!-- Product Bin: -->
+
+                      <div class="col-md-3">
+                        <label class="form-label" style="font-size:25px;font-weight:bolder;">Bin:</label>
+                        <div class="mb-3">
+                          <div class="input-group mb-3">
+                            <input type="text" class="form-control" formControlName="wBin" placeholder="Bin"
+                              aria-describedby="basic-addon2">
+                          </div>
+
+                        </div>
+                      </div>
+
+
+                    </div>
+                    <div class="row">
+                      <!-- Product WareHouse -->
+                      <div class="col-md-3">
+                        <label class="form-label" style="font-size:25px;font-weight:bolder;">From Warehouse:</label>
+                        <div class="mb-3">
+                          <select class="form-select" formControlName="warehouseId" data-placeholder="Warehouse"
+                            tabindex="1">
+                            <option *ngFor="let warehouse of warehouseList" [value]="warehouse.warehouseId">
+                              {{warehouse.warehouseName}}
+                            </option>
+                          </select>
+
+                        </div>
+                      </div>
+
+                      <!-- Product Quantity -->
+                      <div class="col-md-3">
+                        <label class="form-label" style="font-size:25px;font-weight:bolder;">Quantity:</label>
+                        <div class="mb-2">
+                          <div class="input-group mb-3">
+
+                            <input type="number" class="form-control" formControlName="quantity" step="1" min="0"
+                              max="500000" size="4" (keypress)="chkNumber('quantity')" placeholder="quantity"
+                              aria-label="Discount" aria-describedby="basic-addon2">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-check"><br><br>
+                          <input class="form-check-input" type="checkbox" formControlName="intransitFlag">
+                          <label class="form-check-label" for="intransitFlag">
+                            <b>Intransit</b>
+                          </label>
+                        </div>
+                      </div>
+
+                      <div class="col-md-3">
+                        <label class="form-label" style="font-size:25px;font-weight:bolder;">Shipment Mode:</label>
+                        <div class="mb-3">
+                          <div class="input-group mb-3">
+                            <input type="text" class="form-control" formControlName="shipmentMode"
+                              placeholder="Shipment Mode" aria-describedby="basic-addon2">
+                          </div>
+
+                        </div>
+                      </div>
+
+                    </div>
+
+                  </div>
+
+
+
+                  <br>
+                </div>
+              </div>
+            </div>
+            <!-- Column -->
+          </div>
+          <!-- </div> -->
+
+        </form>
+
+
+
+      </div>
+      <!-- CONTAINER DIV Ends here -->
+
+
+    </div>
+  </div>
+</div>

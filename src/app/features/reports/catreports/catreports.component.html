@@ -1,0 +1,91 @@
+<div class="container-fluid">
+    <div class="row">
+
+
+        <div class="col-12 col-lg-12 col-md-12 col-sm-12 mt-2">
+
+            <div class="container mb-3 mt-3">
+                <div class="row">
+                    <div class="col-1">
+                        <a [routerLink]="'/home'" class="btn ">
+                            <button class="glow-on-hover order-btn" type="button">Home
+                            </button></a>
+                    </div>
+                    <div class="col-7"><button type="button" (click)="changeReports('daily')" class="adddept btn"
+                            style="background-color:#198754;color: white">Daily</button>&nbsp;
+                        <button type="button" (click)="changeReports('weekly')" class="btn btn-primary"
+                            style="color: white">Weekly</button>&nbsp;
+                        <button type="button" (click)="changeReports('monthly')" class="btn btn-danger"
+                            style="color: white">Monthly</button>&nbsp;
+                        <button type="button" (click)="changeReports('yearly')" class="btn btn-info"
+                            style="color: white">Yearly</button>
+                    </div>
+                    <div class="col-2"><button (click)="exportexcel()" class="btn btn-info">Export Excel</button></div>
+                    <div class="col-2"><button (click)="openPDF()" class="btn btn-info">Export PDF</button></div>
+                </div>
+            </div>
+
+            <div class="container" *ngIf="dailyFlage" id="excel-table">
+                <div class="container">
+                    <div class="col-12 "
+                        style="text-align:center ;background-color:#198754; font-weight:bolder ; color: white; font-size: medium; padding: 0.5rem 2rem;font-size: 1.0rem;">
+                        <label style="color: white; font-size: large;">Category Sale Reports</label>
+                    </div>
+                </div>
+                <!-- </div> -->
+
+                <div class="container mb-3">
+                    <div class="row">
+
+                        <div class="col-3">
+
+                            <label for="selectedMonth">Select Month:</label>
+                            <!-- <select id="selectedMonth" class="form-control" [(ngModel)]="selectedMonth"
+        (change)="filterAndSortItemsMonthly()"> -->
+
+                            <!-- <option *ngFor="let item of monthlySaleList" [value]="item.date.toISOString().substring(0, 7)">
+            {{ item.date | date: 'MMMM yyyy' }}
+          </option> -->
+                            <!-- </select> -->
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <apx-chart [series]="chart1Options.series" [chart]="chart1Options.chart"
+                                [xaxis]="chart1Options.xaxis" [title]="chart1Options.title">
+                            </apx-chart>
+                        </div>
+                    </div>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Category</th>
+                            <th scope="col">YEAR</th>
+                            <th scope="col">MONTH</th>
+                            <th scope="col"># OF ORDERS </th>
+                            <th scope="col">TOTAL TAX</th>
+                            <th scope="col">TOTAL REVENUE</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of dailySaleList">
+                            <td>{{ item.category }}</td>
+                            <td>{{ item.year }}</td>
+                            <td>{{ item.month }}</td>
+                            <td>{{(item.totalCount)}}</td>
+                            <td>{{(item.totalTax).toFixed(2)}}</td>
+                            <td>{{(item.totalSale).toFixed(2)}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+            <div class="container" style="position: fixed;bottom: 0px;">
+                <app-footer></app-footer>
+            </div>
+        </div>
+    </div>
+</div>

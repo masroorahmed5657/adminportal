@@ -1,0 +1,453 @@
+<!-- Page wrapper start -->
+<div class="page-wrapper">
+    <!-- Main container start -->
+    <div class="main-container">
+        <!-- Content wrapper scroll start -->
+        <div class="content-wrapper-scroll">
+            <!-- Content wrapper start -->
+            <div class="content-wrapper container-fluid px-4">
+                <!-- Row start -->
+                <div class="row g-4">
+                    <div class="col-12">
+                        <!-- Dashboard header start -->
+                        <div class="dashboard-header border border-2">
+                            <div class="dashboard-header-content">
+                                <span class="mb-5">Home</span>
+                                <!-- Welcome Title -->
+                                <div class="welcome-title mb-4">
+                                    <h1 class="display-5 fw-bold">Welcome to <span>{{appName}}</span>
+                                        <span class="winner-icon ms-2">
+                                            <img src="./assets/img/trophy.svg" alt="" class="img-fluid"
+                                                style="height: 40px;">
+                                        </span>
+                                    </h1>
+                                </div>
+                                <!-- Sales Tiles Container -->
+                                <div class="sales-tile-container row row-cols-1 row-cols-md-3 row-cols-lg-5 g-3">
+                                    <div class="col">
+                                        <div class="sales-tile">
+                                            <h1 class="fw-bold">{{grandTotalCountSales}}</h1>
+                                            <h6 class="text-muted">Sales</h6>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="sales-tile">
+                                            <h1 class="fw-bold">{{totalCountOrdersList || 0}}</h1>
+                                            <h6 class="text-muted">Orders</h6>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="sales-tile">
+                                            <h1 class="fw-bold">{{totalCountProductsList || 0}}</h1>
+                                            <h6 class="text-muted">Products</h6>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="sales-tile">
+                                            <h1 class="fw-bold">{{totalCountSignupList.length || 0}}</h1>
+                                            <h6 class="text-muted">Signups</h6>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="sales-tile">
+                                            <h1 class="fw-bold">{{0}}</h1>
+                                            <h6 class="text-muted">Reviews</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Dashboard header end -->
+                    </div>
+                </div>
+                <!-- Row end -->
+
+                <!-- Row start -->
+                <div class="row g-4">
+                    <div class="col-12">
+                        <div class="card border border-2">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Earnings</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="sales2" class="chart-placeholder mb-4">Earnings Chart Placeholder</div>
+                                <div class="row row-cols-1 row-cols-md-3 g-3 justify-content-center text-center">
+                                    <div class="col" *ngFor="let count of dailySaleList">
+                                        <div class="monthly-earnings">
+                                            <p class="text-muted mb-1">Today Earnings</p>
+                                            <h4 class="fw-bold">{{(count.totalSale).toFixed(2)}}</h4>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="monthly-earnings">
+                                            <p class="text-muted mb-1">Weekly Earnings</p>
+                                            <h4 class="fw-bold">{{grandTotalWeekly}}</h4>
+                                        </div>
+                                    </div>
+                                    <div class="col" *ngFor="let count of monthlySaleList">
+                                        <div class="monthly-earnings">
+                                            <p class="text-muted mb-1">Monthly Earnings</p>
+                                            <h4 class="fw-bold">{{(count.totalSale).toFixed(2)}}</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Row end -->
+
+                <!-- Row start -->
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <div class="card border border-2">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Weekly Sales</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="sales" class="chart-placeholder">Weekly Sales Chart Placeholder</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card border border-2">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Revenue</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="revenue" class="chart-placeholder">Revenue Chart Placeholder</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Row end -->
+
+                <!-- Row start -->
+                <div class="row g-4">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card border border-2">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">Visitors</h5>
+                                <button type="button" class="btn btn-outline-primary btn-sm">Export</button>
+                            </div>
+                            <div class="card-body">
+                                <div id="visitorsGraph" class="chart-placeholder mb-4">Visitors Graph Placeholder</div>
+                                <ul class="stats-list-container list-unstyled">
+                                    <li class="stats-list-item d-flex align-items-center mb-3">
+                                        <div class="stats-icon me-3">
+                                            <i class="bi bi-calendar"></i>
+                                        </div>
+                                        <div class="stats-info">
+                                            <h6 class="stats-title mb-1">Week 1</h6>
+                                            <p class="stats-amount mb-0">25</p>
+                                        </div>
+                                    </li>
+                                    <li class="stats-list-item d-flex align-items-center">
+                                        <div class="stats-icon me-3">
+                                            <i class="bi bi-calendar"></i>
+                                        </div>
+                                        <div class="stats-info">
+                                            <h6 class="stats-title mb-1">Week 2</h6>
+                                            <p class="stats-amount mb-0">32</p>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card border border-2">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">Orders</h5>
+                                <button type="button" class="btn btn-outline-primary btn-sm">View All</button>
+                            </div>
+                            <div class="card-body">
+                                <div id="ordersGraph" class="chart-placeholder mb-4">Orders Graph Placeholder</div>
+                                <ul class="stats-list-container list-unstyled">
+                                    <li class="stats-list-item d-flex align-items-center mb-3">
+                                        <div class="stats-icon me-3">
+                                            <i class="bi bi-box"></i>
+                                        </div>
+                                        <div class="stats-info">
+                                            <h6 class="stats-title mb-1">New</h6>
+                                            <p class="stats-amount mb-0">15</p>
+                                        </div>
+                                    </li>
+                                    <li class="stats-list-item d-flex align-items-center">
+                                        <div class="stats-icon me-3">
+                                            <i class="bi bi-truck"></i>
+                                        </div>
+                                        <div class="stats-info">
+                                            <h6 class="stats-title mb-1">Delivered</h6>
+                                            <p class="stats-amount mb-0">10</p>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-12">
+                        <div class="card border border-2">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">Earnings</h5>
+                                <button type="button" class="btn btn-outline-primary btn-sm">Download</button>
+                            </div>
+                            <div class="card-body">
+                                <div id="earningsGraph" class="chart-placeholder mb-4">Earnings Graph Placeholder</div>
+                                <ul class="stats-list-container list-unstyled">
+                                    <li class="stats-list-item d-flex align-items-center mb-3">
+                                        <div class="stats-icon me-3">
+                                            <i class="bi bi-briefcase"></i>
+                                        </div>
+                                        <div class="stats-info">
+                                            <h6 class="stats-title mb-1">Today</h6>
+                                            <p class="stats-amount mb-0">$25</p>
+                                        </div>
+                                    </li>
+                                    <li class="stats-list-item d-flex align-items-center">
+                                        <div class="stats-icon me-3">
+                                            <i class="bi bi-briefcase"></i>
+                                        </div>
+                                        <div class="stats-info">
+                                            <h6 class="stats-title mb-1">Yesterday</h6>
+                                            <p class="stats-amount mb-0">$18</p>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Row end -->
+
+                <!-- Row start -->
+                <div class="row g-4">
+                    <div class="col-lg-12 col-md-6">
+                        <div class="card border border-2">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">Recent Orders</h5>
+                                <button type="button" class="btn btn-outline-primary btn-sm">Export to Excel</button>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered products-table table-hover align-middle">
+                                        <thead>
+                                            <tr>
+                                                <th>Order No.</th>
+                                                <th>Ordered Date</th>
+                                                <th>Product</th>
+                                                <th>Delivery Status</th>
+                                                <th>Amount</th>
+                                                <th>Discount</th>
+                                                <th>Location</th>
+                                                <th>Est Delivery Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let order of recentOrders">
+                                                <td>#{{order.orderNo}}</td>
+                                                <td>{{order.orderDate}}</td>
+                                                <td>
+                                                    <img class="user rounded" [src]="order.product" alt="Product Image"
+                                                        style="width: 50px; height: 50px;">
+                                                </td>
+                                                <td>
+                                                    <span class="badge fw-medium" [ngClass]="{
+                              'movingBadge': order.deliveryStatus === 'moving',
+                              'pendingBadge': order.deliveryStatus === 'pending',
+                              'cancelledBadge': order.deliveryStatus === 'cancelled',
+                              'shippedBadge': order.deliveryStatus === 'shipped'
+                            }">{{order.deliveryStatus}}</span>
+                                                </td>
+                                                <td>${{order.amount}}</td>
+                                                <td>{{order.discount}}%</td>
+                                                <td>{{order.location}}</td>
+                                                <td>{{order.estDeliveryDate}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-6">
+                        <div class="card border border-2">
+                            <div
+                                class="card-header bg-white d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">Orders</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="customScroll250">
+                                    <ul class="recent-orders list-unstyled mb-0">
+                                        <li *ngFor="let order of orders"
+                                            class="d-flex justify-content-between align-items-center">
+
+                                            <div class="d-flex align-items-center p-2 rounded mb-3 order-item">
+                                                <!-- Image + Badge -->
+                                                <div class="order-img me-3 position-relative">
+                                                    <img [src]="order.img" [alt]="order.title" class="rounded"
+                                                        style="width: 65px; height: 65px; object-fit: cover;">
+                                                </div>
+                                                <!-- Order Details -->
+                                                <div class="order-details flex-grow-1">
+                                                    <h6 class="order-title fw-semibold mb-1">{{ order.title }}</h6>
+                                                    <p class="order-desc mb-1 text-muted small">{{ order.desc }}</p>
+                                                    <span class="order-date text-muted small">{{ order.date }}</span>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <span class="badge order-badge" [ngClass]="{
+                                                    'shippedBadge': order.status === 'Delivered',
+                                                    'pendingBadge': order.status === 'On Hold',
+                                                    'movingBadge': order.status === 'Processing',
+                                                    }">
+                                                    {{ order.status }}
+                                                </span>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="card border border-2">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">Orders</h5>
+                                <div class="graph-day-selection btn-group" role="group">
+                                    <button type="button" class="btn btn-outline-primary btn-sm active">Today</button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm">Weekly</button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm">Monthly</button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div id="ordersGraph1" class="chart-placeholder mb-4">Orders Graph Placeholder</div>
+                                <div
+                                    class="stats-tiles-list row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3 text-center">
+                                    <div class="col">
+                                        <div class="tiles-list">
+                                            <img src="./assets/img/food/pizza.svg" alt="Pizzas" class="img-fluid mb-2"
+                                                style="height: 40px;">
+                                            <h2 class="fw-bold">120</h2>
+                                            <p class="text-muted mb-0">Pizzas</p>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="tiles-list">
+                                            <img src="./assets/img/food/donut.svg" alt="Burgers" class="img-fluid mb-2"
+                                                style="height: 40px;">
+                                            <h2 class="fw-bold">320</h2>
+                                            <p class="text-muted mb-0">Donuts</p>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="tiles-list">
+                                            <img src="./assets/img/food/biscuit.svg" alt="Biscuits"
+                                                class="img-fluid mb-2" style="height: 40px;">
+                                            <h2 class="fw-bold">260</h2>
+                                            <p class="text-muted mb-0">Biscuits</p>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="tiles-list">
+                                            <img src="./assets/img/food/ice-cream.svg" alt="Ice Cream"
+                                                class="img-fluid mb-2" style="height: 40px;">
+                                            <h2 class="fw-bold">490</h2>
+                                            <p class="text-muted mb-0">Ice Cream</p>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="tiles-list">
+                                            <img src="./assets/img/food/cupcake.svg" alt="Cakes" class="img-fluid mb-2"
+                                                style="height: 40px;">
+                                            <h2 class="fw-bold">580</h2>
+                                            <p class="text-muted mb-0">Cakes</p>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="tiles-list">
+                                            <img src="./assets/img/food/tea-cup.svg" alt="Coffee" class="img-fluid mb-2"
+                                                style="height: 40px;">
+                                            <h2 class="fw-bold">310</h2>
+                                            <p class="text-muted mb-0">Coffee</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Row end -->
+
+                <!-- Row start -->
+                <div class="row g-4 bg-white shadow-sm border border-2 rounded-4">
+                    <div class="col-lg-6 col-md-6">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="stats-tile3 d-flex align-items-center">
+                                    <div class="sale-icon3 me-3">
+                                        <img src="./assets/img/svg/customer.svg" alt="Customers" class="img-fluid"
+                                            style="height: 40px;">
+                                    </div>
+                                    <div class="sale-details3">
+                                        <h3 class="fw-bold">8,500</h3>
+                                        <p class="text-muted mb-0">New Customers</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="stats-tile3 d-flex align-items-center">
+                                    <div class="sale-icon3 me-3">
+                                        <img src="./assets/img/svg/box.svg" alt="Products" class="img-fluid"
+                                            style="height: 40px;">
+                                    </div>
+                                    <div class="sale-details3">
+                                        <h3 class="fw-bold">1,650</h3>
+                                        <p class="text-muted mb-0">New Products</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="stats-tile3 d-flex align-items-center">
+                                    <div class="sale-icon3 me-3">
+                                        <img src="./assets/img/svg/income.svg" alt="Sales" class="img-fluid"
+                                            style="height: 40px;">
+                                    </div>
+                                    <div class="sale-details3 flex-grow-1">
+                                        <h3 class="fw-bold">4.5M</h3>
+                                        <p class="text-muted mb-0">Today Sales</p>
+                                    </div>
+                                    <!-- <div id="sparklineLine1" class="stats-graph3 chart-placeholder">Sales Graph Placeholder</div> -->
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="stats-tile3 d-flex align-items-center">
+                                    <div class="sale-icon3 me-3">
+                                        <img src="./assets/img/svg/commissions.svg" alt="Commissions" class="img-fluid"
+                                            style="height: 40px;">
+                                    </div>
+                                    <div class="sale-details3 flex-grow-1">
+                                        <h3 class="fw-bold">2,500</h3>
+                                        <p class="text-muted mb-0">Commissions</p>
+                                    </div>
+                                    <!-- <div id="sparklineLine2" class="stats-graph3 chart-placeholder">Commissions Graph Placeholder</div> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Row end -->
+            </div>
+            <!-- Content wrapper end -->
+        </div>
+        <!-- Content wrapper scroll end -->
+    </div>
+    <!-- Main container end -->
+</div>
+<!-- Page wrapper end -->

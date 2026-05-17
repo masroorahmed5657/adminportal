@@ -1,0 +1,31 @@
+// 
+// extra-pages.scss
+// 
+
+.chat-button {
+    position: fixed;
+    bottom: 0;
+    left: 135px;
+    right: auto;
+}
+
+.chat-box {
+    position: fixed;
+    bottom: 0;
+    left: 128px;
+    right: auto;
+}
+
+
+.p-accordion-toggle-icon-end {
+    margin-right: auto !important;
+    margin-left: 0 !important;
+}
+
+// 
+// product overview
+// 
+
+.slick-initialized .slick-slide {
+    display: block;
+}

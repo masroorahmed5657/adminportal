@@ -1,0 +1,20 @@
+<app-header></app-header>
+
+<div class="container-fluid" style="background-color: rgb(228, 228, 228);">
+
+    <h1 class="h1"
+      style="text-align:center ;background-color:#be0b31; font-weight:bolder ; color: white; font-size: x-large; padding: 0.5rem;">
+      Products List &nbsp;&nbsp;
+      <button type="button" class="btn btn-primary"
+        style="color: white; font-size: large;font-weight: bold; cursor: pointer; align-items: end;"
+        (click)="importProduct()">
+        Import Products from Excel File
+        <fa-icon [icon]="faPlusSquare" (click)="importProduct()"></fa-icon>
+      </button>
+    </h1>
+</div>
+
+
+
+<app-footer></app-footer>
+

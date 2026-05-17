@@ -1,0 +1,231 @@
+<app-header2></app-header2>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- <div class="col-2"><app-header></app-header></div> -->
+        <div class="col-12 col-lg-12 col-md-12 col-sm-12 mt-5">
+            <div class="container-fluid">
+                <div class="row">>
+                    <div class="col-12 "
+                        style="text-align:center ;background-color:#be0b31; font-weight:bolder ; color: white; font-size: medium; padding: 0.5rem 2rem;font-size: 1.0rem;">
+                        <label style="color: white; font-size: large;">User Lists</label>
+                    </div>
+                </div>
+                <div class="card mb-0 container">
+                    <div class="card-body">
+                        <div class="d-md-flex align-items-center">
+                            <div class="form-group mb-0">
+                                <input type="text" placeholder="Search" class="form-control">
+                            </div>
+                            <div class="ms-auto mt-4 mt-md-0">
+                                <!-- .................add button.............. -->
+                                <!-- Button trigger modal -->
+                                <button type="button" class="adduser btn" style="background-color:#198754;"
+                                    data-toggle="modal" data-target="#exampleModalCenter">
+                                    <a (click)="addUser()">Add User</a>
+                                </button>
+                                <!-- .................add button End.............. -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="table-responsive">
+                    <table id="tblUserList" class="table table-striped no-wrap user-table mb-0">
+                        <thead>
+                            <tr style="width: 100%; font-size: 15px; text-transform: capitalize;">
+                                <th scope="col" class="border-0 text-capitalize font-medium">No.</th>
+                                <th scope="col" class="border-0 text-capitalize font-medium">LoginId</th>
+                                <th scope="col" class="border-0 text-capitalize font-medium" *ngIf="addFlag">
+                                    LoginPassword</th>
+                                <th scope="col" class="border-0 text-capitalize font-medium" data-field="firstName"
+                                    data-editable="true" data-editable-type="text" data-editable-mode="inline"
+                                    data-editable-emptytext="N/A">FirstName
+                                </th>
+                                <th scope="col" class="border-0 text-capitalize font-medium">LastName</th>
+                                <th scope="col" class="border-0 text-capitalize font-medium">Email</th>
+                                <th scope="col" class="border-0 text-capitalize font-medium">Created</th>
+                                <!-- <th scope="col" class="border-0 text-capitalize font-medium">Roles</th> -->
+                                <th scope="col" class="border-0 text-capitalize font-medium">Manage</th>
+                            </tr>
+                        </thead>
+                        <tbody *ngIf="!addFlag">
+
+                            <tr *ngFor="let user of adminList let row = index;">
+
+                                <td scope="row"> {{user.userId}} </td>
+
+                                <td> <input id="loginId-{{row}}" *ngIf="addFlag" [(ngModel)]="user.loginId"
+                                        [disabled]="!enabledEdit[row]" value=''>
+                                    <label *ngIf="!addFlag"> {{user.loginId}} </label>
+                                </td>
+                                <td *ngIf="addFlag">
+                                    <input id="loginPassword-{{row}}" type="password" [(ngModel)]="user.loginPassword"
+                                        [disabled]="!enabledEdit[row]" value=''>
+                                </td>
+                                <td> <input id="firstName-{{row}}" [(ngModel)]="user.firstName"
+                                        [disabled]="!enabledEdit[row]"> </td>
+                                <td> <input id="lastName-{{row}}" [(ngModel)]="user.lastName"
+                                        [disabled]="!enabledEdit[row]" /> </td>
+                                <td> <input id="email-{{row}}" [(ngModel)]="user.email"
+                                        [disabled]="!enabledEdit[row]" /> </td>
+                                <td> {{user.updatedDate}} </td>
+                                <!-- <td>
+            <select class="form-select category-select" id="userRole-{{row}}" [value]="user.userRole" [disabled]="!enabledEdit[row]">
+                              <option>ALL</option>
+                              <option>ORDERS</option>
+                              <option>NEWS</option>
+                              <option>INVENTORY</option>
+                              <option >FINANCE</option>
+                              <option >HR</option>
+                              <option >POS</option>
+                              <option >REPORTS</option>
+                            </select>
+          </td> -->
+                                <td>
+                                    <button class="btn btn-primary" (click)="startEdit(row)"><i
+                                            class="fa fa-edit"></i></button>&nbsp;
+                                    <button class="btn btn-danger" (click)="onDelete(row)"><i class="fa fa-trash"></i>
+                                    </button>&nbsp;
+                                    <button class="btn btn-info" (click)="onSave(row)"><i class="fa fa-save"></i>
+                                    </button>&nbsp;
+                                    <button class="btn btn-info" (click)="openPopup(row)"><i class="fas fa-lock"></i>
+                                    </button>&nbsp;
+                                    <button class="btn btn-info" (click)="openPopupRole(row)"><i class="fas fa-key"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody *ngIf="addFlag">
+                            <tr>
+
+                                <td scope="row"> &nbsp;</td>
+                                <td> <input id="loginId-new" value='' placeholder="Login Id" class="form-control"
+                                        type="text" style="padding: 0.5rem;" required></td>
+                                <td> <input id="loginPassword-new" type="password" value='' placeholder="Password"
+                                        class="form-control" type="password" style="padding: 0.5rem;" required></td>
+                                <td> <input id="firstName-new" placeholder="First Name" class="form-control" type="text"
+                                        style="padding: 0.5rem;" required></td>
+                                <td> <input id="lastName-new" placeholder="Last Name" class="form-control" type="text"
+                                        style="padding: 0.5rem;"></td>
+                                <td> <input id="email-new" placeholder="E-Mail Address" class="form-control" type="text"
+                                        style="padding: 0.5rem;" required></td>
+                                <td> &nbsp; </td>
+
+                                <td>
+                                    <!-- <ng-multiselect-dropdown  placeholder="'User Roles'" data="roleList"  [(ngModel)]="selectedItems"  settings="dropdownSettings">
+
+            </ng-multiselect-dropdown> -->
+                                    <button class="btn btn-info" (click)="openPopupRole('userRole-new')"><i
+                                            class="fas fa-key"></i> </button>
+                                    <!-- <select class="form-select category-select" id="userRole-new" style="padding: 0.5rem;">
+                          <option title="ALL">ALL</option>
+                          <option title="ORDERS">ORDERS</option>
+                          <option title="NEWS">NEWS</option>
+                          <option title="INVENTORY">INVENTORY</option>
+                          <option title="FINANCE">FINANCE</option>
+                          <option title="HR">HR</option>
+                          <option title="POS">POS</option>
+                          <option title="REPORTS">REPORTS</option>
+                        </select> -->
+                                </td>
+                                <td>
+                                    <button class="btn btn-info" (click)="onSave(-1)"><i class="fa fa-save"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+
+
+                </div>
+                <!-- <ng-multiselect-dropdown  [placeholder]="'User Roles'" [data]="roleList"  [(ngModel)]="selectedItems"  [settings]="dropdownSettings"></ng-multiselect-dropdown> -->
+            </div>
+            <!----------------------- POPUP   ----------------------->
+            <div class="modal" tabindex="-1" role="dialog" [ngStyle]="{'display':displayStyle}">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Change Password</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-12">
+                                    <input type="text" class="form-control" id="current-password"
+                                        placeholder="Enter Current Password">
+                                </div>
+                                <br>
+                                <br>
+                                <div class="col-12">
+                                    <input type="text" class="form-control" id="new-password"
+                                        placeholder="Enter New Password">
+                                </div>
+                                <br>
+                                <br>
+                                <div class="col-12">
+                                    <input type="text" class="form-control" id="confirm-password"
+                                        placeholder="Enter Confirm Password">
+                                </div>
+                                <br>
+                                <br>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" (click)="closePopup()">
+                                Close
+                            </button>
+                            <button type="button" class="btn btn-success" (click)="onPasswordChange()">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!------------------------POPUP ENDS--------------------->
+            <!----------------------- ROLE POPUP   ----------------------->
+            <div class="modal" tabindex="-1" role="dialog" [ngStyle]="{'display':displayRoleStyle}">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Set Roles</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-12">
+                                    <!-- <ng-multiselect-dropdown [placeholder]="'User Roles'" [data]="roleList"  [(ngModel)]="selectedItems"  [settings]="dropdownSettings"></ng-multiselect-dropdown> -->
+                                    <div *ngFor="let role of roleList index as i">
+
+                                        <!-- {{checkRoleChecked(i)}} -->
+                                        <input type="checkbox" id="role-{{i}}" (change)="addRole(role.text, i)"
+                                            style="width: 15px;height: 15px;" *ngIf="roleChckedFlag" checked> &nbsp;
+
+                                        <input type="checkbox" id="role-{{i}}" (change)="addRole(role.text, i)"
+                                            style="width: 15px;height: 15px;" *ngIf="!roleChckedFlag"> &nbsp;
+                                        <label>{{role.text}}</label>
+                                    </div>
+
+
+                                </div>
+                                <br>
+                                <br>
+                            </div>
+                        </div>
+                        <div class="modal-footer mt-10">
+                            <button type="button" class="btn btn-danger" (click)="closeRolePopup()">
+                                Close
+                            </button>
+                            <!-- <button type="button" class="btn btn-success" (click)="onRoleChange()">
+          Submit
+        </button> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!------------------------ ROLE POPUP ENDS--------------------->
+            <div class="container" Style="position:fixed;bottom:0px;">
+                <app-footer></app-footer>
+            </div>
+        </div>
+    </div>
+</div>

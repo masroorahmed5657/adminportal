@@ -1,0 +1,367 @@
+<div class="card border border-2 mt-5">
+
+  <!-- Receive Order Section -->
+  <div class="container-fluid" *ngIf="ReceiveFlag">
+    <!-- Card start -->
+
+    <!-- Order Details -->
+    <div class="mb-5">
+
+      <div class="row g-3">
+        <div class="col-12 col-md-2 col-lg-2">
+          <label class="form-label">PO No:</label>
+          <input type="search" [(ngModel)]="poNumber" placeholder="Search By PO Number" class="form-control"
+            (keyup)="poSearchEnter($event)">
+        </div>
+        <div class="col-12 col-md-1 col-lg-1">
+
+          <button class="btn btn-info " (click)="searchByPo()">Search</button>
+        </div>
+
+        <div class="col-12 col-md-2 col-lg-2">
+          <label class="form-label">Receive No:</label>
+          <input type="number" [(ngModel)]="rcvNumber" class="form-control">
+        </div>
+      </div>
+    </div>
+  </div>
+  <section class="container-fluid" *ngIf="poFlag" id="poSection">
+
+
+    <p style="background-color: brown; color:white;font-size: larger;"><b>Recieve PO #: {{receiveProduct.poId}}</b></p>
+    <!-- SUPPLIER SECTION -->
+
+    <div class="row ">
+
+      <div class="col-12 col-sm-6 col-md-2">
+        <label class="px-3"><b>Name: </b></label>{{mySupplier.supplierName}}
+
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-2">
+        <label class="px-3"><b>Phone: </b></label>{{mySupplier.supplierContact}}
+
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-2">
+        <label class="px-3"><b>Email: </b></label>{{mySupplier.supplierEmail}}
+
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-2">
+        <label class="px-3"><b>Contact Person: </b></label>{{receiveProduct.contactPerson}}
+
+      </div>
+
+    </div>
+    <hr>
+
+    <!-- PO DETAILS SECTION -->
+
+    <div class=" row g-3">
+
+      <div class="col-12 col-sm-6 col-md-2">
+        <label class="px-3"><b>PO No:</b></label>{{purchaseOrder.poNumber}}
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-2">
+        <label class="px-3"><b>PO Ref No:</b></label>{{purchaseOrder.poRef}}
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-2">
+        <label class="px-3"><b>Status:</b></label>{{receiveProduct.rcvStatus}}
+
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-2">
+        <label class="px-3"><b>PO Date:</b></label> {{purchaseOrder.poDate}}
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-2">
+        <label>Currency:</label>{{receiveProduct.currency}}
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-2">
+        <label class="px-3"><b>PO Type:</b></label>{{ receiveProduct.rcvType }}
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-2">
+        <label class="px-3"><b>Rcv Date:</b></label>
+        <input type="text" class="form-control" disabled style="font-weight:bold;font-size:larger;" [(ngModel)]="receiveProduct.rcvDate">
+      </div>
+
+
+    </div>
+    <hr>
+    <!-- PO Items -->
+
+
+    <table class="table dept-table mb-0 teble-responsive">
+      <thead style="border: 1px solid black;">
+        <tr style="width: 100%; font-size: 15px; text-transform: capitalize;">
+
+          <th scope="col" style="width: 40%;" class="border-1 text-capitalize font-medium">Item</th>
+          <th scope="col" style="width: 10%;" class="border-1 text-capitalize font-medium">Qty</th>
+          <th scope="col" style="width: 10%;" class="border-1 text-capitalize font-medium">Unit Price ({{currency}})
+          </th>
+          <th scope="col" style="width: 10%;" class="border-1 text-capitalize font-medium">Discount
+          </th>
+          <th scope="col" style="width: 10%;" class="border-1 text-capitalize font-medium">Amount ({{currency}})</th>
+          <th scope="col" style="width: 10%;" class="border-1 text-capitalize font-medium">Tax %</th>
+          <th scope="col" style="width: 10%;" class="border-1 text-capitalize font-medium">Total ({{currency}})</th>
+        </tr>
+      </thead>
+      <tbody style="border: 1px solid black; font-family: 'Times New Roman', Times, serif; font-weight: bold;">
+        <tr *ngFor="let item of receiveItemList let row = index;">
+          <td>
+            {{item.productName}}
+          </td>
+
+          <td class="border-1 text-capitalize font-medium">
+            <!--<input type="number"  class="form-control" [(ngModel)]="product.quantity"  [value]="product.quantity" (change)="qtyChange(row)">-->
+
+            <!-- <input type="number" name="Qty_{{row}}" id="Qty_{{row}}" (keypress)="chkNumber($event, row)"
+              class="input-number qty number" step="1" size="5" value="{{item.quantity}}" (change)="qtyChange(row)" /> -->
+
+<input
+  type="number"
+  [(ngModel)]="item.quantity"
+  (ngModelChange)="chkNumber(item.quantity, row)" />
+
+
+          </td>
+          <td class="border-1 text-capitalize font-medium">
+            <input type="text" name="price_{{row}}" id="price_{{row}}" (keypress)="chkPrice(row)"
+              class="input-number qty number" value="{{item.unitPrice | number:'1.2-2' }}" size="5" (change)="priceChange(row)" />
+          </td>
+          <td class="border-1 text-capitalize font-medium">
+            <input type="number" class="form-control" id="discount_{{row}}" size="4" [(ngModel)]="item.discount "
+              [value]="item.discount" (change)="discountChange(row)">
+          </td>
+          <td class="border-1 text-capitalize font-medium">
+            <input type="text" class="form-control" id="itemTotal_{{row}}" [(ngModel)]="item.amount" (blur)="item.amount = format(item.amount)" size="5">
+          </td>
+          <td class="border-1 text-capitalize font-medium">
+            <input type="number" class="form-control" id="tax_{{row}}" (change)="taxChange(row)" [(ngModel)]="item.tax"
+              size="3">
+          </td>
+          <td class="border-1 text-capitalize "
+            style="font-family:'Times New Roman', Times, serif ; font-weight: bold;">
+            <input type="currency" class="form-control" id="itemTotal_{{row}}" [(ngModel)]="item.total" 
+            (blur)="item.total = format(item.total)"
+             size="5">
+          </td>
+
+        </tr>
+
+
+      </tbody>
+      <tfoot style="border: 1px solid;">
+        <tr class="mt-3 mb-3">
+          <td style="border:none"></td>
+          <!--<td style="border:none"></td>-->
+          <td style="border:none"></td>
+          <td style="border:none"></td>
+          <td style="border:none"></td>
+
+          <td style="border:none; text-align:right; font-weight: bold;" colspan="2">Sub Total(
+            {{currency}}):
+          </td>
+          <td class="border-1" style="font-weight: bold;"> {{receiveProduct.subTotal | number:'1.2-2'}}</td>
+        </tr>
+        <tr class="mt-3 mb-3">
+          <td style="border:none"></td>
+          <td style="border:none"></td>
+          <td style="border:none"></td>
+          <td style="border:none"></td>
+
+          <td style="border:none;text-align:right; font-weight: bold;" colspan="2">Discount(
+            {{currency}}):
+          </td>
+          <td class=" border-1" contenteditable="true">
+            <input type="number" class="form-control" [(ngModel)]="receiveProduct.discount"
+              (change)="totalDiscountChange()">
+          </td>
+        </tr>
+        <tr class="mt-3 mb-3">
+          <td style="border:none"></td>
+          <td style="border:none"></td>
+          <td style="border:none"></td>
+          <td style="border:none"></td>
+          <td style="border:none;text-align:right; font-weight: bold;" colspan="2">Total Qty:</td>
+          <td class="amount border-1" contenteditable="true" style="font-weight: bold;">
+            {{receiveProduct.quantity}} </td>
+        </tr>
+        <tr class="mt-3 mb-3">
+          <td style="border:none"></td>
+          <!--<td style="border:none"></td>-->
+          <td style="border:none"></td>
+          <td style="border:none"></td>
+          <td style="border:none"></td>
+
+          <td style="border:none;text-align:right; font-weight: bold;" colspan="2">Total Payment
+            Due({{currency}}):</td>
+          <td class="border-1" contenteditable="true" style="font-weight: bold;"> {{receiveProduct.total | number:'1.2-2'}} </td>
+        </tr>
+      </tfoot>
+    </table>
+
+
+    <div class="row">
+      <div class="col-12 col-md-4 col-lg-4 col-sm-4">
+        <label>Remarks:</label>
+        <input type="textarea" cols="5" rows="3" class="form-control" [(ngModel)]="receiveProduct.remarks">&nbsp;
+
+      </div>
+    </div>
+
+
+
+    <!-- Action Buttons -->
+
+    <div class="action-buttons mt-3">
+      <div class="row g-3">
+
+        <div class="col-12 col-md-auto">
+          <button type="button" class="btn btn-save btn-sm  " (click)="save()">
+            Save
+          </button>
+        </div>
+
+        <div class="col-12 col-md-auto">
+          <button type="button" class="btn btn-cancel btn-sm " (click)="navigatePoList()">
+            Purchase Order List
+          </button>
+        </div>
+
+        <!-- <div class="col-12 col-md-auto">
+          <button type="button" class="btn btn-reset btn-sm " (click)="clear()">
+            Reset
+          </button>
+        </div> -->
+
+        <div class="col-12 col-md-auto">
+          <button type="button" class="btn btn-invoice btn-sm " (click)="invoice(receiveProduct)">
+            Invoice
+          </button>
+        </div>
+
+        <div class="col-12 col-md-auto">
+          <button type="button" class="btn btn-print btn-sm " (click)="printPreview()">
+            Print
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Card end -->
+</div>
+
+<!-- Print Section -->
+<div class="container-fluid" id="excel-table" *ngIf="ReceivePrintFlag">
+  <div class="card">
+    <div class="card-header">
+      Receive Order
+    </div>
+    <div class="card-body">
+      <div class="mb-4">
+        <h2 class="section-title">Supplier Details</h2>
+        <table class="print-table">
+          <tr>
+            <td class="col-2">Receive No:</td>
+            <td class="col-4"><strong>{{receiveProduct.rcvNumber}}</strong></td>
+          </tr>
+          <tr>
+            <td class="col-2">Name:</td>
+            <td class="col-4"><strong>{{mySupplier.supplierId}}</strong></td>
+          </tr>
+          <tr>
+            <td class="col-2">Email:</td>
+            <td class="col-4"><strong>{{mySupplier.supplierEmail}}</strong></td>
+          </tr>
+          <tr>
+            <td class="col-2">Address:</td>
+            <td class="col-4"><strong>{{mySupplier.supplierAddress}}</strong></td>
+          </tr>
+          <tr>
+            <td class="col-2">Ph:</td>
+            <td class="col-4"><strong> </strong></td>
+          </tr>
+          <tr>
+            <td colspan="2" class="text-center"><small>Some Company c/o Some Guy</small></td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="mb-4">
+        <h2 class="section-title">Order Summary</h2>
+        <table class="print-table">
+          <tr>
+            <th>Date</th>
+            <td>{{receiveProduct.updatedDate}}</td>
+          </tr>
+          <tr>
+            <th>Amount Due</th>
+            <td><span>({{currency}})</span>{{receiveProduct.total}}</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="mb-4">
+        <h2 class="section-title">Items</h2>
+        <table class="print-table">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Qty</th>
+              <th>Unit Price ({{currency}})</th>
+              <th>Discount</th>
+              <th>Tax %</th>
+              <th>Total ({{currency}})</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let it of receiveItemList">
+              <td>{{it.productId}}</td>
+              <td>{{it.quantity}}</td>
+              <td>{{it.unitPrice}}</td>
+              <td>{{it.discount}}</td>
+              <td>{{it.tax}}</td>
+              <td>{{it.total}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div>
+        <h2 class="section-title">Totals</h2>
+        <table class="print-table">
+          <tr>
+            <td>SubTotal</td>
+            <td><span>({{currency}})</span>{{receiveProduct.subTotal}}</td>
+          </tr>
+          <tr>
+            <td>Discount</td>
+            <td><span>({{currency}})</span>{{receiveProduct.discount}}</td>
+          </tr>
+          <tr>
+            <td>Balance Due</td>
+            <td><span>({{currency}})</span>{{receiveProduct.total}}</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="d-flex gap-2 justify-content-end">
+        <button type="button" class="btn btn-pdf" (click)="pdfSave()">Pdf</button>
+        <button type="button" class="btn btn-excel" (click)="exportexcel()">Excel</button>
+        <button type="button" class="btn btn-close" (click)="closePrint()">Close</button>
+      </div>
+    </div>
+    <div class="card-footer">
+      <small>Receive Order 2026</small>
+    </div>
+  </div>
+</div>

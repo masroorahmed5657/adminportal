@@ -1,0 +1,119 @@
+<section class="login-section">
+  <div class="login-container">
+    <!-- Right Panel - Form -->
+    <div class="form-panel" style="background: white;">
+      <div class="form-container">
+        <div class="form-header">
+          <h2 style="color: #0141a0;">{{registerFlag ? 'Create Account' : 'Welcome Back'}}</h2>
+          <p style="color: #666;">{{registerFlag ? 'Register your account' : 'Sign in to continue'}}</p>
+        </div>
+
+        <form [formGroup]="registerForm" (ngSubmit)="registerFlag ? onRegisterSave() : signInClick($event)">
+          <!-- Error Message -->
+          <div *ngIf="errorMsg" class="alert alert-danger">{{errorMsg}}</div>
+
+          <!-- User ID -->
+          <div class="form-group">
+            <label for="loginId" style="color: #333;">User ID</label>
+            <div class="input-with-icon">
+              <input type="text" id="loginId" formControlName="loginId" placeholder="Enter your user ID"
+                style="padding-left: 40px;">
+              <i class="ri-user-3-line"
+                style="color: #0141a0; left: 15px; position: absolute; top: 50%; transform: translateY(-50%);"></i>
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div class="form-group">
+            <label for="password" style="color: #333;">Password</label>
+            <div class="input-with-icon" style="position: relative;">
+              <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="loginPassword" autocomplete="true"
+                placeholder="Enter your password" style="padding-left: 40px;">
+              <i class="ri-lock-2-line"
+                style="color: #0141a0; left: 15px; position: absolute; top: 50%; transform: translateY(-50%);"></i>
+              <button type="button" class="toggle-password" (click)="togglePasswordVisibility()"
+                style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none;">
+                <i [class]="showPassword ? 'ri-eye-off-line' : 'ri-eye-line'"
+                  style="color: #0141a0; font-size: 18px; margin-left: -15px;"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Remember Me Link -->
+          <!-- <div *ngIf="!registerFlag" class="form-options d-flex justify-content-between align-items-center">
+            <div class="remember-me">
+              <input type="checkbox" id="remember" [(ngModel)]="rememberMe" (change)="rememberChange()"
+                name="rememberMe" class="form-check-input">
+              <label for="remember" style="color: #333;">Remember me</label>
+            </div>
+            <a href="#!" class="forgot-password" style="color: #0141a0;">Forgot password?</a>
+          </div> -->
+
+          <div *ngIf="!registerFlag" class="form-options d-flex justify-content-between align-items-center">
+            <div class="remember-me">
+              <input type="checkbox" id="remember" name="rememberMe" (change)="rememberChange()">
+              <label for="remember" style="color: #333;">Remember me</label>
+            </div>
+            <a href="#!" class="forgot-password" style="color: #0141a0;">Forgot password?</a>
+          </div>
+
+
+
+          <!-- Submit Button -->
+          <button type="submit" class="btn-primary d-flex justify-content-center align-items-center mt-3"
+            [disabled]="loading"
+            style="background: #161950; color: white; width: 100%; height: 40px; font-size: 15px; border-radius: 5px;">
+
+            <!-- Loader spinner -->
+            <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+
+            <!-- Text -->
+            <span>{{ registerFlag ? (loading ? 'Registering...' : 'Register') : (loading ? 'Signing In...' : 'Sign In')
+              }}</span>
+          </button>
+
+          <!-- Registration Toggle -->
+          <div *ngIf="!registerFlag" class="register-prompt mt-3">
+            <p style="color: #666;">Don't have an account? <a (click)="register()" class="register-link"
+                style="color: #0141a0; cursor: pointer;">Create one</a></p>
+          </div>
+
+          <!-- Registration Actions -->
+          <div *ngIf="registerFlag" class="registration-actions mt-3 d-flex gap-2">
+            <button type="button" class="btn-secondary d-flex align-items-center justify-content-center"
+              (click)="onClear()"
+              style="background: #ff6713; color: white; height: 38px; font-size: 14px; border-radius: 5px;">
+              <i class="ri-delete-bin-6-line me-1"></i> Clear
+            </button>
+            <button type="button" class="btn-outline d-flex align-items-center justify-content-center"
+              (click)="registerFlag=false"
+              style="border: 1px solid #0141a0; color: #0141a0; height: 38px; font-size: 14px; border-radius: 5px;">
+              <i class="ri-arrow-left-line me-1"></i> Back to Login
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Left Panel - Branding -->
+    <div class="branding-panel position-relative" style="background: #161950;">
+
+      <img src="../../../assets/img/grid-01.svg" width="70%" class="position-absolute top-0 end-0" alt="">
+
+      <div class="branding-content">
+        <img src="{{logoName}}" alt="EZPZ Back Office" class="brand-logo">
+        <h1 style="color: white;">EZPZ Inventory Management System</h1>
+        <p class="tagline" style="color: white;">Streamlined management for modern businesses</p>
+      </div>
+      <div class="version-info" style="color: white;">
+        Version: {{versionNumber}} | Environment: {{appEnv}}
+      </div>
+
+      <img src="../../../assets/img/grid-02.svg" width="70%" class="position-absolute bottom-0 start-0"
+        style="rotate: 180deg;" alt="">
+
+    </div>
+
+
+  </div>
+</section>

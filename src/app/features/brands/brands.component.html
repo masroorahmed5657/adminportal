@@ -1,0 +1,227 @@
+<!-- Card Start -->
+<div class="card border border-2">
+  <div class="card-body">
+    <!-- Search & Buttons Row -->
+    <div *ngIf="!addFlag">
+      <!-- Search Inputs Row -->
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="searchCode" class="fw-semibold mb-2">Search Code</label>
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control" placeholder="Search By Code" [(ngModel)]="searchCode"
+              (ngModelChange)="brandSearch()" id="searchCode">
+          </div>
+        </div>
+        <div class="col-md-6 mt-3 mt-md-0">
+          <label for="searchName" class="fw-semibold mb-2">Search Name</label>
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control" placeholder="Search By Name" [(ngModel)]="searchName"
+              (ngModelChange)="brandSearch()" id="searchName" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Actual content -->
+      <div *ngIf="!addFlag">
+        <!-- Table -->
+        <div *ngIf="brandList.length > 0; else notFound">
+          <p-table [value]="brandList" [paginator]="false" [rows]="5" [sortMode]="'multiple'"
+            [rowsPerPageOptions]="[5,10,20]" responsiveLayout="scroll">
+            <!-- Table content moved to PrimeNG Table below -->
+          </p-table>
+        </div>
+
+        <ng-template #notFound>
+          <div class="not-found py-5">
+            <h5>Brand Not Found</h5>
+          </div>
+        </ng-template>
+
+        <!-- Buttons Row -->
+        <div class="row mb-4">
+          <div class="col d-flex justify-content-center align-items-center gap-2">
+            <button class="btn btn-success mb-1" (click)="addbrand()">
+              Add Brand
+            </button>
+
+            <label for="documents" class="btn btn-primary ">
+              Upload BrandS
+            </label>
+            <input type="file" id="documents" class="d-none" accept=".xlsx, .xls, .csv" (change)="uploadBrands($event)"
+              multiple />
+          </div>
+        </div>
+
+        <!-- PrimeNG Table Start -->
+        <p-table [value]="brandList" class="d-none d-md-block"
+        [paginator]="true" 
+        [rows]="5" 
+        [sortMode]="'multiple'" 
+        sortField="brandId"
+          [rowsPerPageOptions]="[5,10,20]" responsiveLayout="scroll">
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="brandId">
+                Brand ID <p-sortIcon field="brandId"></p-sortIcon>
+              </th>
+              <th pSortableColumn="brandCode">
+                Brand Code <p-sortIcon field="brandCode"></p-sortIcon>
+              </th>
+              <th pSortableColumn="brandName">
+                Brand Name <p-sortIcon field="brandName"></p-sortIcon>
+              </th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-brnd let-row="rowIndex">
+            <tr [ngClass]="{'table-active': activeRow === row}">
+              <td>{{ brnd.brandId }}</td>
+              <td>
+                <input type="text" class="form-control" id="brandCode-{{ row }}" [(ngModel)]="brnd.brandCode"
+                  [disabled]="!enabledEdit[row]" />
+              </td>
+              <td>
+                <input type="text" class="form-control" id="brandName-{{ row }}" [(ngModel)]="brnd.brandName"
+                  [disabled]="!enabledEdit[row]" />
+              </td>
+              <td class="text-center">
+                <div class="btn-group">
+                  <button *ngIf="!enabledEdit[row]" class="btn btn-primary me-1" (click)="startEdit(row)">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button *ngIf="enabledEdit[row]" class="btn btn-success me-1" (click)="onSave(brnd.brandId, row)">
+                    <i class="bi bi-check"></i>
+                  </button>
+                  <button class="btn btn-outline-danger" (click)="onDelete(brnd.brandId, row)">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <!-- PrimeNG Table End -->
+        <!-- Mobile Cards View -->
+        <div class="container-fluid d-md-none">
+
+          <div class="row g-3">
+            <div class="col-12 col-md-6 col-lg-4" *ngFor="let brnd of brandList; let row = index">
+
+              <div class="card shadow-sm h-100">
+                <div class="card-body">
+
+                  <!-- Brand ID -->
+                  <div class="mb-2 d-flex justify-content-between">
+                    <span class="fw-bold">Brand ID</span>
+                    <span>{{ brnd.brandId }}</span>
+                  </div>
+
+                  <!-- Brand Code -->
+                  <div class="mb-2">
+                    <label class="fw-bold">Brand Code</label>
+                    <input type="text" class="form-control form-control-sm" [(ngModel)]="brnd.brandCode"
+                      [disabled]="!enabledEdit[row]" />
+                  </div>
+
+                  <!-- Brand Name -->
+                  <div class="mb-3">
+                    <label class="fw-bold">Brand Name</label>
+                    <input type="text" class="form-control form-control-sm" [(ngModel)]="brnd.brandName"
+                      [disabled]="!enabledEdit[row]" />
+                  </div>
+
+                  <!-- Actions -->
+                  <div class="d-flex justify-content-end gap-2">
+                    <button *ngIf="!enabledEdit[row]" class="btn btn-sm btn-primary" (click)="startEdit(row)">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+
+                    <button *ngIf="enabledEdit[row]" class="btn btn-sm btn-success" (click)="onSave(brnd.brandId, row)">
+                      <i class="bi bi-check"></i>
+                    </button>
+
+                    <button class="btn btn-sm btn-outline-danger" (click)="onDelete(brnd.brandId, row)">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+
+        <!-- Mobile Cards View Ends Here -->
+
+      </div>
+    </div>
+
+    <!-- Loader -->
+    <div *ngIf="spinnerDataLoad" class="d-flex justify-content-center align-items-center py-5">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+
+    <!-- Add Form Row -->
+    <div *ngIf="addFlag">
+      <div class="row mb-4">
+        <h3>Add Brand</h3>
+        <div class="col d-flex justify-content-center flex-wrap gap-2" *ngIf="showBrandListFlag">
+          <button class="btn btn-warning" (click)="backToList()">
+            <i class="bi bi-arrow-left"></i> Back to Brand List
+          </button>
+        </div>
+      </div>
+
+<div class="card shadow-sm border-0">
+  <div class="card-body">
+
+    <h6 class="mb-3 fw-bold text-primary">
+      ➕ Add New Brand
+    </h6>
+
+    <div class="row g-2 align-items-center">
+
+      <!-- Brand Code -->
+      <div class="col-12 col-md-4">
+        <input type="text"
+               class="form-control"
+               id="brandCode-new"
+               placeholder="Brand Code" />
+      </div>
+
+      <!-- Brand Name -->
+      <div class="col-12 col-md-5">
+        <input type="text"
+               class="form-control"
+               id="brandName-new"
+               placeholder="Brand Name" />
+      </div>
+
+      <!-- Save Button -->
+      <div class="col-12 col-md-3 d-grid">
+        <button class="btn btn-success"
+                (click)="onSave(-1, -1)">
+          <i class="bi bi-save me-1"></i> Save Brand
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+    </div>
+  </div>
+</div>
+<!-- Card End -->

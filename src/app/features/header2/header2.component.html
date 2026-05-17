@@ -1,0 +1,33 @@
+<!--<nav class="navbar navbar-expand-lg navbar-light bg-white w-150 navigation" id="navbar">-->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+
+    <div class="container-fluid">
+
+        <a class="navbar-brand" href="#" style="font-size: 1rem;">
+            <img src="{{logoName}}" class="img-thumbnail rounded-circle" alt="" style="margin-left: 20px; height:40px;">
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse text-right" id="navbarSupportedContent">
+            <div style="padding-left: 35px;">
+                <a routerLink="/home" class="btn btn-info">Home</a>
+            </div>
+            <button type="button" (click)="signOut()" class="btn"
+                style="color:white; font-size: medium; padding-left: 35px;">
+                Logout &nbsp;&nbsp;<fa-icon [icon]="faSignOut"></fa-icon>
+            </button>
+
+            <label style="color:white;font-size: medium;">Hello, {{currentUser.firstName}}
+                {{currentUser.lastName}}</label>
+        </div>
+    </div>
+</nav>
+
+<div class="ticker-wrap" *ngIf="showTicker">
+    <div class="ticker">
+        <div class="ticker__item" *ngFor="let news of tickerNewsList"> {{news.news}} </div>
+    </div>
+</div>

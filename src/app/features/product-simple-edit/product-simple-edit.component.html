@@ -1,0 +1,418 @@
+<!-- <title>Edit Product - Admin Portal</title> -->
+
+
+<!-- Sticky Action Bar -->
+<div class="sticky-actions " style="margin-top: 4rem;">
+  <div class="container">
+    <div class="d-flex flex-wrap gap-2 align-items-center">
+      <h4 class="mb-0 me-auto">
+        Edit Product: <span class="text-primary">ID-{{editProduct.productId}}</span> — {{editProduct.productName}}
+      </h4>
+
+      <button type="button" class="btn btn-success" (click)="onSubmit()">
+        <i class="bi bi-save"></i> Save
+      </button>
+      <button type="button" class="btn btn-danger" (click)="deleteProduct(editProduct.productId)">
+        <i class="bi bi-trash"></i> Delete
+      </button>
+      <button type="button" class="btn btn-primary" (click)="backToList()">
+        <i class="bi bi-arrow-left"></i> Back to List
+      </button>
+      <button type="button" class="btn btn-warning text-dark" (click)="onCloneSubmit()">
+        <i class="bi bi-copy"></i> Clone
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="addBrand()">
+         Brand
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="addCategory()">
+         Category
+      </button>
+
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+
+    <div *ngIf="brandFlag">
+      <button class="btn btn-lg" (click)="closeBrand()">X Close</button>
+      <app-brands #brandComp (brandSaved)="onBrandSaved()"></app-brands>
+    </div>
+
+    <div *ngIf="categoryFlag">
+      <button class="btn btn-lg" (click)="closeCategory()">X Close</button>
+      <app-category #categoryComp (categorySaved)="onCategorySaved()"></app-category>
+    </div>
+
+    
+    <!-- <div class="container my-4"> -->
+
+    <form [formGroup]="productForm">
+
+      <!-- ====================== BASIC INFORMATION ====================== -->
+      <h5 class="section-title">Basic Information</h5>
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">Product Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" formControlName="productName"
+                [ngClass]="{ 'is-invalid': submitted && f['productName'].errors }">
+              <div *ngIf="submitted && f['productName'].errors?.['required']" class="invalid-feedback">
+                Product Name is required
+              </div>
+            </div>
+
+            <div class="col-md-2">
+              <label class="form-label">Category <span class="text-danger">*</span></label>
+              <select class="form-select" formControlName="categoryId" (change)="categoryProductChange()">
+                <option *ngFor="let cat of categoryList" [value]="cat.categoryId">
+                  {{cat.category}} — {{cat.subCategory}}
+                </option>
+              </select>
+            </div>
+
+            <div class="col-md-2">
+              <label class="form-label">Brand <span class="text-danger">*</span></label>
+              <select class="form-select" formControlName="brandId">
+                <option *ngFor="let b of brandsList" [value]="b.brandId">{{b.brandName}}</option>
+              </select>
+            </div>
+
+            <div class="col-md-2">
+              <label class="form-label">SKU</label>
+              <input type="text" class="form-control" formControlName="sku">
+            </div>
+
+            <div class="col-md-2">
+              <label class="form-label">Barcode / UPC</label>
+              <input type="text" class="form-control" formControlName="upc">
+            </div>
+
+            <div class="col-md-2" *ngIf="!showSimpleProduct">
+              <label class="form-label">HSN</label>
+              <input type="text" class="form-control" formControlName="hsn">
+            </div>
+
+            <div class="col-12" *ngIf="!showSimpleProduct">
+              <label class="form-label">Abbreviated Name</label>
+              <input type="text" class="form-control" formControlName="abbrName">
+            </div>
+
+            <div class="col-4">
+              <label class="form-label">Description</label>
+              <textarea class="form-control" formControlName="productDetails" rows="3"></textarea>
+            </div>
+            <!-- ************** PRICE *******************  -->
+            <!-- <h5 class="section-title">Pricing</h5> -->
+            <!-- <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <div class="row g-3"> -->
+            <div class="col-md-2">
+              <label class="form-label">Regular Price (Rs) <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <!-- <span class="input-group-text">Rs</span> -->
+                <input type="number" class="form-control" formControlName="unitPrice" min="0">
+              </div>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">Sale / Cut Price (Rs)</label>
+              <div class="input-group">
+                <!-- <span class="input-group-text">Rs</span> -->
+                <input type="number" class="form-control" formControlName="salePrice" min="0">
+              </div>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">Purchase Price (Rs)</label>
+              <div class="input-group">
+                <!-- <span class="input-group-text">Rs</span> -->
+                <input type="number" class="form-control" formControlName="purchasePrice" min="0">
+              </div>
+            </div>
+            <div class="col-md-1">
+              <label class="form-label">Discount (Rs)</label>
+              <div class="input-group">
+                <!-- <span class="input-group-text">Rs</span> -->
+                <input type="number" class="form-control" formControlName="discount" min="0">
+              </div>
+            </div>
+
+            <div class="col-md-1">
+              <label class="form-label">Tax (% or Rs)</label>
+              <input type="text" class="form-control" formControlName="tax">
+            </div>
+            <!-- </div>
+      </div>
+    </div> -->
+
+
+            <!-- *************************************** -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ====================== PRICING ====================== -->
+      <!-- <h5 class="section-title">Pricing</h5> -->
+      <!-- <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-1">
+            <label class="form-label">Regular Price (Rs) <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <input type="number" class="form-control" formControlName="unitPrice" min="0">
+            </div>
+          </div>
+          <div class="col-md-1">
+            <label class="form-label">Sale / Cut Price (Rs)</label>
+            <div class="input-group">
+              <input type="number" class="form-control" formControlName="salePrice" min="0">
+            </div>
+          </div>
+          <div class="col-md-1">
+            <label class="form-label">Purchase Price (Rs)</label>
+            <div class="input-group">
+              <input type="number" class="form-control" formControlName="purchasePrice" min="0">
+            </div>
+          </div>
+          <div class="col-md-1">
+            <label class="form-label">Discount (Rs)</label>
+            <div class="input-group">
+              <input type="number" class="form-control" formControlName="discount" min="0">
+            </div>
+          </div>
+
+          <div class="col-md-1">
+            <label class="form-label">Tax (% or Rs)</label>
+            <input type="text" class="form-control" formControlName="tax">
+          </div>
+        </div>
+      </div>
+    </div> -->
+
+      <!-- ====================== INVENTORY & PHYSICAL ====================== -->
+      <h5 class="section-title">Inventory & Physical Properties</h5>
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <div class="row g-2">
+            <div class="col-md-2">
+              <label class="form-label">Stock Quantity</label>
+              <input type="number" class="form-control" formControlName="quantity" min="0">
+            </div>
+            <div class="col-md-3" *ngIf="!showSimpleProduct">
+              <label class="form-label">Case / Pack Quantity</label>
+              <input type="number" class="form-control" formControlName="qtyCase" min="0">
+            </div>
+            <div class="col-md-3" *ngIf="!showSimpleProduct">
+              <label class="form-label">Made in</label>
+              <input type="text" class="form-control" formControlName="madein">
+            </div>
+            <div class="col-md-3" *ngIf="!showSimpleProduct">
+              <label class="form-label">Weight</label>
+              <input type="number" step="0.01" class="form-control" formControlName="weight">
+            </div>
+
+            <div class="col-md-1">
+              <label class="form-label">Unit</label>
+              <select class="form-select" formControlName="unitName">
+                <option value="liter">Liter</option>
+                <option value="kg">Kg</option>
+                <option value="pcs">Pieces</option>
+                <option value="feet">Feet</option>
+                <option value="inches">Inches</option>
+                <option value="meter">Meter</option>
+                <!-- ... more options -->
+              </select>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">Expiry Date</label>
+              <input type="date" class="form-control" formControlName="expiryDate">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">Dimension</label>
+              <input type="text" class="form-control" formControlName="physicalDimension">
+            </div>
+            <div class="d-flex flex-wrap gap-4 col-md-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" formControlName="popularFlag" id="popular">
+                <label class="form-check-label" for="popular"><strong>Popular</strong></label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" formControlName="productStatus" id="active">
+                <label class="form-check-label" for="active"><strong>Active</strong></label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" formControlName="sellinPcs" id="sellPcs">
+                <label class="form-check-label" for="sellPcs"><strong>Sell in Pieces</strong></label>
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap col-md-4" *ngIf="showImageFlag">
+              <!-- <h6>Product Images</h6> -->
+              <div class="row g-3">
+                <div class="dropzone col-auto" (click)="fileInput.click()"
+                  *ngIf="editProduct.productImage===null || editProduct.productImage===undefined">
+                  <input #fileInput type="file" accept="image/*" style="display:none;" (change)="selectFile($event)"
+                    multiple>
+                  <i class="bi bi-cloud-arrow-up fs-1 text-primary d-block mb-2"></i>
+                  <p class="mb-1">Click or drag images here</p>
+                  <small class="text-muted">PNG, JPG, max 5MB each</small>
+
+                </div>
+                <div class="col-auto" *ngIf="previewList.length>0" id="removePreviewButton">
+                  <img class="preview" [src]="previewList" style="width:100%;height:400px !important;">
+                  <button class="btn btn-danger btn-sm d-flex " style="margin: 0px auto;margin-top: 5px;"
+                    (click)="removePreviewImage()"><fa-icon [icon]="faRemove"></fa-icon>
+                    Remove
+                    Image</button>
+
+                </div>
+              </div>
+              <div class="row g-3">
+                <div class="card col-auto" style="box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 4px;"
+                  *ngIf="editProduct.productImage" id="myRemoveButton-{{editProduct.productId}}">
+                  <img class="card-img-top" src='data:{{editProduct.imageMimeType}};base64,{{editProduct.productImage}}'
+                    alt="Card image cap" style="padding-right: 2px;">
+
+                  <button class="btn btn-danger btn-sm d-flex " style="margin: 0px auto;margin-top: 5px;"
+                    (click)="removeImage(editProduct.productId, -1)"><fa-icon [icon]="faRemove"></fa-icon>
+                    Remove
+                    Image</button>
+                </div>
+
+
+
+                <div *ngIf="productImageViewList.length>0 && productImageViewList[0].finalImage!==null">
+                  <!-- Existing / Preview images – adapt your *ngFor logic here -->
+                  <div class="card col-auto" *ngFor="let img of productImageViewList; let i = index">
+                    <div class="position-relative">
+                      <img [src]="'data:' + img.fileType + ';base64,' + img.finalImage" class="preview-img">
+                      <button class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1"
+                        (click)="removeImage(editProduct.productId, img.imageId)">
+                        <i class="bi bi-x"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ====================== FLAGS ====================== -->
+      <!-- <h5 class="section-title">Product Flags</h5>
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <div class="d-flex flex-wrap gap-4">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" formControlName="popularFlag" id="popular">
+            <label class="form-check-label" for="popular"><strong>Popular</strong></label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" formControlName="productStatus" id="active">
+            <label class="form-check-label" for="active"><strong>Active</strong></label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" formControlName="sellinPcs" id="sellPcs">
+            <label class="form-check-label" for="sellPcs"><strong>Sell in Pieces</strong></label>
+          </div>
+        </div>
+      </div>
+    </div> -->
+
+      <!-- ====================== ATTRIBUTES ====================== -->
+      <h5 class="section-title" *ngIf="!showSimpleProduct">Attributes / Variants</h5>
+      <div class="card shadow-sm mb-4" *ngIf="!showSimpleProduct">
+        <div class="card-body">
+
+          <!-- Using ngb-tabset instead of plain Bootstrap tabs -->
+
+          <div class="card shadow-sm mb-4">
+            <div class="card-body">
+              <ul class="nav nav-tabs mb-3" id="attrTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active" id="sizes-tab" data-bs-toggle="tab" data-bs-target="#sizes"
+                    type="button" (click)="tabClick(1)">Sizes</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="colors-tab" data-bs-toggle="tab" data-bs-target="#colors" type="button"
+                    (click)="tabClick(2)">Colors</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="additional-tab" data-bs-toggle="tab" data-bs-target="#additional"
+                    type="button" (click)="tabClick(3)">Additional</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="extra-tab" data-bs-toggle="tab" data-bs-target="#extra" type="button"
+                    (click)="tabClick(4)">Extra</button>
+                </li>
+              </ul>
+
+              <div class="tab-content">
+                <div class="tab-pane fade show active" id="sizes" *ngIf="sizeFlag">
+                  <div class="row g-2">
+                    <div class="col-md-3" *ngFor="let i of [1,2,3,4,5,6,7]">
+                      <input class="form-control" type="text" formControlName="packagingAttributes{{i}}"
+                        placeholder="Size {{i}}">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="tab-pane fade show active" id="colors" *ngIf="colorFlag">
+                  <div class="row g-2">
+                    <div class="col-md-3" *ngFor="let i of [1,2,3,4,5,6,7]">
+                      <input class="form-control" type="text" formControlName="extraAttributes{{i}}"
+                        placeholder="Color {{i}}">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="tab-pane fade show active" id="additional" *ngIf="additionalFlag">
+                  <div class="row g-2">
+                    <div class="col-md-3" *ngFor="let i of [1,2,3,4,5,6,7]">
+                      <input class="form-control" type="text" formControlName="optionsAttributes{{i}}"
+                        placeholder="Option {{i}}">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="tab-pane fade show active" id="extra" *ngIf="extrasFlag">
+                  <div class="row g-2">
+                    <div class="col-md-3" *ngFor="let i of [1,2,3,4,5,6,7]">
+                      <input class="form-control" type="text" formControlName="cuttingAttributes{{i}}"
+                        placeholder="Extra {{i}}">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+
+
+        </div>
+      </div>
+
+    </form>
+
+    <!-- Warehouse form – keep as separate if needed -->
+    <form [formGroup]="warehouseForm" *ngIf="showWarehouseFlag">
+      <!-- ... your existing warehouse fields ... -->
+    </form>
+
+  </div>
+
+</div>
+
+<div class="text-center my-5" *ngIf="spinnerDataLoad">
+  <div class="spinner-border" role="status">
+    <span class="visually-hidden">Saving...</span>
+  </div>
+  <p class="mt-2 text-muted">Saving Products...</p>
+</div>

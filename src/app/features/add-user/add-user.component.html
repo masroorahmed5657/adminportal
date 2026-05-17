@@ -1,0 +1,50 @@
+<app-header2></app-header2>
+
+<div class="container-fluid">
+<legend style="text-align:center ;background-color:#be0b31; font-weight:bolder ; color: white; font-size: x-large; padding: 0.5;font-size: 1.3rem;">Add User</legend><br>
+<!-- Text input-->
+  <form class="form" action="" [formGroup]="userForm" (ngSubmit)="onUserSave()" style="margin-left: 18%; line-height: 2;">  <!-- Text input-->
+    <label style="font-size: 1rem; font-weight: 700;">First Name</label>
+    <input formControlName="firstName" placeholder="First Name" class="form-control"  type="text" style="padding: 0.5rem;" required >
+    <!-- Text input-->
+    <label  style="font-size: 1rem; font-weight: 700;">Last Name</label>
+    <input formControlName="lastName" placeholder="Last Name" class="form-control"  type="text" style="padding: 0.5rem;" >
+    <label  style="font-size: 1rem; font-weight: 700;">Login Id</label>
+    <input formControlName="loginId" placeholder="Login Id" class="form-control"  type="text" style="padding: 0.5rem;" required >
+    <!-- Text input-->
+    <label  style="font-size: 1rem; font-weight: 700;">Login Password</label>
+    <input formControlName="loginPassword" placeholder="Password" class="form-control"  type="password" style="padding: 0.5rem;" required >
+    <!-- Text input-->
+    <label style="font-size: 1rem; font-weight: 700;">E-Mail</label>
+    <input formControlName="email" placeholder="E-Mail Address" class="form-control"  type="text" style="padding: 0.5rem;" required >
+    <!-- Text input-->
+    <label style="font-size: 1rem; font-weight: 700;">User Role</label>
+      <select formControlName="userRole" class="form-control selectpicker" style="padding: 0.5rem; width: 45%;" >
+        <!-- <option value=""></option> -->
+        <option>ALL</option>
+        <option>ORDERS</option>
+        <option>NEWS</option>
+        <option>INVENTORY</option>
+        <option >FINANCE</option>
+        <option >HR</option>
+        <option >POS</option>
+        <option >REPORTS</option>
+        <option >WAREHOUSE</option>
+      </select>
+    <br>
+  <div class="row">
+  <div class="col-2">
+<button type="submit"  class="save btn" style="background-color:#198754;" data-toggle="modal" data-target="#exampleModalCenter">
+  Save</button>
+</div>
+&nbsp;&nbsp;&nbsp;
+<div class="col-2">
+  <button type="button" (click)="onClear()" class="clear btn" style="background-color:#be0b31;" data-toggle="modal" data-target="#exampleModalCenter">
+    Clear
+  </button>
+</div>
+
+</div>
+</form>
+  <!-- /.container -->
+<app-footer></app-footer>

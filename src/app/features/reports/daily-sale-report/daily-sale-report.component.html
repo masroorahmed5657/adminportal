@@ -1,0 +1,246 @@
+<!-- Card Start -->
+<div class="card border border-2" style="margin-top: 4em;">
+
+    <div class="card-body">
+        <div class="row mb-3">
+            <!-- Action Buttons Row -->
+
+            <!-- Date Filter Row -->
+            <div class="col-12">
+                <div class="card border border-2 shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-12 col-md-auto">
+                                <label class="form-label">Start Date:</label>
+                                <input type="date" class="form-control" [(ngModel)]="startDate"
+                                    (change)="startDateChange()">
+                            </div>
+                            <div class="col-12 col-md-auto">
+                                <label class="form-label">Start Time:</label>
+                                <input type="time" class="form-control" [(ngModel)]="startTime"
+                                    (change)="startTimeChange()">
+                            </div>
+                            <div class="col-12 col-md-auto">
+                                <label class="form-label">End Date:</label>
+                                <input type="date" class="form-control" [(ngModel)]="endDate"
+                                    (change)="endDateChange()">
+                            </div>
+                            <div class="col-12 col-md-auto">
+                                <label class="form-label">End Time:</label>
+                                <input type="time" class="form-control" [(ngModel)]="endTime"
+                                    (change)="endTimeChange()">
+                            </div>
+                            <div class="col-12 col-md-auto">
+                                <button class="btn btn-success" (click)="dailyReportWithDate()">
+                                    <i class="bi bi-search"></i> Search
+                                </button>
+                            </div>
+                            <div class="col-12 col-md-auto">
+                                <button (click)="print()" class="btn btn-primary">
+                                    <i class="bi bi-printer"></i> Print
+                                </button>
+                            </div>
+                            <div class="col-12 col-md-auto">
+                                <button (click)="exportexcel()" class="btn btn-success">
+                                    <i class="bi bi-file-excel"></i> Excel
+                                </button>
+                            </div>
+                            <div class="col-12 col-md-auto">
+                                <button (click)="openPDF()" class="btn btn-danger">
+                                    <i class="bi bi-file-pdf"></i> PDF
+                                </button>
+                            </div>
+                            <div class="col-12 col-md-auto">
+                                <button (click)="showDetails()" class="btn btn-warning">
+                                    <i class="bi bi-info-circle"></i> Details
+                                </button>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cash Sale Table -->
+            <div class="col-12">
+                <div class="card border border-2 shadow-sm mb-4">
+                    <div class="card-header text-center">
+                        <h5 class="card-title mb-0"><i class="bi bi-cash-coin"></i> Cash Sale</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table align-middle text-center mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 8%; min-width: 80px;">S No.</th>
+                                        <th style="width: 12%; min-width: 100px;">Invoice #</th>
+                                        <th style="width: 15%; min-width: 120px;" class="no-print">Customer</th>
+                                        <th style="width: 15%; min-width: 120px;">Created Time</th>
+                                        <th style="width: 12%; min-width: 100px;" class="no-print" *ngIf="showTaxFlag">
+                                            Tax</th>
+                                        <th style="width: 12%; min-width: 100px;">Amount</th>
+                                        <th style="width: 15%; min-width: 120px;">PaymentStatus</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of dailySaleCashReport let i = index">
+                                        <td>{{i+1}}</td>
+                                        <td *ngIf="item.invoiceNumber !==null">BL{{item.invoiceNumber}}</td>
+                                        <td *ngIf="item.invoiceNumber ===null">BL{{item.orderId}}</td>
+                                        <td class="no-print">{{item.phone1}}</td>
+                                        <td>{{item.dateStr}}</td>
+                                        <td class="no-print" *ngIf="showTaxFlag">{{toNumber(item.tax)}}</td>
+                                        <td>{{toNumber(item.grandTotal)}}</td>
+                                        <td>{{item.paymentStatus}}</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-success">
+                                        <td colspan="2" class="no-print">Total #(CASH): {{totalCashSaleCount}}
+                                        </td>
+                                        <td colspan="2" class="no-print" *ngIf="showTaxFlag">Total Tax(CASH):
+                                            {{toNumber(totalCashTax)}}</td>
+                                        <td colspan="2">Total Sale(CASH): {{toNumber(totalCashSaleAmount)}}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Sale Table -->
+            <div class="col-12">
+                <div class="card border border-2 shadow-sm mb-4">
+                    <div class="card-header text-center">
+                        <h5 class="card-title mb-0"><i class="bi bi-credit-card"></i> Card Sale</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table align-middle text-center mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 8%; min-width: 80px;">S No.</th>
+                                        <th style="width: 12%; min-width: 100px;">Invoice #</th>
+                                        <th style="width: 15%; min-width: 120px;" class="no-print">Customer</th>
+                                        <th style="width: 15%; min-width: 120px;">Created Time</th>
+                                        <th style="width: 12%; min-width: 100px;" class="no-print" *ngIf="showTaxFlag">
+                                            Tax</th>
+                                        <th style="width: 12%; min-width: 100px;">Amount</th>
+                                        <th style="width: 15%; min-width: 120px;">PaymentStatus</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of dailySaleCardReport let i = index">
+                                        <td>{{i+1}}</td>
+                                        <td *ngIf="item.invoiceNumber !==null">BL{{item.invoiceNumber}}</td>
+                                        <td *ngIf="item.invoiceNumber ===null">BL{{item.orderId}}</td>
+                                        <td class="no-print">{{item.phone1}}</td>
+                                        <td>{{item.dateStr}}</td>
+                                        <td class="no-print" *ngIf="showTaxFlag">{{toNumber(item.tax)}}</td>
+                                        <td>{{toNumber(item.grandTotal)}}</td>
+                                        <td>{{item.paymentStatus}}</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-primary">
+                                        <td colspan="2" class="no-print">Total #(CARD): {{totalCardSaleCount}}
+                                        </td>
+                                        <td colspan="2" class="no-print" *ngIf="showTaxFlag">Total Tax(CARD):
+                                            {{toNumber(totalCardTax)}}</td>
+                                        <td colspan="2">Total(CARD): {{toNumber(totalCardSaleAmount)}}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Return Report -->
+            <div class="col-12">
+                <div class="card border border-2 shadow-sm mb-4">
+                    <div class="card-header text-center">
+                        <h5 class="card-title mb-0"><i class="bi bi-arrow-counterclockwise"></i> Return Report
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table align-middle text-center mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 8%; min-width: 80px;">S No.</th>
+                                        <th style="width: 12%; min-width: 100px;">Invoice #</th>
+                                        <th style="width: 15%; min-width: 120px;" class="no-print">Customer</th>
+                                        <th style="width: 15%; min-width: 120px;">Created Time</th>
+                                        <th style="width: 12%; min-width: 100px;" class="no-print" *ngIf="showTaxFlag">
+                                            Tax</th>
+                                        <th style="width: 12%; min-width: 100px;">Amount</th>
+                                        <th style="width: 15%; min-width: 120px;">PaymentStatus</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of dailyReturnCashReport let i = index">
+                                        <td>{{i+1}}</td>
+                                        <td *ngIf="item.invoiceNumber !==null">BL{{item.invoiceNumber}}</td>
+                                        <td *ngIf="item.invoiceNumber ===null">BL{{item.orderId}}</td>
+                                        <td class="no-print">{{item.phone1}}</td>
+                                        <td>{{item.dateStr}}</td>
+                                        <td class="no-print negMoney" *ngIf="showTaxFlag">{{toNumber(item.tax)}}
+                                        </td>
+                                        <td class="negMoney">{{toNumber(item.grandTotal)}}</td>
+                                        <td>{{item.paymentStatus}}</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-danger">
+                                        <td colspan="2" class="no-print">Total #(CASH): {{totalCashReturnCount}}
+                                        </td>
+                                        <td colspan="2" class="no-print" *ngIf="showTaxFlag">Total Tax(CASH):
+                                            {{toNumber(totalCashReturnTax)}}</td>
+                                        <td colspan="2">Total Sale(CASH): {{toNumber(totalCashReturnAmount)}}
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Combined Summary -->
+            <div class="col-12">
+                <div class="row g-2">
+                    <div class="col-12 col-md-4">
+                        <div class="card border border-2 shadow-sm h-100">
+                            <div class="card-body text-center">
+                                <h5 class="card-title text-muted">Total Sale Count</h5>
+                                <p class="card-text display-6 text-primary">{{totalCashCardSaleCount}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4" *ngIf="showTaxFlag">
+                        <div class="card border border-2 shadow-sm h-100">
+                            <div class="card-body text-center">
+                                <h5 class="card-title text-muted">Total Tax (MINUS RETURN)</h5>
+                                <p class="card-text display-6 text-info">{{toNumber(totalCashCardTax +
+                                    totalCashCardReturnTax)}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="card border border-2 shadow-sm h-100">
+                            <div class="card-body text-center">
+                                <h5 class="card-title text-muted">Total Sale (MINUS RETURN)</h5>
+                                <p class="card-text display-6 text-success">{{toNumber(totalCashCardSaleAmount +
+                                    totalCashCardReturnAmount)}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,40 @@
+<app-header></app-header>
+
+<div style="background-color: rgb(231, 231, 231); overflow-x: hidden;">
+
+    <div class="row">
+        <div class="col-1">
+            &nbsp;
+        </div>
+        <div class="col-10">
+            <label style="font-weight: bold; font-size: x-large; margin-left: 2px;"> Total Qurbani Orders as of {{totalQurbani}}</label>
+        </div>
+        <div class="col-1">
+            &nbsp;
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <apx-chart
+                [series]="chart1Options.series"
+                [chart]="chart1Options.chart"
+                [xaxis]="chart1Options.xaxis"
+                [title]="chart1Options.title">
+            </apx-chart>
+        </div>
+    </div>
+    <div class="row" *ngIf="firstDrill">
+        <div class="col-12">
+            <apx-chart
+                [series]="chart3Options.series"
+                [chart]="chart3Options.chart"
+                [xaxis]="chart3Options.xaxis"
+                [title]="chart3Options.title">
+            </apx-chart>
+        </div>
+    </div>
+
+
+</div>    
+
+<app-footer></app-footer>

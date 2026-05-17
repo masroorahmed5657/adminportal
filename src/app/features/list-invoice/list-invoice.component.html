@@ -1,0 +1,146 @@
+<app-header2></app-header2>
+<div class="container-fluid">
+    <div class="row">
+        <!-- <div class="col-2"><app-header></app-header></div> -->
+
+        <div class="col-12 col-lg-12 col-md-12 col-sm-12 mt-5">
+
+            <div class="col-12 "
+                style="text-align:center ;background-color:#be0b31; font-weight:bolder ; color: white; font-size: medium; padding: 0.5rem 2rem;font-size: 1.0rem;">
+                <label style="color: white; font-size: large;">List Invoice</label>
+            </div>
+
+            <div class="card mb-0 container">
+                <div class="card-body">
+                    <div class="d-md-flex align-items-center">
+                        <div class="form-group mb-0">
+                            <input type="text" placeholder="Search Invoice" class="form-control">
+                        </div>
+                        <div class="ms-auto mt-4 mt-md-0">
+                            <!-- <a routerLink='/apps/addinvoice'>
+                    <button type="button" class="bb btn btn-info"> <i class="me-2 mdi mdi-plus"></i> Add Invoice</button>
+                </a> -->
+
+
+                            <!-- .................add button.............. -->
+
+                            <!-- Button trigger modal -->
+                            <button type="button" class="adinvoice btn btn-primary" data-toggle="modal"
+                                data-target="#exampleModalCenter">
+                                <a routerLink="/invoice">Add Invoice</a>
+                            </button>
+
+
+                            <!-- .................add button End.............. -->
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card pt-3 container-fluid border border-5">
+                <div class="table-responsive">
+                    <table class="table table-borderless table-hover align-middle no-wrap ">
+                        <thead>
+                            <tr class="border-bottom">
+
+                                <th scope="col">Customer ID.</th>
+                                <th scope="col">Consingee Name</th>
+                                <th scope="col">City</th>
+                                <th scope="col">Country</th>
+                                <th scope="col">Contact No.</th>
+                                <th scope="col">Primary Mail</th>
+                                <th scope="col">Destination of Deliveryy</th>
+                                <th scope="col">Stock No.</th>
+                                <th scope="col">Price Option</th>
+                                <th scope="col">Transportaion</th>
+                                <th scope="col" class="edit">EDIT</th>
+
+                            </tr>
+
+
+                        </thead>
+                        <tbody>
+                            <tr>
+
+                                <th scope="row">#264</th>
+                                <td>Mark</td>
+                                <td>Techmaci</td>
+                                <td>supervisor</td>
+                                <td>03402488798</td>
+                                <td>mark</td>
+                                <td>karachi</td>
+                                <td>#6634</td>
+                                <td>199$</td>
+                                <td>japan</td>
+                                <td><a href="" class="edt-butn">Edit</a></td>
+                            </tr>
+                        </tbody>
+                        <!-- <tbody>
+                <tr class="border-bottom "
+                    *ngFor="let invoice of compInvoice|slice: (page-1) * pageSize : (page-1) * pageSize + pageSize; index as i">
+
+                    <td class="py-4">
+                        <input type="checkbox" [(ngModel)]="invoice.isSelected" name="list_name" value="{{invoice.id}}"
+                            (change)="isAllSelected()" />
+                    </td>
+
+                    <td class="py-4">{{ invoice.id }} </td>
+
+                    <td class="py-4">
+                        <ngb-highlight [result]="invoice.billFrom" [term]="searchTerm"></ngb-highlight>
+                    </td>
+                    <td class="py-4">
+                        <ngb-highlight [result]="invoice.billTo" [term]="searchTerm"></ngb-highlight>
+                    </td>
+                    <td class="py-4">
+                        <ngb-highlight [result]="invoice.grandTotal | number" [term]="searchTerm"></ngb-highlight>
+                    </td>
+
+                    <td class="py-4">
+                        <span class="badge bg-info px-3 font-medium" *ngIf="invoice.status==='Shipped'">
+                            <ngb-highlight [result]="invoice.status" [term]="searchTerm"></ngb-highlight>
+                        </span>
+                        <span class="badge bg-danger px-3 font-medium" *ngIf="invoice.status==='Pending'">
+                            <ngb-highlight [result]="invoice.status" [term]="searchTerm"></ngb-highlight>
+                        </span>
+                        <span class="badge bg-success px-3 font-medium" *ngIf="invoice.status==='Delivered'">
+                            <ngb-highlight [result]="invoice.status" [term]="searchTerm"></ngb-highlight>
+                        </span>
+                    </td>
+
+                    <td class="py-4"> -->
+                        <!-- <a routerLink='/apps/viewinvoice/'>View</a> -->
+
+                        <!-- <a [routerLink]="['/apps/viewinvoice/',invoice.id]" class="text-info mx-2">
+                            <i-feather name="eye" class="feather-sm"></i-feather>
+                        </a>
+
+                        <a href="javascript:void(0)" class="text-danger mx-2 ps-3 border-start"
+                            (click)="deleteInvoice(invoice.id)">
+                            <i-feather name="trash-2" class="feather-sm"></i-feather>
+                        </a>
+
+                    </td>
+                </tr>
+            </tbody> -->
+                    </table>
+                </div>
+
+                <!-- <div class="card-body">
+        <div class="d-flex justify-content-center">
+            <ngb-pagination [(page)]="page" [pageSize]="pageSize" [collectionSize]="totalLengthOfCollection">
+            </ngb-pagination>
+        </div>
+    </div> -->
+
+            </div>
+
+            <div class="container" Style="position:fixed;bottom:0px;">
+                <app-footer></app-footer>
+            </div>
+        </div>
+    </div>
+</div>

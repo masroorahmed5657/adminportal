@@ -1,0 +1,195 @@
+<div class="card border border-2" style="margin-top: 4em;">
+
+    <div class="card-body">
+        <div class="row mb-3">
+
+            <div class="col-12">
+                <div class="card border border-2 shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-12 col-md-3">
+                                <label class="form-label">Start Date:</label>
+                                <input type="date" class="form-control" [(ngModel)]="startDate"
+                                    (change)="startDateChange()">
+                            </div>
+                            <div class="col-12 col-md-3">
+                                <label class="form-label">End Date:</label>
+                                <input type="date" class="form-control" [(ngModel)]="endDate"
+                                    (change)="endDateChange()">
+                            </div>
+                            <div class="col-12 col-md-3">
+                                <label class="form-label">Top Number:</label>
+                                <input type="number" class="form-control" [(ngModel)]="topNumber">
+                            </div>
+                            <!-- <div class="col-12 col-md-3">
+                                <label class="form-label">Report Type:</label>
+                                <select id="reportType" class="form-select" [(ngModel)]="reportType">
+                                    <option value="ONLINE">ONLINE</option>
+                                    <option value="POS">POS</option>
+                                </select>
+                            </div> -->
+                            <div class="col-12 col-md-auto">
+                                <button class="btn btn-success" (click)="reportWithDate()">
+                                    <i class="bi bi-search"></i> Search
+                                </button>
+                            </div>
+                            <!-- <div class="col-12 col-md-auto">
+                                <button (click)="print()" class="btn btn-primary">
+                                    <i class="bi bi-printer"></i> Print
+                                </button>
+                            </div> -->
+                            <div class="col-12 col-md-auto">
+                                <button (click)="exportexcel()" class="btn btn-info">
+                                    <i class="bi bi-file-excel"></i> Export Excel
+                                </button>
+                            </div>
+                            <div class="col-12 col-md-auto">
+                                <button (click)="openPDF()" class="btn btn-danger">
+                                    <i class="bi bi-file-pdf"></i> Export PDF
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div *ngIf="top10ProductFlag" id="excel-table">
+            <h2>Top {{topNumber}} Products Sale</h2>
+            <!-- Top 10 Product Sale -->
+            <div class="row mb-3">
+                <div class="col-12 col-lg-12 col-md-12 col-sm-12">
+                    <table class="table">
+                        <thead class="bg-primary">
+                            <tr style="background-color:lightgray;border: 1px solid white;color: black !important; ">
+                                <th scope="col" style="color: black !important; ">Item Name</th>
+                                <th scope="col" style="color: black !important; "># OF SALES </th>
+                                <th scope="col" style="color: black !important; ">TOTAL Sale</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let sale of saleReportList">
+                                <td>{{sale.productName}}</td>
+                                <td>{{sale.totalCount}}</td>
+                                <td>{{(sale.totalSale).toFixed(2)}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- CHART-->
+            <div class="row mb-3">
+                <div class="col-12 col-lg-12 col-md-12 col-sm-12" *ngIf="chart1Options">
+                    <apx-chart [series]="chart1Options.series" [chart]="chart1Options.chart"
+                        [xaxis]="chart1Options.xaxis" [title]="chart1Options.title">
+                    </apx-chart>
+                </div>
+
+
+            </div>
+            <div class="row mb-3">
+                <div class="col-12 col-lg-12 col-md-12 col-sm-12" *ngIf="chartPieOptions">
+                    <apx-chart [series]="chartPieOptions.series" [chart]="chartPieOptions.chart"
+                        [xaxis]="chartPieOptions.xaxis" [title]="chartPieOptions.title"
+                        [labels]="chartPieOptions.labels">
+                    </apx-chart>
+                </div>
+            </div>
+
+        </div>
+
+
+
+        <div *ngIf="top10CategoryFlag" id="excel-table">
+            <h2>Top {{topNumber}} Category Sale</h2>
+            <!-- Top 10 Product Sale -->
+            <div class="row mb-3">
+                <div class="col-12 col-lg-12 col-md-12 col-sm-12">
+                    <table class="table">
+                        <thead class="bg-primary">
+                            <tr style="background-color:lightgray;border: 1px solid white;color: black !important; ">
+                                <th scope="col" style="color: black !important; ">Category Name</th>
+                                <th scope="col" style="color: black !important; "># OF SALES </th>
+                                <th scope="col" style="color: black !important; ">TOTAL Sale</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let sale of saleReportList">
+                                <td>{{sale.category}}</td>
+                                <td>{{sale.totalCount}}</td>
+                                <td>{{(sale.totalSale).toFixed(2)}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- CHART-->
+            <div class="row mb-3">
+                <div class="col-12 col-lg-12 col-md-12 col-sm-12" *ngIf="chart1Options">
+                    <apx-chart [series]="chart1Options.series" [chart]="chart1Options.chart"
+                        [xaxis]="chart1Options.xaxis" [title]="chart1Options.title">
+                    </apx-chart>
+                </div>
+
+
+            </div>
+            <!-- PIE Chart-->
+            <div class="row mb-3">
+                <div class="col-12 col-lg-12 col-md-12 col-sm-12" *ngIf="chartPieOptions">
+                    <apx-chart [series]="chartPieOptions.series" [chart]="chartPieOptions.chart"
+                        [xaxis]="chartPieOptions.xaxis" [title]="chartPieOptions.title"
+                        [labels]="chartPieOptions.labels">
+                    </apx-chart>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div *ngIf="top10BrandsFlag" id="excel-table">
+            <h2>Top {{topNumber}} Brands Sale</h2>
+            <!-- Top 10 Product Sale -->
+            <div class="row mb-3">
+                <div class="col-12 col-lg-12 col-md-12 col-sm-12">
+                    <table class="table">
+                        <thead class="bg-primary">
+                            <tr style="background-color:lightgray;border: 1px solid white;color: black !important; ">
+                                <th scope="col" style="color: black !important; ">Brand Name</th>
+                                <th scope="col" style="color: black !important; "># OF SALES </th>
+                                <th scope="col" style="color: black !important; ">TOTAL Sale</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let sale of saleReportList">
+                                <td>{{sale.brandName}}</td>
+                                <td>{{sale.totalCount}}</td>
+                                <td>{{(sale.totalSale).toFixed(2)}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- CHART-->
+            <div class="row mb-3">
+                <div class="col-12 col-lg-12 col-md-12 col-sm-12" *ngIf="chart1Options">
+                    <apx-chart [series]="chart1Options.series" [chart]="chart1Options.chart"
+                        [xaxis]="chart1Options.xaxis" [title]="chart1Options.title">
+                    </apx-chart>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-12 col-lg-12 col-md-12 col-sm-12" *ngIf="chartPieOptions">
+                    <apx-chart [series]="chartPieOptions.series" [chart]="chartPieOptions.chart"
+                        [xaxis]="chartPieOptions.xaxis" [title]="chartPieOptions.title"
+                        [labels]="chartPieOptions.labels">
+                    </apx-chart>
+
+                </div>
+            </div>
+
+
+        </div>
+
+
+    </div>

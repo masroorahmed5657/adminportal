@@ -1,0 +1,44 @@
+<!-- Card Start -->
+<div class="card border border-2" style="margin-top: 4em;">
+    <div class="card-body">
+        <div id="spinner" *ngIf="spinnerDataLoad" class="text-center">
+            <label style="font-size: larger;">Loading... &nbsp;&nbsp; </label>
+            <div class="spinner-border text-danger" style="width: 5rem; height: 5rem;" role="status">
+                <span class="visually-hidden"></span>
+            </div>
+        </div>
+
+        <div class="container-fluid">
+            <div class="row g-3">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2" *ngFor="let product of productViewList">
+
+                    <div class="card shadow-sm h-100">
+
+                        <img class="card-img-top img-fluid"
+                            src="data:{{product.imageMimeType}};base64,{{product.productImage}}"
+                            alt="{{product.productName}}">
+
+                        <div class="card-body d-flex flex-column justify-content-center text-center">
+                            <h5 class="card-title" style="font-size:1rem;">
+                                {{product.productName}}
+                            </h5>
+                        </div>
+
+                        <div class="text-center card shadow-sm">
+                            <button class="btn btn-primary  ">
+                                $ {{product.unitPrice}}
+                            </button>
+                        </div>
+                        <div class="text-center card shadow-sm">
+                            <button class="text-center p-2 mt-2" style="background-color: red; color: white;">
+                                Expires on {{ product.expiryDate | date:'yyyy-MM-dd'}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>

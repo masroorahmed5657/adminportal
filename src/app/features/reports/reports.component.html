@@ -1,0 +1,447 @@
+<div class="container-fluid">
+  <div class="row">
+    <!-- <div class="col-2"><app-header></app-header></div> -->
+
+    <div class="col-12 col-lg-12 col-md-12 col-sm-12 mt-5" *ngIf="legacyReport">
+      <div class="container mb-3 mt-3">
+        <div class="row">
+          <div class="col-1">
+            <a [routerLink]="'/home'" class="btn ">
+              <button class="glow-on-hover order-btn" type="button">Home
+              </button></a>
+          </div>
+          <div class="col-1"><button (click)="print()" class="btn btn-primary" style="padding-right: 0.5rem;">Print</button></div>
+          <div class="col-2"><button (click)="exportexcel()" class="btn btn-info">Export Excel</button></div>
+
+          <div class="col-2"><button (click)="openPDF()" class="btn btn-info">Export PDF</button></div>
+          <div class="col-4">&nbsp;</div>
+          <div class="col-2">
+            <a href="#" class="icontext">
+              <a href="#" (click)="signOut()" class="btn btn-info m-btn m-btn--icon m-btn--icon-only">
+                Signout&nbsp;<fa-icon [icon]="faSignOut"></fa-icon>
+              </a>
+            </a>
+          </div>
+
+        </div>
+        <div class="row mt-2">
+          <div class="col-12 d-md-flex align-items-center" >
+            <label for="startDate" style="color:black; font-weight: bold;">Start Date:</label>&nbsp;
+            <input type="date" id="startDate" [(ngModel)]="startDate" style="height: 35px;border-radius: 5px;"
+              (change)="startDateChange()" placeholder="Start Date">
+
+            &nbsp;
+            <input type="time" id="startTime" [(ngModel)]="startTime" style="height: 35px;border-radius: 5px;"
+              (change)="startTimeChange()" placeholder="Start Time">
+              &nbsp;&nbsp;  
+
+            <label for="endDate" style="color:black;font-weight: bold;">End Date:</label>&nbsp;&nbsp;
+            <input type="date" id="endDate" [(ngModel)]="endDate" style="height: 35px;border-radius: 5px; margin-right: 5px;"
+              (change)="endDateChange()" placeholder="End Date">
+            <input type="time" id="endTime" [(ngModel)]="endTime" style="height: 35px;border-radius: 5px;"
+              (change)="endTimeChange()" placeholder="End Time">
+              &nbsp;&nbsp;  
+  
+            <button class="btn btn-success" type="button" style="color:black; font-weight: bold;"
+              (click)="dailyReportWithDate()">Search</button>&nbsp;
+          </div>
+
+        </div>
+      </div>
+
+      <div class="container " id="saleReport">
+        <table id="cash-table" style="width:100%;" >
+
+
+
+          <thead style="border: 2px solid black;width: 100%;">
+            <tr>
+              <td style="margin-top:25px;" colspan="6">
+                <h4 style="text-align:center;">Cash Sale</h4>
+              </td>
+            </tr>
+
+            <tr style="background-color:transparent; border: 1px solid black; color: black;">
+              <th> S No. </th>
+              <th>Invoice #</th>
+              <th class="no-print">Customer</th>
+              <th>Created Time</th>
+              <th class="no-print"  *ngIf="showTaxFlag" >Tax</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody style="border-bottom-style: solid;border-width: 0.1px;">
+            <tr *ngFor="let  item of dailySaleCashReport let i = index">
+              <td> {{i+1}}</td>
+              <td *ngIf="item.invoiceNumber !==null"> BL{{item.invoiceNumber}} </td>
+              <td *ngIf="item.invoiceNumber ===null"> BL{{item.orderId}} </td>
+              <td class="no-print"> {{item.phone1}} </td>
+              <td> {{item.dateStr}} </td>
+              <td class="no-print"  *ngIf="showTaxFlag"> {{item.tax}} </td>
+              <td> {{item.grandTotal}} </td>
+            </tr>
+
+          </tbody>
+          <tfoot style="border-bottom-style: solid;border-width: 0.1px;">
+            <tr>
+              <td colspan="2" style="font-weight: bold;" class="no-print">
+                Total #(CASH): {{totalCashSaleCount}}
+              </td>
+              <td colspan="2" style="font-weight: bold;" class="no-print"  *ngIf="showTaxFlag"> Total Tax(CASH): {{(totalCashTax).toFixed(2)}}</td>
+              <td colspan="2" style="font-weight: bold;"> Total Sale(CASH) : {{(totalCashSaleAmount).toFixed(2)}}</td>
+            </tr>
+          </tfoot>
+
+        </table>
+
+        <table id="card-table" style="width:100%;" >
+          <thead style="border: 2px solid black;width: 100%;">
+            <tr>
+              <td style="margin-top:25px;" colspan="6">
+                <h4 style="text-align:center;">Card Sale</h4>
+              </td>
+            </tr>
+
+            <tr style="background-color:transparent; border: 1px solid black; color: black;">
+              <th> S No. </th>
+              <th>Invoice #</th>
+              <th class="no-print">Customer</th>
+              <th>Created Time</th>
+              <th class="no-print"  *ngIf="showTaxFlag">Tax</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody style="border-bottom-style: solid;border-width: 0.1px;">
+            <tr *ngFor="let  item of dailySaleCardReport let i = index">
+              <td> {{i+1}}</td>
+              <td *ngIf="item.invoiceNumber !==null"> BL{{item.invoiceNumber}} </td>
+              <td *ngIf="item.invoiceNumber ===null"> BL{{item.orderId}} </td>
+              <td class="no-print"> {{item.phone1}} </td>
+              <td> {{item.dateStr}} </td>
+              <td class="no-print"  *ngIf="showTaxFlag"> {{item.tax}} </td>
+              <td> {{item.grandTotal}} </td>
+            </tr>
+
+          </tbody>
+          <tfoot style="border-bottom-style: solid;border-width: 0.1px;" >
+            <tr>
+              <td colspan="2" style="font-weight: bold;" class="no-print">
+                Total#(CARD): {{totalCardSaleCount}}
+              </td>
+              <td colspan="2" style="font-weight: bold;" class="no-print"  *ngIf="showTaxFlag"> Total Tax(CARD): {{(totalCardTax).toFixed(2)}}</td>
+              <td colspan="2" style="font-weight: bold;"> Total(CARD) : {{(totalCardSaleAmount).toFixed(2)}}</td>
+            </tr>
+          </tfoot>
+
+        </table>
+        <table id="cardcash-table" class="mt-1" style="width:100%; " >
+          <tfoot style="border-bottom-style: solid;border-width: 0.1px;">
+            <tr>
+              <td colspan="2" style="font-weight: bold;" class="no-print">
+                Total Sale Count: {{totalCashCardSaleCount}}
+              </td>
+              <td colspan="2" style="font-weight: bold;" class="no-print"  *ngIf="showTaxFlag"> Total Tax(COMBINED): {{(totalCashCardTax).toFixed(2)}}</td>
+              <td colspan="2" style="font-weight: bold;"> Total Sale (COMBINED): {{(totalCashCardSaleAmount).toFixed(2)}}</td>
+            </tr>
+          </tfoot>
+
+
+        </table>
+
+      </div>
+
+    </div>
+
+    <div class="col-12 col-lg-12 col-md-12 col-sm-12 mt-5" *ngIf="!legacyReport">
+
+      <div class="container mb-3 mt-3">
+        <div class="row">
+          <div class="col-6"><button type="button" (click)="changeReports('daily')" class="adddept btn"
+              style="background-color:#198754;color: white">Daily</button>&nbsp;
+            <button type="button" (click)="changeReports('weekly')" class="btn btn-primary"
+              style="color: white">Weekly</button>&nbsp;
+            <button type="button" (click)="changeReports('monthly')" class="btn btn-danger"
+              style="color: white">Monthly</button>&nbsp;
+            <button type="button" (click)="changeReports('yearly')" class="btn btn-info"
+              style="color: white">Yearly</button>
+            &nbsp;&nbsp;&nbsp;
+            <a [routerLink]="'/home'" class="btn "><button class="glow-on-hover order-btn" type="button">Home
+              </button></a>&nbsp;&nbsp;&nbsp;
+          </div>
+          <div class="col-2"><button (click)="exportexcel()" class="btn btn-info">Export Excel</button></div>
+          <div class="col-2"><button (click)="openPDF()" class="btn btn-info">Export PDF</button></div>
+          <div class="col-2">
+            <a href="#" class="icontext">
+              <a href="#" (click)="signOut()" class="btn btn-info m-btn m-btn--icon m-btn--icon-only">
+                Signout&nbsp;<fa-icon [icon]="faSignOut"></fa-icon>
+              </a>
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="container" *ngIf="dailyFlage" id="excel-table">
+        <div class="container">
+          <div class="col-12 "
+            style="text-align:center ;background-color:#198754; font-weight:bolder ; color: white; font-size: medium; padding: 0.5rem 2rem;font-size: 1.0rem;">
+            <label style="color: white; font-size: large;">Daily Payment Reports</label>
+          </div>
+        </div>
+        <div class="container mb-3">
+          <div class="row">
+            <div class="col-4">
+              <apx-chart [series]="chartPaymentCountOptions.series" [chart]="chartPaymentCountOptions.chart"
+                [xaxis]="chartPaymentCountOptions.xaxis" [title]="chartPaymentCountOptions.title"
+                [labels]="chartPaymentCountOptions.labels" [plotOptions]="chartPaymentCountOptions.plotOptions"
+                [dataLabels]="chartPaymentCountOptions.dataLabels">
+              </apx-chart>
+            </div>
+            <div class="col-4">
+              <apx-chart [series]="chartPaymentAmountOptions.series" [chart]="chartPaymentAmountOptions.chart"
+                [xaxis]="chartPaymentAmountOptions.xaxis" [title]="chartPaymentAmountOptions.title"
+                [labels]="chartPaymentAmountOptions.labels" [plotOptions]="chartPaymentAmountOptions.plotOptions"
+                [dataLabels]="chartPaymentAmountOptions.dataLabels">
+              </apx-chart>
+            </div>
+            <div class="col-4">
+              <apx-chart [series]="chartPaymentTaxesOptions.series" [chart]="chartPaymentTaxesOptions.chart"
+                [xaxis]="chartPaymentTaxesOptions.xaxis" [title]="chartPaymentTaxesOptions.title"
+                [labels]="chartPaymentTaxesOptions.labels" [plotOptions]="chartPaymentTaxesOptions.plotOptions"
+                [dataLabels]="chartPaymentTaxesOptions.dataLabels">
+              </apx-chart>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="container" *ngIf="dailyFlage" id="excel-table">
+        <div class="container">
+          <div class="col-12 "
+            style="text-align:center ;background-color:#198754; font-weight:bolder ; color: white; font-size: medium; padding: 0.5rem 2rem;font-size: 1.0rem;">
+            <label style="color: white; font-size: large;">Daily Sales Reports</label>
+          </div>
+        </div>
+        <div class="container mb-3">
+          <div class="row">
+            <div class="col-3">
+
+              <label for="order">Order</label>
+
+              <select name="" id="" class="form-control" style="width: 100%;height: 40px;" id="sortOrder"
+                [(ngModel)]="sortOrder" (change)="sortItems()">
+                <option value="asc">Ascending</option>
+                <option value="desc">Descending</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <apx-chart [series]="chart1Options.series" [chart]="chart1Options.chart" [xaxis]="chart1Options.xaxis"
+                [title]="chart1Options.title">
+              </apx-chart>
+            </div>
+          </div>
+        </div>
+        <table class="table">
+          <thead class="bg-primary">
+            <tr style="background-color:black;border: 1px solid white;color: white !important; ">
+              <th scope="col" style="color: white !important; ">Order Type</th>
+              <th scope="col" style="color: white !important; ">Date</th>
+              <th scope="col" style="color: white !important; "># OF SALES </th>
+              <th scope="col" style="color: white !important; ">TOTAL TAX</th>
+              <th scope="col" style="color: white !important; ">TOTAL REVENUE</th>
+
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let daily of dailySaleList">
+              <td>{{daily.orderType}}</td>
+              <td>{{daily.dateStr}}</td>
+              <td>{{daily.totalCount}}</td>
+              <td>{{(daily.totalTax).toFixed(2)}}</td>
+              <td>{{(daily.totalSale).toFixed(2)}}</td>
+            </tr>
+
+
+          </tbody>
+        </table>
+
+
+      </div>
+
+
+      <div class="container" *ngIf="weeklyflage" id="excel-table">
+        <div class="container">
+          <div class="col-12 "
+            style="text-align:center ;background-color:#0d6efd; font-weight:bolder ; color: white; font-size: medium; padding: 0.5rem 2rem;font-size: 1.0rem;">
+            <label style="color: white; font-size: large;">Weekly Sales Reports</label>
+          </div>
+        </div>
+        <div class="container mb-3">
+          <div class="row">
+            <div class="col-3">
+              <label>Select Week</label>
+
+              <select [(ngModel)]="weekdata" class="form-control" style="width: 100%;height: 40px;" id="sortOrder"
+                (change)="filterAndSortItemsWeekly()">
+                <option [value]="8">Current Week</option>
+                <option [value]="15">Last Week</option>
+              </select>
+
+            </div>
+            <div class="col-3">
+              <label for="order">Order</label>
+
+              <select name="" id="" class="form-control">
+                <option value="asc">Ascending</option>
+                <option value="desc">Descending</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <apx-chart [series]="chart1Options.series" [chart]="chart1Options.chart" [xaxis]="chart1Options.xaxis"
+                [title]="chart1Options.title">
+              </apx-chart>
+            </div>
+          </div>
+
+        </div>
+        <table class="table">
+          <thead>
+            <tr style="background-color:black;border: 1px solid white;color: white !important; ">
+              <th scope="col" class="tdcolumnheader">Order Type</th>
+              <th scope="col" class="tdcolumnheader">DATE</th>
+              <th scope="col" class="tdcolumnheader">DAY</th>
+              <th scope="col" class="tdcolumnheader"># OF SALES </th>
+              <th scope="col" class="tdcolumnheader">TOTAL TAX</th>
+              <th scope="col" class="tdcolumnheader">TOTAL REVENUE</th>
+
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of weeklySaleList">
+              <td>{{ item.orderType }}</td>
+              <td>{{ item.dateStr }}</td>
+              <td>{{ item.dayStr }}</td>
+              <td>{{item.totalCount}}</td>
+              <td>{{item.totalTax.toFixed(2)}}</td>
+              <td>{{item.totalSale.toFixed(2)}}</td>
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+      <div class="container" *ngIf="monthlyFlag" id="excel-table">
+        <div class="container">
+          <div class="col-12 "
+            style="text-align:center ;background-color:#be0b31; font-weight:bolder ; color: white; font-size: medium; padding: 0.5rem 2rem;font-size: 1.0rem;">
+            <label style="color: white; font-size: large;">Monthly Sales Reports</label>
+          </div>
+        </div>
+        <div class="container mb-3">
+          <div class="row">
+
+            <div class="col-3">
+
+              <label for="selectedMonth">Select Month:</label>
+              <select id="selectedMonth" class="form-control" [(ngModel)]="selectedMonth"
+                (change)="filterAndSortItemsMonthly()">
+
+                <!-- <option *ngFor="let item of monthlySaleList" [value]="item.date.toISOString().substring(0, 7)">
+              {{ item.date | date: 'MMMM yyyy' }}
+            </option> -->
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <apx-chart [series]="chart1Options.series" [chart]="chart1Options.chart" [xaxis]="chart1Options.xaxis"
+                [title]="chart1Options.title">
+              </apx-chart>
+            </div>
+          </div>
+        </div>
+        <table class="table">
+          <thead>
+            <tr style="background-color:black;border: 1px solid white;color: white !important; ">
+              <th scope="col" class="tdcolumnheader">Order Type</th>
+              <th scope="col" class="tdcolumnheader">YEAR</th>
+              <th scope="col" class="tdcolumnheader">MONTH</th>
+              <th scope="col" class="tdcolumnheader"># OF SALES </th>
+              <th scope="col" class="tdcolumnheader">TOTAL TAX</th>
+              <th scope="col" class="tdcolumnheader">TOTAL REVENUE</th>
+
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of monthlySaleList">
+              <td>{{ item.orderType }}</td>
+              <td>{{ item.year }}</td>
+              <td>{{ item.month }}</td>
+              <td>{{(item.totalCount)}}</td>
+              <td>{{(item.totalTax).toFixed(2)}}</td>
+              <td>{{(item.totalSale).toFixed(2)}}</td>
+            </tr>
+          </tbody>
+        </table>
+
+
+      </div>
+
+      <div class="container" *ngIf="yearlyFlag" id="excel-table">
+        <div class="container">
+          <div class="col-12 "
+            style="text-align:center ;background-color:#0dcaf0; font-weight:bolder ; color: white; font-size: medium; padding: 0.5rem 2rem;font-size: 1.0rem;">
+            <label style="color: white; font-size: large;">Yearly Sales Reports</label>
+          </div>
+        </div>
+        <div class="container mb-3">
+          <div class="row">
+
+            <div class="col-3">
+
+              <label for="order">Sort Order</label>
+
+              <select name="" id="" class="form-control" style="width: 100%;height: 40px;">
+                <option value="">Asc</option>
+                <option value="">Dsc</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <apx-chart [series]="chart1Options.series" [chart]="chart1Options.chart" [xaxis]="chart1Options.xaxis"
+              [title]="chart1Options.title">
+            </apx-chart>
+          </div>
+        </div>
+        <table class="table">
+          <thead>
+            <tr style="background-color:black;border: 1px solid white;color: white !important; ">
+              <th scope="col" class="tdcolumnheader">DATE</th>
+              <th scope="col" class="tdcolumnheader"># OF SALES </th>
+              <th scope="col" class="tdcolumnheader">TOTAL REVENUE</th>
+              <th scope="col" class="tdcolumnheader">TOTAL TAX</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let yearly of yearlySaleList">
+              <td>{{ yearly.year }}</td>
+              <td>{{yearly.totalCount}}</td>
+              <td>{{(yearly.totalSale).toFixed(2)}}</td>
+              <td>{{(yearly.totalTax).toFixed(2)}}</td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+
+    </div>
+  </div>
+</div>

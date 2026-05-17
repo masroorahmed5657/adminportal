@@ -1,0 +1,138 @@
+<div class="container-fluid">
+  <div class="row g-5">
+    <!-- Sidebar -->
+    <div class="col-12 col-md-3">
+      <div class="list-group">
+        <button class="list-group-item list-group-item-action" [class.active]="selectedSection === 'general'"
+          (click)="setSection('general')">
+          <i class="bi bi-gear"></i> General
+        </button>
+        <button class="list-group-item list-group-item-action" [class.active]="selectedSection === 'account'"
+          (click)="setSection('account')">
+          <i class="bi bi-person"></i> Account
+        </button>
+        <button class="list-group-item list-group-item-action" [class.active]="selectedSection === 'security'"
+          (click)="setSection('security')">
+          <i class="bi bi-lock"></i> Security
+        </button>
+        <button class="list-group-item list-group-item-action" [class.active]="selectedSection === 'notifications'"
+          (click)="setSection('notifications')">
+          <i class="bi bi-bell"></i> Notifications
+        </button>
+        <button class="list-group-item list-group-item-action" [class.active]="selectedSection === 'appearance'"
+          (click)="setSection('appearance')">
+          <i class="bi bi-palette"></i> Appearance
+        </button>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="col-12 col-md-9">
+      <!-- General -->
+      <div *ngIf="selectedSection === 'general'" class="card">
+        <div class="card-body">
+          <h4 class="card-title">General Settings</h4>
+          <form class="mt-3">
+            <div class="mb-3">
+              <label class="form-label">Language</label>
+              <select class="form-select">
+                <option selected>English</option>
+                <option>Spanish</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Timezone</label>
+              <select class="form-select">
+                <option value="EST">EST</option>
+                <option value="CST">CST</option>
+                <option value="MST">MST</option>
+                <option value="PST">PST</option>
+              </select>
+            </div>
+            <button class="btn btn-primary"><i class="bi bi-save"></i> Save Changes</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Account -->
+      <div *ngIf="selectedSection === 'account'" class="card">
+        <div class="card-body">
+          <h4 class="card-title">Account Settings</h4>
+          <form class="mt-3">
+            <div class="mb-3">
+              <label class="form-label">Username</label>
+              <input type="text" class="form-control" value="mohsin123">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" value="mohsin@example.com">
+            </div>
+            <button class="btn btn-primary"><i class="bi bi-person-check"></i> Update Account</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Security -->
+      <div *ngIf="selectedSection === 'security'" class="card">
+        <div class="card-body">
+          <h4 class="card-title">Security Settings</h4>
+          <form class="mt-3">
+            <div class="mb-3">
+              <label class="form-label">Current Password</label>
+              <input type="password" class="form-control">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">New Password</label>
+              <input type="password" class="form-control">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Confirm Password</label>
+              <input type="password" class="form-control">
+            </div>
+            <button class="btn btn-danger"><i class="bi bi-lock-fill"></i> Change Password</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Notifications -->
+      <div *ngIf="selectedSection === 'notifications'" class="card">
+        <div class="card-body">
+          <h4 class="card-title">Notification Settings</h4>
+          <form class="mt-3">
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="checkbox" checked>
+              <label class="form-check-label">Email Notifications</label>
+            </div>
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="checkbox">
+              <label class="form-check-label">SMS Alerts</label>
+            </div>
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="checkbox" checked>
+              <label class="form-check-label">Push Notifications</label>
+            </div>
+            <button class="btn btn-primary"><i class="bi bi-bell-fill"></i> Save Preferences</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Appearance -->
+      <div *ngIf="selectedSection === 'appearance'" class="card">
+        <div class="card-body">
+          <h4 class="card-title">Appearance</h4>
+          <form class="mt-3">
+            <div class="mb-3">
+              <label class="form-label">Theme</label>
+              <select class="form-select">
+                <option>Light</option>
+                <option selected>Dark</option>
+                <option>System Default</option>
+              </select>
+            </div>
+            <button class="btn btn-primary"><i class="bi bi-brush"></i> Apply</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

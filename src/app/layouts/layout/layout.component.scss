@@ -1,0 +1,11 @@
+/* Default (sidebar open) */
+.main-content {
+  margin-left: 280px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+/* Jab sidebar collapse ho */
+.main-content.sidebar-collapsed {
+  margin-left: 80px;
+}

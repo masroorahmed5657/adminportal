@@ -1,0 +1,125 @@
+<div class="card border border-2" style="margin-top: 4em;">
+
+    <div class="card-body">
+        <div class="row mb-3">
+            <!-- Date Filter Row -->
+            <div class="col-12">
+                <div class="card border border-2 shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-12 col-md-3">
+                                <label class="form-label">Start Date:</label>
+                                <input type="date" class="form-control" [(ngModel)]="startDate"
+                                    (change)="startDateChange()">
+                            </div>
+                            <div class="col-12 col-md-3">
+                                <label class="form-label">End Date:</label>
+                                <input type="date" class="form-control" [(ngModel)]="endDate"
+                                    (change)="endDateChange()">
+                            </div>
+                            <div class="col-12 col-md-auto">
+                                <button class="btn btn-success" (click)="agentSaleWithDate()">
+                                    <i class="bi bi-search"></i> Search
+                                </button>
+                            </div>
+                            <div class="col-12 col-md-auto">
+                                <button (click)="print()" class="btn btn-primary">
+                                    <i class="bi bi-printer"></i> Print
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Report Table -->
+            <div class="col-12">
+                <div class="card border border-2 shadow-sm mb-4">
+                    <div class="card-header text-center">
+                        <h4 class="card-title mb-0">Agent Sale Commission</h4>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table align-middle text-center mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 10%; min-width: 80px;">Agent ID</th>
+                                        <th style="width: 15%; min-width: 140px;">Agent Name</th>
+                                        <th style="width: 10%; min-width: 80px;"># of Sale</th>
+                                        <th style="width: 10%; min-width: 80px;" class="text-danger">Return</th>
+                                        <th style="width: 12%; min-width: 100px;">Sale Amount (Rs.)</th>
+                                        <th style="width: 12%; min-width: 100px;">Taxes (Rs.)</th>
+                                        <th style="width: 12%; min-width: 100px;" class="text-danger">Return Taxes (Rs.)
+                                        </th>
+                                        <th style="width: 12%; min-width: 100px;">Commission %</th>
+                                        <th style="width: 12%; min-width: 100px;">Commission</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of agentSaleReport; let i = index">
+                                        <td>{{item.loginId}}</td>
+                                        <td>{{item.firstName}} {{item.lastName}}</td>
+                                        <td>{{item.totalCount}}</td>
+                                        <td class="text-danger">{{item.totalReturn}}</td>
+                                        <td>{{toNumber(item.totalSale)}}</td>
+                                        <td>{{toNumber(item.tax)}}</td>
+                                        <td class="text-danger">{{toNumber(item.returnTax)}}</td>
+                                        <td>
+                                            <input type="text" name="commission_{{i}}" id="commission_{{i}}"
+                                                class="form-control text-center d-inline-block no-print"
+                                                autocomplete="off" [value]="item.commissionPercentage"
+                                                (keyup)="chkCommissionNumber(i)" (change)="chkCommissionNumber(i)">
+                                            <label class="yes-print d-none">{{item.commissionPercentage}}</label>
+                                        </td>
+                                        <td>{{toNumber(item.totalCommission)}}</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-success">
+                                        <td colspan="2">Total Agents #: {{totalAgentsCount}}</td>
+                                        <td colspan="2">Total Sale: {{toNumber(totalSale)}}</td>
+                                        <td colspan="2">Total Tax: {{toNumber(totalTax)}}</td>
+                                        <td colspan="3">Total Commission: {{toNumber(totalCommission)}}</td>
+                                    </tr>
+                                    <tr class="table-danger">
+                                        <td colspan="2">Total Return: {{toNumber(totalReturn)}}</td>
+                                        <td colspan="2">Return Tax: {{toNumber(totalReturnTax)}}</td>
+                                        <td colspan="5"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="col-12">
+                <div class="card border border-2 shadow-sm mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Commission Sale</h5>
+                    </div>
+                    <div class="card-body" *ngIf="chartCommissionSale">
+                        <apx-chart [series]="chartCommissionSale.series" [chart]="chartCommissionSale.chart"
+                            [xaxis]="chartCommissionSale.xaxis" [title]="chartCommissionSale.title"></apx-chart>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="card border border-2 shadow-sm mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Commission Count</h5>
+                    </div>
+                    <div class="card-body" *ngIf="chartCommissionSale">
+                        <apx-chart [series]="chartCommissionCount.series" [chart]="chartCommissionCount.chart"
+                            [xaxis]="chartCommissionCount.xaxis" [title]="chartCommissionCount.title"></apx-chart>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>

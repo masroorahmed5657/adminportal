@@ -1,0 +1,141 @@
+<div class="card border border-2" style="margin-top: 4em;">
+
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card"
+                        style="background: white; border-radius: 12px; box-shadow: 0 6px 12px rgba(0,0,0,0.1); margin-bottom: 25px; overflow: hidden;">
+                        <div class="card-body border border-2" style="padding: 20px;">
+                            <!-- Date Filters and Search Button -->
+                            <div
+                                style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center; margin-bottom: 20px; justify-content: space-between;">
+                                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                                    <div>
+                                        <label style="font-weight: 600; color: #333; margin-right: 10px;">Start
+                                            Date:</label>
+                                        <input type="date" id="startDate" [(ngModel)]="startDate"
+                                            style="padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px;"
+                                            (change)="startDateChange()">
+                                    </div>
+                                    <div>
+                                        <label style="font-weight: 600; color: #333; margin-right: 10px;">End
+                                            Date:</label>
+                                        <input type="date" id="endDate" [(ngModel)]="endDate"
+                                            style="padding: 10px; border: 2px solid #ddd; border-radius: 6px; margin-right: 5px;"
+                                            (change)="endDateChange()">
+                                    </div>
+                                    <button class="btn btn-success" type="button" (click)="onSearch()"
+                                        style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: transform 0.2s; font-weight: 500;"
+                                        onmouseover="this.style.transform='scale(1.05)'"
+                                        onmouseout="this.style.transform='scale(1)'">Search</button>
+                                </div>
+                                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                    <button type="button" class="btn btn-info" (click)="exportToExcel()"
+                                        style="background: green; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: transform 0.2s; font-weight: 500;"
+                                        onmouseover="this.style.transform='scale(1.05)'"
+                                        onmouseout="this.style.transform='scale(1)'">Export to Excel</button>
+                                    <button type="button" class="btn btn-info" (click)="exportToPdf()"
+                                        style="background: red; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: transform 0.2s; font-weight: 500;"
+                                        onmouseover="this.style.transform='scale(1.05)'"
+                                        onmouseout="this.style.transform='scale(1)'">Export to PDF</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div  id="excel-table">
+                        <div class="card"
+                            style="background: white; border-radius: 12px; box-shadow: 0 6px 12px rgba(0,0,0,0.1); margin-bottom: 25px; overflow: hidden;">
+                            <div class="card-header"
+                                style="background-color: #1c5eeb3f; color: #2563eb; padding: 15px; text-align: center;">
+                                <h4 class="card-title" style="margin: 0; font-weight: 600;">Profit & Loss Report</h4>
+                            </div>
+                            <div class="card-body" style="padding: 20px;">
+                                <table
+                                    style="width: 100%; border-collapse: separate; border-spacing: 0; background: white;">
+                                    <thead>
+                                        <tr style="background: #f8f9fa; border: 2px solid #ddd;">
+                                            <th
+                                                style="padding: 12px; border: 2px solid #ddd; color: #333; font-weight: 600;">
+                                                Date</th>
+                                            <th
+                                                style="padding: 12px; border: 2px solid #ddd; color: #333; font-weight: 600;">
+                                                Sales</th>
+                                            <th
+                                                style="padding: 12px; border: 2px solid #ddd; color: #333; font-weight: 600;">
+                                                Purchases</th>
+                                            <th
+                                                style="padding: 12px; border: 2px solid #ddd; color: #333; font-weight: 600;">
+                                                Expense</th>
+                                            <th
+                                                style="padding: 12px; border: 2px solid #ddd; color: #333; font-weight: 600;">
+                                                Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <ng-container *ngFor="let order of orderList; let i = index;">
+                                            <tr style="transition: background 0.3s;"
+                                                onmouseover="this.style.background='#f1f3f5'"
+                                                onmouseout="this.style.background='white'">
+                                                <td style="padding: 12px; border: 2px solid #ddd;">{{
+                                                    order.orders?.createDate | date:'dd-mm-yyyy' }}</td>
+                                                <td style="padding: 12px; border: 2px solid #ddd;">{{
+                                                    order.orders?.grandTotal | number:'1.0-0'}}</td>
+                                                <td style="padding: 12px; border: 2px solid #ddd;">{{
+                                                    purchaseOrderList[i].total || 0 | number:'1.0-0'}}</td>
+                                                <td style="padding: 12px; border: 2px solid #ddd;">{{
+                                                    expenseList[i].amount || 0 | number:'1.0-0'}}</td>
+                                                <td style="padding: 12px; border: 2px solid #ddd;">{{
+                                                    order.orders?.grandTotal - (purchaseOrderList[i].total || 0) -
+                                                    (expenseList[i].amount || 0) | number:'1.0-0'}}</td>
+                                            </tr>
+                                        </ng-container>
+                                        <tr style="background: #f8f9fa; transition: background 0.3s;"
+                                            onmouseover="this.style.background='#e9ecef'"
+                                            onmouseout="this.style.background='#f8f9fa'">
+                                            <td colspan="4"
+                                                style="padding: 12px; border: 2px solid #ddd; font-weight: 600;">Total
+                                                Sales</td>
+                                            <td style="padding: 12px; border: 2px solid #ddd;">{{ totalSales |
+                                                number:'1.0-0'}}</td>
+                                        </tr>
+                                        <tr style="background: #f8f9fa; transition: background 0.3s;"
+                                            onmouseover="this.style.background='#e9ecef'"
+                                            onmouseout="this.style.background='#f8f9fa'">
+                                            <td colspan="4"
+                                                style="padding: 12px; border: 2px solid #ddd; font-weight: 600;">Total
+                                                Purchases</td>
+                                            <td style="padding: 12px; border: 2px solid #ddd;">{{ totalPurchases |
+                                                number:'1.0-0'}}</td>
+                                        </tr>
+                                        <tr style="background: #f8f9fa; transition: background 0.3s;"
+                                            onmouseover="this.style.background='#e9ecef'"
+                                            onmouseout="this.style.background='#f8f9fa'">
+                                            <td colspan="4"
+                                                style="padding: 12px; border: 2px solid #ddd; font-weight: 600;">Total
+                                                Expense</td>
+                                            <td style="padding: 12px; border: 2px solid #ddd;">{{ totalExpense |
+                                                number:'1.0-0'}}</td>
+                                        </tr>
+                                        <tr style="background: #f8f9fa; transition: background 0.3s;"
+                                            onmouseover="this.style.background='#e9ecef'"
+                                            onmouseout="this.style.background='#f8f9fa'">
+                                            <td colspan="4"
+                                                style="padding: 12px; border: 2px solid #ddd; font-weight: 600;">
+                                                <b>Grand Total</b></td>
+                                            <td style="padding: 12px; border: 2px solid #ddd;"><b>{{ netIncome |
+                                                    number:'1.0-0'}}</b></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

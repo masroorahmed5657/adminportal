@@ -1,0 +1,162 @@
+<!--=============== SIDEBAR ===============-->
+<aside class="admin-sidebar" id="sidebar">
+  <div class="admin-sidebar__wrapper d-flex flex-column h-100">
+
+    <!-- User Info -->
+    <div class="admin-sidebar__user text-center py-3">
+      <img src="{{logoName}}" alt="Admin" class="admin-sidebar__avatar mb-2">
+      <h5 class="mb-0 fw-semibold">Inventory Management Portal</h5>
+      <small class="text-light opacity-75">{{currentUser.firstName}} {{currentUser.lastName}}</small>
+    </div>
+
+    <!-- Search -->
+    <div class="admin-sidebar__search p-3 border-bottom">
+      <input type="text" class="form-control form-control-sm admin-sidebar__searchbox" placeholder="Search menu..."
+        (input)="filterSidebarItems($event)" />
+    </div>
+
+    <!-- Menu -->
+    <div class="admin-sidebar__menu flex-grow-1 overflow-auto px-3">
+
+      <!-- INVENTORY -->
+      <div class="admin-sidebar__section">
+        <h6 class="admin-sidebar__title">Inventory</h6>
+        <a routerLink="/layout/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+          class="admin-sidebar__link"><i class="ri-home-4-fill me-2"></i> <span>Home</span></a>
+        <a routerLink="/layout/brands" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-price-tag-3-fill me-2"></i> <span>Brands</span></a>
+        <a routerLink="/layout/category" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-grid-fill me-2"></i> <span>Category</span></a>
+        
+        <a routerLink="/layout/customer" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-user-3-fill me-2"></i> <span>Customer</span></a>
+        
+        <a routerLink="/layout/purchase-order" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-file-copy-2-fill me-2"></i> <span>Purchase Order (PO)</span></a>
+
+        <a routerLink="/layout/receive-product" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-download-2-fill me-2"></i> <span>Receiving PO</span></a>
+
+        <a routerLink="/layout/purchase-invoice/0" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-file-copy-2-fill me-2"></i> <span>Invoicing PO</span></a>
+
+            
+
+        <a routerLink="/layout/supplier" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-truck-fill me-2"></i> <span>Supplier</span></a>
+        
+        <a routerLink="/layout/inventory-adjustment" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-edit-box-fill me-2"></i> <span>Inventory Adjustment</span></a>
+        
+        <a routerLink="/layout/products" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-inbox-2-fill me-2"></i> <span>Products</span>
+        
+        </a>
+        
+        <a routerLink="/layout/expired-product" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-inbox-2-fill me-2"></i> <span>Expired Products</span>
+        </a>
+
+
+        
+      </div>
+
+      <!-- ORDERS -->
+      <!-- <div class="admin-sidebar__section">
+        <h6 class="admin-sidebar__title">Orders</h6>
+        <a routerLink="/layout/orders" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-instance-fill me-2"></i> <span>Orders</span></a>
+        <a routerLink="/layout/orders-payment" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-secure-payment-fill me-2"></i> <span>Payments</span></a>
+      </div> -->
+
+      <!-- Finance -->
+      <div class="admin-sidebar__section" *ngIf="showExpenseFlag">
+        <h3 class="admin-sidebar__title">Finance</h3>
+        <a routerLink="/layout/expenses" routerLinkActive="active" class="admin-sidebar__link"> <i
+            class="ri-bar-chart-2-fill me-2"></i> <span>Expenses</span></a>
+
+      </div> 
+
+      <!-- HR -->
+      <!-- <div class="admin-sidebar__section">
+        <h6 class="admin-sidebar__title">HR</h6>
+        <a routerLink="/layout/departments" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-building-fill me-2"></i> <span>Departments</span></a>
+        <a routerLink="/layout/store-hours" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-time-fill me-2"></i> <span>Store Hours</span></a>
+        <a routerLink="/layout/employees" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-user-settings-fill me-2"></i> <span>Employees</span></a>
+
+        <a routerLink="/layout/adminuser" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-user-settings-fill me-2"></i> <span> Admin User </span></a>
+            
+        <a routerLink="/layout/customer" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-user-3-fill me-2"></i> <span>Customers</span></a>
+
+        <a routerLink="/layout/barcode" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-user-3-fill me-2"></i> <span> BarCodes </span></a>     
+      </div> -->
+
+      <!-- REPORTS -->
+      <div class="admin-sidebar__section">
+        <h6 class="admin-sidebar__title">Reports</h6>
+        <!-- <a routerLink="/layout/commission-report" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-money-dollar-circle-fill me-2"></i> <span>Commission</span></a> -->
+
+        <a routerLink="/layout/daily-sale-report" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-calendar-check-fill me-2"></i> <span>Daily Sale</span></a>
+
+        <a routerLink="/layout/top10-reports/top10Product" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-calendar-check-fill me-2"></i> <span>Top Product Sale</span></a>
+
+        <a routerLink="/layout/top10-reports/top10Category" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-calendar-check-fill me-2"></i> <span>Top Category Sale</span></a>
+
+        <a routerLink="/layout/top10-reports/top10Brands" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-calendar-check-fill me-2"></i> <span>Top Brands Sale</span></a>
+
+
+
+        <!-- <a routerLink="/layout/expenses" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-hand-coin-fill me-2"></i> <span>Customer Sales & Expense</span></a> -->
+
+        <!-- <a routerLink="/layout/vendor" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-store-2-fill me-2"></i> <span>Vendor</span></a> -->
+
+       
+
+        <a routerLink="/layout/profit-loss" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-line-chart-fill me-2"></i> <span>Profit & Loss</span></a>
+      </div>
+
+      <!-- SETTINGS -->
+      <!-- <div class="admin-sidebar__section">
+        <h6 class="admin-sidebar__title">Settings</h6>
+        <a routerLink="/layout/settings" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-settings-3-fill me-2"></i> <span>Settings</span></a>
+
+        <a routerLink="/layout/my-messages" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-mail-unread-fill me-2"></i> <span>My Messages</span></a>
+
+        <a routerLink="/layout/newstracker" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-notification-2-fill me-2"></i> <span> News Tracker </span></a>
+
+      <!-- </div> -->
+    </div> 
+
+    <!-- Bottom -->
+    <div class="admin-sidebar__footer text-center border-top py-3">
+      <button class="admin-sidebar__link w-75" (click)="themeShowHide()">
+        <i class="ri-moon-clear-fill me-2"></i> <span>{{ isDarkTheme ? 'Light Mode' : 'Dark Mode' }}</span>
+      </button>
+      <button class="admin-sidebar__link w-75" style="color: red;" (click)="signOut()">
+        <i class="ri-logout-box-r-fill me-2"></i> <span>Log Out</span>
+      </button>
+      
+      <!-- <small class="opacity-75 mt-2"><span>Techmaci.com {{versionNumber}}</span></small> -->
+      <div class="admin-sidebar__link opacity-75 mt-2" style="pointer-events: none; justify-content: center;"><span>www.techmaci.com <br>Version: {{versionNumber}}</span></div>
+    </div>
+
+  </div>
+</aside>

@@ -1,0 +1,119 @@
+<style>
+    * {
+        margin: 0px;
+        padding: 0px;
+        text-decoration: none;
+        list-style: none;
+        outline: none;
+        border: none;
+        box-sizing: border-box;
+    }
+
+    nav {
+        position: absolute;
+        top: 0px;
+        bottom: 0px;
+        height: 100%;
+        left: 0px;
+        background-color: rgb(187, 255, 255);
+
+        width: 65px;
+        overflow: hidden;
+        transition: width 0.2s linear;
+        z-index: 1;
+        position: fixed;
+        box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+    }
+
+    .logo {
+
+        padding: 2rem 3rem;
+    }
+
+    .logo1 {
+        text-align: center;
+        display: flex;
+        transition: all 0.5s ease;
+        font-size: 1.8rem;
+    }
+
+    .logo1 span {
+        font-weight: bold;
+        padding-left: 15px;
+        font-style: 18px;
+        text-transform: uppercase;
+    }
+
+    a {
+        position: relative;
+        color: rgba(85, 83, 83);
+        display: table;
+        padding: 12px 1px;
+        top: 15px;
+        font-size: 14px;
+        width: 300px;
+        font-weight: 500;
+    }
+
+    .fas {
+        position: relative;
+        width: 70px;
+        height: 40px;
+        top: 14px;
+        font-size: 20px;
+        text-align: center;
+    }
+
+    .nav-item {
+        position: relative;
+        top: 12px;
+        margin-left: 10px;
+    }
+
+    a:hover {
+        background-color: #58867e;
+        box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+        color: #fff;
+    }
+
+    nav:hover {
+        width: 250px;
+        transition: all 0.5s ease;
+    }
+</style>
+
+<nav>
+    <ul>
+        <li class="logo">
+            <a href="#" class="logo1"><span>EZPZFASHION</span></a>
+        </li>
+        <li><a href="dashboard">
+                <i class="fas fa-home"></i>
+                <span class="nav-item">Dashboard</span>
+            </a></li>
+
+        <li>
+            <a href="#">
+                <i class="fas fa-solid fa-envelopes-bulk"></i>
+                <span class="nav-item">Mail</span>
+            </a>
+        </li>
+
+        <li><a href="chat">
+                <i class="fas fa-solid fa-comments"></i>
+                <span class="nav-item">Chat</span>
+            </a></li>
+
+        <li><a href="#" class="logout">
+                <i class="fas fa-solid fa-users"></i>
+                <span class="nav-item">Users</span>
+            </a></li>
+
+        <li><a href="#" class="logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span class="nav-item">Log out</span>
+            </a></li>
+
+    </ul>
+
+</nav>

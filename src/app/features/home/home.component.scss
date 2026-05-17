@@ -1,0 +1,268 @@
+.page-wrapper {
+    padding: 1.5rem;
+}
+
+.main-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.content-wrapper-scroll {
+    overflow-x: auto;
+}
+
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    background-color: #fff;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header {
+    background-color: transparent;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 1.5rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.dashboard-header {
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    background-color: #fff;
+    padding: 2rem;
+}
+
+.welcome-title h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.welcome-title span {
+    color: #3b82f6;
+}
+
+.sales-tile {
+    background-color: #f8fafc;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.sales-tile h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #3b82f6;
+    margin-bottom: 0.5rem;
+}
+
+.sales-tile h6 {
+    font-size: 0.9rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.monthly-earnings {
+    background-color: #f8fafc;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.monthly-earnings h4 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #3b82f6;
+}
+
+.stats-list-item {
+    background-color: #f8fafc;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.stats-list-item h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.stats-list-item p {
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+.table {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table th,
+.table td {
+    border: none;
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+.table th {
+    background-color: #f8fafc;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.badge {
+    font-size: 0.85rem;
+    padding: 0.5em 1em;
+    border-radius: 6px;
+}
+
+.recent-orders li {
+    background-color: #f8fafc;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.recent-orders .order-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.recent-orders .order-desc {
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+.recent-orders .order-date {
+    font-size: 0.85rem;
+    color: #94a3b8;
+}
+
+.tiles-list {
+    background-color: #f8fafc;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.tiles-list h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #3b82f6;
+}
+
+.tiles-list p {
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+.stats-tile3 {
+    background-color: #f8fafc;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.stats-tile3 h3 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #3b82f6;
+}
+
+.stats-tile3 p {
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+.btn-outline-primary {
+    border-color: #3b82f6;
+    color: #3b82f6;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+}
+
+.btn-outline-primary:hover {
+    background-color: #3b82f6;
+    color: #fff;
+}
+
+.btn-group .btn {
+    border-radius: 6px;
+    margin-right: 0.5rem;
+}
+
+.btn-group .btn.active {
+    background-color: #3b82f6;
+    color: #fff;
+}
+
+.customScroll250 {
+    max-height: 350px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 #f8fafc;
+}
+
+.customScroll250::-webkit-scrollbar {
+    width: 6px;
+}
+
+.customScroll250::-webkit-scrollbar-track {
+    background: #f8fafc;
+}
+
+.customScroll250::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+.chart-placeholder {
+    background-color: #f8fafc;
+    height: 200px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    font-size: 1rem;
+}
+
+.shippedBadge {
+
+    background-color: #e5fff0;
+    color: #039855;
+
+}
+
+.movingBadge {
+
+    background-color: #ECF3FF;
+    color: #465FFF;
+
+}
+
+.pendingBadge {
+
+    background-color: #FFFAEB;
+    color: #DC6803;
+
+}
+
+.cancelledBadge {
+
+    background-color: #FEF3F2;
+    color: #E02D20;
+
+}
+

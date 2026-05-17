@@ -1,0 +1,239 @@
+<!-- LIST VIEW -->
+<div class="card shadow-sm " style="margin-top: 3.5rem;" *ngIf="!addEditFlag">
+    <div class="card-body">
+
+        <!-- Header -->
+        <div class="d-flex flex-column flex-md-row justify-content-between gap-2 mb-3">
+            <h5 class="fw-bold mb-0">Expenses</h5>
+            <button class="btn btn-primary" (click)="addExpense()">
+                <i class="bi bi-plus-circle"></i> Add Expense
+            </button>
+            <button (click)="print()" class="btn btn-success">Print</button>
+            <!-- <button (click)="exportexcel()" class="btn btn-info">Export Excel</button> -->
+            <button (click)="exportToPDF()" class="btn btn-info">Export PDF</button>
+
+        </div>
+
+        <div class="row g-2 align-items-end">
+            <!-- Year -->
+            <div class="col-6 col-md-3">
+                <label class="form-label fw-semibold small">Year</label>
+                <select class="form-select form-select-sm" [(ngModel)]="selectedYear" (change)="onFilterChange()">
+                    <option *ngFor="let year of years" [value]="year">
+                        {{ year }}
+                    </option>
+                </select>
+            </div>
+
+            <!-- Month -->
+            <div class="col-6 col-md-3">
+                <label class="form-label fw-semibold small">Month</label>
+                <select class="form-select form-select-sm" [(ngModel)]="selectedMonth" (change)="onFilterChange()">
+                    <option value="">All</option>
+                    <option *ngFor="let month of months" [value]="month.value">
+                        {{ month.label }}
+                    </option>
+                </select>
+            </div>
+
+            <!-- Button -->
+            <div class="col-12 col-md-3">
+                <button class="btn btn-primary btn-sm w-100" (click)="loadReport()">
+                    View Report
+                </button>
+            </div>
+        </div>
+        <hr>
+
+
+        <div id="print-table">
+            <h2>Expense Report for {{ reportDate | date:'MMMM, yyyy' }}</h2>
+            <hr>
+
+            <!-- DESKTOP TABLE -->
+            <div class="table-responsive d-none d-md-block" *ngIf="!addEditFlag">
+                <table class="table table-striped table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="col-id">ID</th>
+                            <th>Category</th>
+                            <th>Type</th>
+                            <th>Amount ({{currency}})</th>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th class="text-center no-print d-print-none pdf-hide">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr *ngFor="let exp of expensesList; let i=index">
+                            <td>{{ exp.expenseId }}</td>
+                            <td>{{ exp.categoryName }}</td>
+                            <td>
+                                <span>
+                                    {{ exp.transactionType | uppercase }}
+                                </span>
+                            </td>
+                            <td>   {{ exp.amount | number:'1.2-2' }}</td>
+                            <td>{{ exp.transactionDate | date:'EEEE, dd MM yyyy'}}</td>
+                            <td class="text-truncate" style="max-width:200px;">
+                                {{ exp.description }}
+                            </td>
+                            <td class="text-center no-print pdf-hide">
+                                <button class="btn btn-sm btn-outline-primary me-1 no-print" (click)="editExpense(i)">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger no-print"
+                                    (click)="onDelete(exp.expenseId, i)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="fw-bold price">
+                                Total Amount: {{currency}}: {{totalExpense | number:'1.2-2'}}
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- MOBILE CARDS -->
+            <div class="d-md-none no-print" *ngIf="!addEditFlag">
+                <div class="card mb-3 shadow-sm" *ngFor="let exp of expensesList; let i=index">
+
+                    <div class="card-body p-3">
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <strong>#{{ exp.expenseId }}</strong>
+                            <span class="badge bg-secondary">
+                                {{ exp.transactionDate | date:'EEEE, dd'}}
+                            </span>
+                        </div>
+
+                        <div class="mb-2">
+                            <!-- <span class="badge" >
+                                {{ exp.transactionType | uppercase }}
+                            </span> -->
+
+                            <span class="badge" [ngClass]="{
+                                'bg-danger': exp.transactionType === 'expense',
+                                'bg-success': exp.transactionType === 'income',
+                                'bg-warning': exp.transactionType === 'transfer'
+                                }">
+                                {{ exp.transactionType | uppercase }}
+                            </span>
+                        </div>
+
+                        <div class="mb-2">
+                            <div class="text-muted small">Amount</div>
+                            <div class="fw-bold fs-5"> {{currency}}:  {{ exp.amount | number:'1.2-2' }}</div>
+                        </div>
+
+                        <div class="mb-2">
+                            <div class="text-muted small">Category</div>
+                            <div>{{ exp.categoryName }}</div>
+                        </div>
+
+                        <div class="mb-3" *ngIf="exp.description">
+                            <div class="text-muted small">Description</div>
+                            <div>{{ exp.description }}</div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-primary btn-sm flex-fill" (click)="editExpense(i)">
+                                Edit
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm flex-fill"
+                                (click)="onDelete(exp.expenseId, i)">
+                                Delete
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-12 text-end mt-2">
+                    <strong>Total ({{currency}}):</strong>
+                    <span class="text-success fw-bold price">
+                        {{ totalExpense | number:'1.2-2'}}
+                    </span>
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- ADD / EDIT FORM -->
+<div class="card shadow-sm" *ngIf="addEditFlag" style="margin-top: 3.5rem;">
+    <div class="card-body">
+
+        <h5 class="fw-bold mb-3">
+            {{ editIndex === null ? 'Add Expense' : 'Edit Expense' }}
+        </h5>
+
+        <div class="row g-3">
+
+            <div class="col-md-6">
+                <label class="form-label">Category</label>
+                <!-- <input type="number" class="form-control"
+          [(ngModel)]="expenseForm.categoryId"> -->
+
+                <select class="form-select " id="expenseForm.categoryId" [(ngModel)]="expenseForm.financeCategoryId">
+                    <option *ngFor="let cat of categoriesList" [value]="cat.financeCategoryId">
+                        {{cat.subCategory}}
+                    </option>
+
+                </select>
+
+
+
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Transaction Type</label>
+                <select class="form-select" [(ngModel)]="expenseForm.transactionType">
+                    <option value="EXPENSE">Expense</option>
+                    <!-- <option value="income">Income</option>
+                    <option value="transfer">Transfer</option> -->
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Amount</label>
+                <input type="number" class="form-control" [(ngModel)]="expenseForm.amount">
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Date</label>
+                <input type="date" class="form-control" [(ngModel)]="expenseForm.transactionDate">
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Time</label>
+                <input type="time" class="form-control" [(ngModel)]="expenseForm.transactionTime">
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Description</label>
+                <textarea class="form-control" rows="3" [(ngModel)]="expenseForm.description"></textarea>
+            </div>
+
+        </div>
+
+        <div class="d-flex gap-2 mt-4">
+            <button class="btn btn-success" (click)="saveExpense()">
+                <i class="bi bi-save"></i> Save
+            </button>
+            <button class="btn btn-secondary" (click)="cancel()">
+                Cancel
+            </button>
+        </div>
+
+    </div>
+</div>

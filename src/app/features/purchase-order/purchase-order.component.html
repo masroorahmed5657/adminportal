@@ -1,0 +1,214 @@
+<!-- Card start -->
+<div class="card border border-2 " style="margin-top: 4em;">
+    <div class="card-body mt-1">
+
+        <div class="row mb-3">
+            <div class="col-12 col-md-4 col-lg-4 col-sm-4">
+                <label>Supplier</label>
+
+                <!-- <input type="text" class="form-control" [(ngModel)]="selectedSupplierName"
+                    (keyup)="supplierName($event)"> -->
+                <select [(ngModel)]="selectedSupplier" id="supplierForList" class="form-select form-control"
+                    width="100%" (change)="supplierChange()">
+
+                    <option *ngFor="let supplier of suppliertList" [value]="supplier.supplierCode">
+
+                        {{supplier.supplierCode}}- {{supplier.supplierName}}
+                    </option>
+                </select>
+            </div>
+            <div class="col-12 col-md-4 col-lg-4 col-sm-4">
+                <label>Status</label>
+                <!-- <input type="text" width="100%" class="form-control" value="Open" /> -->
+                <select class="form-select form-control" [(ngModel)]="searchStatus">
+                    <option selected value=""></option>
+                    <option value="OPEN">OPEN</option>
+                    <option value="RECEIVED">RECEIVED</option>
+                    <!-- <option value="INVOICED">INVOICED</option> -->
+
+                </select>
+
+            </div>
+            <div class="col-12 col-md-4 col-lg-4 col-sm-4">
+                <label>Start Date</label>
+                <input type="date" [(ngModel)]="fromDate" width="100%" class="form-control">
+            </div>
+        </div>
+        <!-- </div> -->
+        <!-- <div class="container mt-3"> -->
+        <div class="row">
+            <div class="col-12 col-md-4 col-lg-4 col-sm-4">
+                <label>PO NO</label>
+                <input type="number" width="100%" class="form-control">
+            </div>
+            <div class="col-12 col-md-4 col-lg-4 col-sm-4">
+                <label>PO Type</label>
+                <select class="form-select" class="form-control">
+                    <option selected>Items</option>
+                    <option>Service</option>
+                </select>
+            </div>
+            <div class="col-12 col-md-4 col-lg-4 col-sm-4">
+                <label>End Date</label>
+                <input type="date" [(ngModel)]="toDate" width="100%" class="form-control">
+            </div>
+        </div>
+        <!-- </div> -->
+        <!-- <div class="container mt-3"> -->
+        <div class="row g-2">
+
+            <!-- Search -->
+            <div class="col-12 col-sm-4">
+                <button class="btn btn-info " type="button" (click)="search()">
+                    <i class="bi bi-search"></i> Search
+                </button>
+            </div>
+
+            <!-- Reset -->
+            <div class="col-12 col-sm-4 ">
+                <button class="btn btn-danger " type="button" (click)="reset()">
+                    <i class="bi bi-arrow-counterclockwise"></i> Reset
+                </button>
+            </div>
+
+            <!-- Add PO -->
+            <div class="col-12 col-sm-4">
+                <button class="btn btn-warning " type="button" (click)="addPurchase()">
+                    <i class="bi bi-plus-circle"></i> Add PO
+                </button>
+            </div>
+
+        </div>
+
+        <!-- <div class="row">
+            <div class="col-12 col-md-4 col-lg-4 col-sm-4">
+                <button class="btn btn-info" type="button" (click)="search()">Search</button>
+            </div>
+            <div class="col-12 col-md-3 col-lg-3 col-sm-3">
+                <button class="btn btn-danger" type="button" (click)="reset()">Reset</button>
+            </div>
+            <div class="col-12 col-md-3 col-lg-3 col-sm-3">
+                <button class="btn btn-warning" type="button" (click)="addPurchase()">Add PO</button>
+            </div>
+
+        </div> -->
+
+        <hr style="font-weight: bolder;">
+        <div class="container-fluid mt-3">
+
+            <!-- DESKTOP / TABLET TABLE -->
+            <div class="table-responsive d-none d-md-block">
+                <table class="table table-striped align-middle table-bordered table-active">
+                    <thead>
+                        <tr>
+                            <th (click)="sort('poId')" class="sortable">
+                                PO ID <fa-icon [icon]="faSort"></fa-icon>
+                            </th>
+                            <th (click)="sort('poNumber')" class="sortable">
+                                PO # <fa-icon [icon]="faSort"></fa-icon>
+                            </th>
+                            <th>PO Ref #</th>
+                            <th (click)="sort('poDate')" class="sortable">
+                                Date <fa-icon [icon]="faSort"></fa-icon>
+                            </th>
+                            <th>Status</th>
+                            <th>Supplier</th>
+                            <th>Sub Total</th>
+                            <th>Amount<br>After<br>Discount</th>
+                            <th class="text-center">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr *ngFor="let purchase of purchaseOrderList; let row = index">
+                            <td>{{ purchase.poId }}</td>
+                            <td>{{ purchase.poNumber }}</td>
+                            <td>{{ purchase.poRef }}</td>
+                            <td>{{ purchase.poDate }}</td>
+                            <td  [ngClass]="{ 'status-open': purchase.poStatus === 'OPEN',  'status-received': purchase.poStatus === 'RECEIVED'  }"> {{purchase.poStatus}}  </td>
+                            <td class="text-truncate" style="max-width: 150px;">
+                                {{ getSupplierInfo(purchase.supplierId) }}
+                            </td>
+                            <td>{{ purchase.subTotal }}</td>
+                            <td>{{ purchase.total }}</td>
+                            <td class="text-center">
+                                <button class="btn btn-secondary btn-sm m-1" (click)="onEdit(row)">
+                                    <fa-icon [icon]="faPencil"></fa-icon> Edit
+                                </button>
+                                <button class="btn btn-danger btn-sm m-1" (click)="onDeletePO(row, purchase.poId)">
+                                    <fa-icon [icon]="faRemove"></fa-icon> Delete
+                                </button>
+                                <button class="btn btn-warning btn-sm m-1" (click)="print(purchase)">
+                                    <fa-icon [icon]="faPrint"></fa-icon> Print
+                                </button>
+                                <button class="btn btn-success btn-sm m-1" (click)="receive(row)">
+                                    <fa-icon [icon]="faReceipt"></fa-icon> Receive
+                                </button>
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- MOBILE CARD VIEW -->
+            <div class="d-block d-md-none">
+                <div class="card mb-3 shadow-sm" *ngFor="let purchase of purchaseOrderList; let row = index">
+
+                    <div class="card-body">
+
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-bold text-primary">
+                                PO #{{ purchase.poNumber }}
+                            </span>
+                            <span class="badge bg-secondary">
+                                ID: {{ purchase.poId }}
+                            </span>
+                        </div>
+
+                        <div class="small text-muted mb-1">
+                            <strong>Date:</strong> {{ purchase.poDate }}
+                        </div>
+
+                        <div class="mb-1">
+                            <strong>Supplier:</strong><br>
+                            {{ getSupplierInfo(purchase.supplierId) }}
+                        </div>
+
+                        <div class="row mt-2">
+                            <div class="col-6">
+                                <small class="text-muted">Sub Total</small>
+                                <div class="fw-semibold">{{ purchase.subTotal }}</div>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted">Total</small>
+                                <div class="fw-semibold text-success">{{ purchase.total }}</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between gap-2 mt-3">
+                            <button class="btn btn-outline-secondary btn-sm w-100" (click)="onEdit(row)">
+                                Edit
+                            </button>
+
+                            <button class="btn btn-outline-danger btn-sm w-100"
+                                (click)="onDeletePO(row, purchase.poId)">
+                                Delete
+                            </button>
+
+                            <button class="btn btn-outline-warning btn-sm w-100" (click)="print(purchase)">
+                                Print
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+
+
+    </div>
+</div>

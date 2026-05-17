@@ -1,0 +1,22 @@
+<!--=============== HEADER ===============-->
+<header class="admin-header fixed-top" id="header">
+  <div class="admin-header__container d-flex align-items-center justify-content-between px-4">
+    <!-- Left: Toggle Button -->
+    <button class="admin-header__toggle btn btn-sm me-3" id="header-toggle" (click)="showHideMenuBar()">
+      <i class="ri-menu-2-line fs-4"></i>
+    </button>
+
+
+    <!-- Center: Current Page Title -->
+    <div class="admin-header__title flex-grow-1 text-center">
+      <span class="fs-4 fw-semibold">{{ currentPageTitle }} Management</span>
+    </div>
+
+        <!-- Right: Logo -->
+    <div class="admin-header__brand d-flex align-items-center">
+      <i class="ri-cloud-fill me-2 fs-3"></i>
+      <span class="fs-4">Admin Portal</span>
+    </div>
+
+  </div>
+</header>

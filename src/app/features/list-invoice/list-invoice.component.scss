@@ -1,0 +1,73 @@
+   .pp {
+       font-weight: bold;
+       display: flex;
+       justify-content: start;
+       background-color: rgb(235, 235, 235);
+       box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+       /* font-size: 3rem; */
+       padding: 1.5rem 8rem;
+   }
+
+   /* .card-body{
+     padding: 2rem 3rem;
+ } */
+   /* .form-control{
+     font-size: 1.8rem;
+      padding: 1.9rem 1.5rem;
+ } */
+   /* .bb{
+     font-size: 2rem;
+ } */
+   .card {
+       margin-top: 2rem;
+   }
+
+   /* tr{
+     font-size: 1.4rem;
+ } */
+   /* .adinvoice{
+ font-size: 2rem;
+} */
+   .adinvoice a {
+       color: white;
+       text-decoration: none;
+       font-weight: 500;
+
+   }
+
+   /* thead tr th{
+ padding: 3rem 0rem;
+} */
+   tbody tr th,
+   td {
+       text-align: center;
+       padding: 20px 20px;
+   }
+
+   tbody tr td {
+       margin-top: 30px !important;
+       /* padding: 2rem 2rem; */
+   }
+
+   tbody tr td .edt-butn {
+       background-color: #4dcfff;
+       color: black;
+       padding: 6px 10px;
+       border-radius: 5px;
+       font-weight: bold;
+       text-decoration: none;
+   }
+
+   thead tr .edit {
+       color: #2596be;
+       text-align: center;
+   }
+
+   tbody tr td .edt-butn:hover {
+       background-color: #2596be;
+   }
+
+   table {
+       font-size: 0.9rem;
+       font-family: sans-serif;
+   }

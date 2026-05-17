@@ -1,0 +1,202 @@
+    body { background: #f5f7fb; font-size: 0.95rem; }
+    .sticky-actions {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: white;
+      border-bottom: 1px solid #dee2e6;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .card-header {
+      background: #0d6efd;
+      color: white;
+      font-weight: 600;
+    }
+    .form-label {
+      font-weight: 500;
+      color: #495057;
+      margin-bottom: 0.35rem;
+    }
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #0d6efd;
+      margin: 1.5rem 0 1rem;
+      border-bottom: 2px solid #0d6efd;
+      padding-bottom: 0.5rem;
+      display: inline-block;
+    }
+    .dropzone {
+      border: 2px dashed #0d6efd;
+      border-radius: 0.5rem;
+      padding: 2.5rem;
+      text-align: center;
+      background: #f8f9fa;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .dropzone:hover { background: #e7f1ff; }
+    .preview-img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 0.375rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    /******** 10.7.1 Controls ********/
+.form-control {
+    border: 1px solid #dbdaea;
+    border-radius: 2px;
+    color: #8a96a0;
+    font-size: small;
+    //min-height: 40px;
+    color: black;
+    //font-weight: bold;
+  }
+
+  .form-control:hover {
+    border: 1px solid #1273eb;
+  }
+
+  .form-control:focus {
+    border-color: #1273eb;
+    -webkit-box-shadow: none;
+            box-shadow: none;
+    border-radius: 2px;
+    outline: auto !important;
+    outline-color: #1273eb !important;
+  }
+
+  .form-control:disabled, .form-control[readonly] {
+    background: #f8f8fb;
+    cursor: not-allowed;
+  }
+
+  .col-form-label {
+    padding-top: calc(.595rem + 1px);
+    padding-bottom: calc(.595rem + 1px);
+    min-height: 40px;
+  }
+
+  .form-select:disabled {
+    background-color: #f8f8fb;
+    cursor: not-allowed;
+    font-size: small;
+  }
+
+  .form-select {
+    
+    
+    font-size: small;
+  }
+
+  .input-group-text {
+    border: 1px solid #dbdaea;
+    background:#f8f8fb;
+    font-weight: bold;
+    border-radius: 2px;
+    font-size: .75rem;
+    min-height: 40px;
+    margin: 0;
+    color: black;
+  }
+
+  .input-group-text i {
+    color: black;  // #6c7882;
+  }
+
+  .form-text {
+    color: black;  // #9aa5af;
+  }
+
+  .form-label {
+    margin-bottom: .3rem;
+    font-size: larger;
+    font-weight: bold;
+  }
+
+  /******** 10.7.2 Validations ********/
+  .form-control.is-valid, .was-validated .form-control:valid {
+    border-color: rgba(25, 135, 84, 0.9);
+  }
+
+  .form-control.is-invalid, .was-validated .form-control:invalid {
+    border-color: rgba(220, 53, 69, 0.9);
+  }
+  /******** 10.7.4 Checkbox and Radio ********/
+.form-check {
+  margin: 0 1rem 0 0;
+}
+
+.form-check .form-check-label {
+  font-weight: 400;
+  font-size: medium;
+  margin: 0 0 0 5px;
+}
+
+.form-check .form-check-input[type=checkbox] {
+  border-radius: 2px;
+  width: 1rem !important;
+  height: 1rem !important;
+  margin-top: .15em;
+  min-height: auto;
+  padding: 0;
+}
+
+.form-check .form-check-input[type=radio] {
+  border-radius: 50px;
+  width: 1rem !important;
+  height: 1rem !important;
+  margin-top: .15em;
+  min-height: auto;
+  padding: 0;
+}
+
+/* Hidden default checkbox */
+.checkbox-container input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Custom checkbox design */
+.custom-checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #3498db;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+/* Checkmark icon (hidden by default) */
+.custom-checkbox::before {
+  content: '\2713'; /* Unicode checkmark character */
+  color: #fff;
+  font-size: 14px;
+  display: none;
+}
+
+/* Styling for checked state */
+.checkbox-container input[type="checkbox"]:checked + .custom-checkbox {
+  background-color: #3498db;
+  border-color: #3498db;
+}
+
+.checkbox-container input[type="checkbox"]:checked + .custom-checkbox::before {
+  display: block; /* Show checkmark icon when checked */
+
+
+  .formLabel{
+    font-size:x-large;font-weight:bold; font-family: 'Times New Roman', Times, serif;
+  }
+  
+
+}
+
+.buttonMargins{
+  margin-bottom: 5px; margin-right: 10px;
+}

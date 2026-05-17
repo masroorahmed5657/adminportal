@@ -1,0 +1,224 @@
+.container-fluid {
+    padding: 1rem 0.5rem;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    background-color: #ffffff;
+}
+
+.card-body {
+    padding: 0.75rem;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+    letter-spacing: 0.05px;
+    position: relative;
+}
+
+.card-title::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background-color: #3b82f6;
+}
+
+.list-group {
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    background-color: #ffffff;
+}
+
+.list-group-item {
+    border: none;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: #1f2937;
+    padding: 0.5rem 0.75rem;
+    transition: all 0.15s ease;
+    cursor: pointer;
+}
+
+.list-group-item:hover {
+    background-color: #eff6ff;
+}
+
+.list-group-item.active {
+    background-color: #eff6ff;
+    color: #3b82f6;
+    border-left: 3px solid #3b82f6;
+    font-weight: 500;
+}
+
+.form-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #1f2937;
+    margin-bottom: 0.3rem;
+}
+
+.form-control,
+.form-select {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background-color: #f9fafb;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.7rem;
+    color: #1f2937;
+    transition: all 0.15s ease;
+    min-width: 90px;
+    max-width: 160px;
+    width: 100%;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+    outline: none;
+}
+
+.form-check-input {
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    width: 1rem;
+    height: 1rem;
+    margin-top: 0.25rem;
+}
+
+.form-check-input:checked {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+}
+
+.form-check-label {
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: #1f2937;
+}
+
+.btn {
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0.4rem 0.8rem;
+    border: none;
+    color: #ffffff;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.btn-primary {
+    background-color: #3b82f6;
+    /* Soft blue for save/apply */
+}
+
+.btn-primary:hover {
+    background-color: #2563eb;
+}
+
+.btn-danger {
+    background-color: #ef4444;
+    /* Soft red for change password */
+}
+
+.btn-danger:hover {
+    background-color: #dc2626;
+}
+
+.btn i {
+    margin-right: 0.2rem;
+}
+
+.text-primary {
+    color: #3b82f6 !important;
+}
+
+.text-danger {
+    color: #ef4444 !important;
+}
+
+.text-muted {
+    color: #6b7280 !important;
+}
+
+.text-dark {
+    color: #1f2937 !important;
+}
+
+@media (max-width: 576px) {
+    .container-fluid {
+        padding: 0.5rem;
+    }
+
+    .card-body {
+        padding: 0.75rem;
+    }
+
+    .card-title {
+        font-size: 0.85rem;
+    }
+
+    .form-label,
+    .form-control,
+    .form-select,
+    .form-check-label {
+        font-size: 0.8rem;
+    }
+
+    .form-control,
+    .form-select {
+        min-width: 90px;
+        max-width: 140px;
+        padding: 0.35rem 0.6rem;
+    }
+
+    .form-check-input {
+        width: 0.9rem;
+        height: 0.9rem;
+    }
+
+    .btn {
+        width: 100% !important;
+        margin-bottom: 0.3rem;
+        font-size: 0.75rem;
+        padding: 0.35rem 0.7rem;
+    }
+
+    .list-group-item {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.6rem;
+    }
+}
+
+@media print {
+
+    .btn,
+    .form-control,
+    .form-select,
+    .form-check-input,
+    .list-group {
+        display: none;
+    }
+
+    .card {
+        border: none;
+        box-shadow: none;
+        margin-bottom: 0;
+    }
+
+    .form-label {
+        font-size: 0.8rem;
+        color: #1f2937;
+    }
+}

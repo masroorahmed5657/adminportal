@@ -1,0 +1,307 @@
+<div class="card border border-2 " style="margin-top: 4em;">
+  <div class="card-body mt-1">
+
+    <div class="row">
+      <!-- <div class="col-2"><app-header></app-header></div> -->
+
+      <div id="po_id" class="col-12 col-lg-12 col-md-12 col-sm-12 mt-1">
+        <!-- <div class="container mt-3"> -->
+        <div class="row">
+          <div class="col-12 col-md-10 col-lg-4 col-sm-4">
+            <label><strong>Supplier</strong></label>&nbsp;
+            <!-- <input type="text" class="form-control" [(ngModel)]="selectedSupplierName" (keyup)="supplierName($event)"> -->
+            <select [(ngModel)]="selectedSupplier" id="supplierForList" class="form-select form-control" width="100%"
+              (change)="supplierChange()">
+              <option *ngFor="let supplier of suppliertList" [value]="supplier.supplierCode">
+                {{supplier.supplierCode}} - {{supplier.supplierName}}</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-2 col-lg-2 col-sm-2">
+            <label><strong>Name</strong></label>
+            <input type="text" width="100%" class="form-control" disabled value="{{mySupplier.supplierName}}">
+          </div>
+          <div class="col-12 col-md-2 col-lg-2 col-sm-2">
+            <label><strong>Phone</strong></label>
+            <input type="text" width="100%" class="form-control" disabled value="{{mySupplier.supplierContact}}">
+          </div>
+          <div class="col-12 col-md-2 col-lg-2 col-sm-2">
+            <label><strong>Email</strong></label>
+            <input type="text" width="100%" class="form-control" disabled value="{{mySupplier.supplierEmail}}">
+          </div>
+          <div class="col-12 col-md-2 col-lg-2 col-sm-2">
+            <label><strong>Contact Person</strong></label>&nbsp;
+            <input type="text" width="100%" class="form-control border bg-light" [(ngModel)]="supplierContactPerson">
+          </div>
+        </div>
+        <!-- </div> -->
+        <!-- <div class="container mt-3"> -->
+        <div class="row">
+          <div class="col-12 col-md-2 col-lg-2 col-sm-2">
+            <label class="label">PO No:</label>
+            <input type="text" width="100%" class="form-control" disabled [(ngModel)]="poNumber">
+          </div>
+          <div class="col-12 col-md-2 col-lg-2 col-sm-2">
+            <label class="label">PO Ref No:</label>
+            <input type="text" width="100%" class="form-control" [(ngModel)]="po.poRef">
+          </div>
+
+          <div class="col-12 col-md-2 col-lg-2 col-sm-2">
+            <label class="label">Status:</label>
+            <!-- <input type="text" disabled width="100%" class="form-control" value="Open" /> -->
+            <select class="form-select form-control" [(ngModel)]="searchStatus" >
+              <option selected value="OPEN">OPEN</option>
+              <option value="RECEIVED">RECEIVED</option>
+              <!-- <option value="INVOICED">INVOICED</option> -->
+
+            </select>
+
+
+
+          </div>
+          <div class="col-12 col-md-2 col-lg-2 col-sm-2">
+            <label class="label">PO Date</label>
+            <input type="date" [(ngModel)]="poDate" width="100%" class="form-control" />
+          </div>
+          <div class="col-12 col-md-2 col-lg-2 col-sm-2">
+            <label class="label">Currency:</label>&nbsp;
+            <select class="form-select form-control" [(ngModel)]="selectedCurrency" (ngModelChange)="currencyChange()">
+              <option  value="USD">USD</option>
+              <option value="CAD">CAD</option>
+              <option selected value="PKR">PKR</option>
+
+            </select>
+          </div>
+          <div class="col-12 col-md-2 col-lg-2 col-sm-2"><br><br>
+
+            <input type="radio" checked value="ITEM" (change)="changePoType('ITEM')" class="form-check-input"
+              name="poType" id="poType"> <label>Items</label>
+            &nbsp;&nbsp;
+            <input type="radio" value="SERVICE" (change)="changePoType('SERVICE')" class="form-check-input"
+              name="poType" id="poType"><label>Service</label>
+
+          </div>
+        </div>
+        <!-- </div> -->
+
+        <!-- <div class="container mt-3"> -->
+        <div class="row">
+          <div class="col-12 col-md-4 col-lg-4 col-sm-4">
+            <h6>Barcode</h6>
+            <input type="text" autofocus [(ngModel)]="upc" class="w-100" class="form-control border bg-light"
+              (keyup)="upcSearch($event)">
+
+          </div>
+
+          <div class="col-12 col-md-4 position-relative">
+            <label class="fw-bold">Name</label>
+
+            <input type="search" class="form-control" placeholder="Search By Name" (keyup)="onNameSearch($event)"
+              [(ngModel)]="searchText" autocomplete="off" />
+
+            <!-- Search result list -->
+            <ul class="list-group position-absolute w-100" *ngIf="productList.length > 0"
+              style="z-index: 1000; max-height: 250px; overflow-y: auto;">
+              <li class="list-group-item list-group-item-action" *ngFor="let product of productList"
+                (click)="selectProduct(product)">
+                {{ product.productName }}
+                <small class="text-muted d-block">
+                  {{ product.sku }} | {{(product.salePrice===null?product.unitPrice:product.salePrice) |
+                  number:'1.2-2'}}
+                </small>
+              </li>
+            </ul>
+          </div>
+
+
+
+          <!-- <div class="col-12 col-md-4 col-lg-4 col-sm-4">
+                      <h6>SKU:</h6>
+                      <input type="text" autofocus width="100%"  [(ngModel)]="sku" class="form-control border bg-light" (keyup)="onKeysku($event)">
+                    </div>
+                    <div class="col-12 col-md-4 col-lg-4 col-sm-4">
+                      <h6>{{mydata}}</h6>
+                      <input type="text" width="100%" class="form-control border bg-light" [(ngModel)]="itemSearch" (keyup)="onKeyItem($event)">
+                    </div> -->
+        </div>
+        <!-- </div> -->
+
+<hr>
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped align-middle">
+            <thead class="text-center">
+              <tr>
+                <th style="width: 25em;">Item</th>
+                <th>Qty</th>
+                <th>Unit Price</th>
+                <th>Discount</th>
+                <th>Amount After Discount</th>
+                <th>Tax %</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let product of productviewList; let row = index">
+                <td>
+                  <button class="btn btn-danger btn-sm" (click)="onDelete(row)">
+                    <fa-icon [icon]="faRemove"></fa-icon>
+                  </button>
+                  &nbsp; {{product.upc}} - {{product.productName}}
+                </td>
+
+                <!-- Qty -->
+                <td>
+                  <input type="number" id="qty_{{row}}" class="form-control form-control-sm" step="1"
+                    (change)="qtyChange(row)" />
+                </td>
+
+                <!-- Unit Price -->
+                <td>
+                  <input type="number" id="price_{{row}}" class="form-control form-control-sm"
+                    value="{{product.unitPrice}}" (change)="priceChange(row)" (keypress)="chkPrice(row)" />
+                </td>
+
+                <!-- Discount -->
+                <td>
+                  <input type="number" id="discount_{{row}}" class="form-control form-control-sm"
+                    [(ngModel)]="product.discount" (change)="discountChange(row)" />
+                </td>
+
+                <!-- Amount After Discount -->
+                <td>
+                  <input type="number" id="itemTotal_{{row}}" class="form-control form-control-sm"
+                    [(ngModel)]="poItems[row].total" />
+                </td>
+
+                <!-- Tax -->
+                <td>
+                  <input type="number" id="tax_{{row}}" class="form-control form-control-sm" [(ngModel)]="product.tax"
+                    (change)="taxChange(row)" disabled />
+                </td>
+
+                <!-- Grand Total -->
+                <td>
+                  <input type="number" id="grandTotal_{{row}}" class="form-control form-control-sm"
+                    [(ngModel)]="poItems[row].grandTotal" />
+                </td>
+              </tr>
+            </tbody>
+
+            <tfoot class="fw-bold">
+              <tr>
+                <td colspan="5" class="text-end">Sub Total:</td>
+                <td colspan="2">{{po.subTotal}}</td>
+              </tr>
+
+              <tr>
+                <td colspan="5" class="text-end">Discount:</td>
+                <td colspan="2">
+                  <input type="number" class="form-control form-control-sm" [(ngModel)]="po.discount"
+                    (change)="totalDiscountChange()" />
+                </td>
+              </tr>
+
+              <tr>
+                <td colspan="5" class="text-end">Total Qty:</td>
+                <td colspan="2">{{po.totalQty}}</td>
+              </tr>
+
+              <tr>
+                <td colspan="5" class="text-end">Total Payment Due:</td>
+                <td colspan="2">{{po.total}}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <div class="row">
+          <div class="col-12 col-md-4 col-lg-4 col-sm-4">
+            <label><b>Notes:</b></label>
+            <input type="textarea" cols="5" rows="3" class="form-control" [(ngModel)]="po.remarks">&nbsp;
+
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="container p-3">
+          <div class="row">
+            <div class="col-lg-12">
+              <button type="button" class="btn btn-success mt-2" (click)="save()">
+              <fa-icon [icon]="faSave"></fa-icon>  Save
+              </button>
+              &nbsp;&nbsp;
+              <!-- <button type="button" class="btn btn-danger m-1"  (click)="close()">Cancel</button> -->
+              <!-- <button type="button" class="btn btn-secondary mt-2" (click)="print()">Print</button> -->
+              &nbsp;&nbsp;
+              <button type="button" class="btn btn-danger mt-2" (click)="poList()">
+                <fa-icon [icon]="faList"></fa-icon>   Purchase Order List
+              </button>
+              &nbsp;&nbsp;
+              <button type="button" class="btn btn-primary mt-2" (click)="generateBarCode()">
+                <fa-icon [icon]="faBarcode"></fa-icon> Barcode
+              </button>
+            </div>
+          </div>
+          <div class="row">&nbsp;</div>
+        </div>
+
+
+
+
+
+      </div><!-- div class=col-12-->
+    </div>
+    <div class="modal mt-5" style="width: 1200px !important;margin:400px auto;margin-top:150px !important;"
+      tabindex="-1" role="dialog" [ngClass]="{'show': modalOpen, 'd-block': modalOpen}">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" style=" box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);">
+          <div class="modal-header" style="background-color: #17A2B8;">
+            <h5 class="modal-title">BarCode Print</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeModal()">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <!-- Print button -->
+            <button type="button" class="btn btn-secondary" (click)="printBarcode()">Print</button>
+            &nbsp;&nbsp;
+            <button type="button" class="btn btn-primary" (click)="this.modalOpen = false;">Close</button>
+            <hr>
+            <!-- Input fields -->
+            <div class="col-lg-6 col-md-6  col-sm-12 gap-3 p-3" *ngFor="let product of productviewList let i=index">
+
+              <div class="col-lg-6 col-md-6  col-sm-12" *ngFor="let codeItem of getQty(i) let j=index">
+                <label style="font-size: smaller; text-align: left;">{{product.productName}}</label>
+                <br>
+                <label style="font-size: smaller; text-align: left;">{{product.sku}}</label>
+                <br>
+                <img src='data:image/png;base64,{{product.firstImage}}'>
+                <br>
+                <label style="font-size: 28px;text-align: left;">{{product.upc}}</label>
+                <br>
+                <label style="font-size: 28px;text-align: left;">Rs. {{(product.salePrice)}}</label>
+
+                <hr>
+              </div>
+
+
+
+            </div>
+
+
+
+          </div>
+          <div class="modal-footer">
+            <!-- Print button -->
+            <button type="button" class="btn btn-secondary" (click)="printBarcodesOnPrinter()">Print</button>
+            &nbsp;&nbsp;
+            <button type="button" class="btn btn-primary" (click)="this.modalOpen = false;">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+</div>

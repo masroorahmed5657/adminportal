@@ -1,0 +1,91 @@
+<div class="card border border-2 " style="margin-top: 4em;">
+    <div class="card-body ">
+
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <input type="text" placeholder="Search" class="form-control">
+
+            </div>
+            <div class="col-md-4">    
+                <button type="button" class="btn btn-primary">
+                    <a (click)="addNewstracker()">Add Newstracker</a>
+                </button>
+            </div>
+            <div class="col-md-4" *ngIf="addFlag">    
+                <button type="button" class="btn btn-info">
+                    <a (click)="newstrackerList()">List Newstracker</a>
+                </button>
+            </div>
+
+
+        </div>
+
+        <div class="row">
+            <div class="table-responsive">
+                <table id="tbldeptList" class="table table-striped no-wrap dept-table mb-0">
+                    <thead>
+                        <tr style="width: 100%; font-size: 15px; text-transform: capitalize;">
+                            <th scope="col" class="border-0 text-capitalize font-medium">newsId</th>
+                            <th scope="col" class="border-0 text-capitalize font-medium">News</th>
+                            <th scope="col" class="border-0 text-capitalize font-medium">site</th>
+                        </tr>
+                    </thead>
+                    <tbody *ngIf="!addFlag">
+
+                        <tr *ngFor="let news of newstrackerlist let row = index;" [ngClass]="{'table-active': activeRow === row}">
+
+
+                            <td>
+                                <input type="text" class="form-control" id="newsId-{{row}}" [(ngModel)]="news.newsId"
+                                    [disabled]="!enabledEdit[row]" value=''>
+                            </td>
+                            <td> <input type="text" class="form-control" id="news-{{row}}" style="width:100%"
+                                    [(ngModel)]="news.news" [disabled]="!enabledEdit[row]"></td>
+
+
+                            <td>
+                                <select id="site-{{row}}" class="form-select" [(ngModel)]="news.site">
+                                    <option>Mobile App</option>
+                                    <option>Back Office</option>
+                                    <option>Public Website</option>
+                                </select>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary" (click)="startEdit(row)">
+                                    
+                                    <fa-icon [icon]="faEdit"></fa-icon>
+                                </button>&nbsp;
+                                <button class="btn btn-danger" (click)="onDelete(row)">
+                                    <fa-icon [icon]="faRemove"></fa-icon>
+                                    
+                                </button>&nbsp;
+                                <button class="btn btn-info" (click)="onSave(row)">
+                                    <fa-icon [icon]="faSave"></fa-icon>
+                                    
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody *ngIf="addFlag">
+                        <tr>
+                            <td scope="row"> &nbsp;</td>
+                            <td> <input type="text" class="form-control" id="news-new" style="width:100%" value=''>
+                            </td>
+                            <td><select id="site-new" class="form-select">
+                                    <option>Mobile App</option>
+                                    <option>Back Office</option>
+                                    <option>Public Website</option>
+                                </select></td>
+                            <td><button class="btn btn-info" (click)="onSave(-1)">
+                                <fa-icon [icon]="faSave"></fa-icon>
+                                </button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+
+    </div>
+</div>

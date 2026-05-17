@@ -1,0 +1,238 @@
+.page-wrapper {
+    padding: 1.5rem;
+}
+
+.main-container {
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+.content-wrapper-scroll {
+    overflow-x: auto;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    background-color: #fff;
+    margin-bottom: 1.5rem;
+    transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.card-header {
+    background: linear-gradient(135deg, #1e293b 0%, #2d3748 100%);
+    color: #fff;
+    border-radius: 10px 10px 0 0;
+    padding: 1rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    text-align: center;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 0.5rem;
+    letter-spacing: 0.1px;
+}
+
+.form-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.form-select {
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background-color: #f9fafb;
+    font-size: 0.9rem;
+    padding: 0.6rem;
+    color: #1e293b;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    outline: none;
+}
+
+.btn {
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    color: #fff;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.btn-add {
+    background-color: #16a34a;
+    /* Green for adding rows */
+}
+
+.btn-delete {
+    background-color: #dc2626;
+    /* Red for delete */
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+}
+
+.btn i {
+    margin-right: 0.3rem;
+}
+
+.table {
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    background-color: #fff;
+}
+
+.table th,
+.table td {
+    padding: 0.75rem;
+    vertical-align: middle;
+    font-size: 0.9rem;
+    border: none;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.table th {
+    background: linear-gradient(180deg, #f9fafb 0%, #f1f5f9 100%);
+    color: #475569;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.3px;
+}
+
+.table tbody tr:hover {
+    background-color: #f1f5f9;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #fff;
+}
+
+.table-striped tbody tr:nth-of-type(even) {
+    background-color: #f9fafb;
+}
+
+.table.meta,
+.table.balance {
+    border: none;
+    margin-bottom: 0;
+}
+
+.table.meta th,
+.table.balance th {
+    background: transparent;
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 0.9rem;
+}
+
+.table.meta td,
+.table.balance td {
+    border: none;
+    text-align: right;
+    font-size: 0.9rem;
+    color: #1e293b;
+    font-weight: 500;
+}
+
+address {
+    font-size: 0.9rem;
+    color: #475569;
+    line-height: 1.6;
+    font-weight: 400;
+}
+
+.action-buttons {
+    // background: linear-gradient(180deg, #fff 0%, #f9fafb 100%);
+    // border-top: 1px solid #e5e7eb;
+    // padding: 1rem;
+    // position: sticky;
+    // bottom: 0;
+    // z-index: 100;
+    border-radius: 0 0 6px 6px;
+    display: flex;
+    justify-content: center;
+    margin-bottom:30px;
+    // box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.text-muted {
+    color: #64748b !important;
+    font-size: 0.85rem;
+    font-weight: 400;
+}
+
+@media (max-width: 768px) {
+    .page-wrapper {
+        padding: 1rem;
+    }
+
+    .card-body {
+        padding: 1.25rem;
+    }
+
+    .btn {
+        width: 100% !important;
+        margin-bottom: 0.5rem;
+    }
+
+    .action-buttons {
+        position: static;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+    }
+
+    .table th,
+    .table td {
+        font-size: 0.85rem;
+        padding: 0.5rem;
+    }
+}
+
+@media print {
+
+    .action-buttons,
+    .btn {
+        display: none;
+    }
+
+    .card {
+        box-shadow: none;
+        margin-bottom: 0;
+    }
+
+    .card-header {
+        border-bottom: 1px solid #e5e7eb;
+    }
+}
