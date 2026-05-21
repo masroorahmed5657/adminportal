@@ -15,9 +15,7 @@ import { HttpMethodService } from '../helper/http-method.service';
   providedIn: 'root'
 })
 export class CustomerService {
-  deleteCustomer(custId: any) {
-    throw new Error('Method not implemented.');
-  }
+  
 
   private url = environment.apiUrl; //http://localhost:9080/EZPZ_WS/customer
   private errors: Errors = new Errors();
@@ -27,6 +25,13 @@ export class CustomerService {
     // super('customer')
     // this.http.setEndpoint('customer')
 
+  }
+
+  
+
+  deleteCustomer(custId: any): Observable<any> {
+    return this.http.delete(`customer/delete/${custId}`);
+  
   }
 
   saveCustomer(customer: CustomerRequest): Observable<CustomerResponse> {
@@ -67,7 +72,7 @@ export class CustomerService {
     return this.http.get<Country[]>('country/findAll')
   }
   /* ********************************************************************** */
-  getProvinceCityList(countryId: Number): Observable<StateProvince[]> {
+  getProvinceCityList(countryId: any): Observable<StateProvince[]> {
 
     return this.http.get<StateProvince[]>(`stateProvince/findAllByCountryId/${countryId}`)
   }
