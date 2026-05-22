@@ -72,7 +72,7 @@ export class CustomerService {
     return this.http.get<Country[]>('country/findAll')
   }
   /* ********************************************************************** */
-  getProvinceCityList(countryId: Number): Observable<StateProvince[]> {
+  getProvinceCityList(countryId: any): Observable<StateProvince[]> {
 
     return this.http.get<StateProvince[]>(`stateProvince/findAllByCountryId/${countryId}`)
   }
