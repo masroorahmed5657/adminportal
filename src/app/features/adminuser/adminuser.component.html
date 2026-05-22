@@ -1,186 +1,314 @@
-<div class="d-flex flex-column flex-md-row gap-3 mb-4 align-items-md-end py-5">
+<!-- Loading Overlay -->
+<div class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-dark bg-opacity-50 z-3"
+     *ngIf="spinnerDataLoad" style="z-index: 9999;">
+  <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
 
-  <!-- Search -->
-  <div class="flex-grow-1" *ngIf="!addFlag">
-    <label class="fw-semibold">Search Name</label>
-    <div class="input-group">
-      <span class="input-group-text"><i class="bi bi-search"></i></span>
-      <input type="text"
-             class="form-control"
-             placeholder="Search admin user"
-             [(ngModel)]="searchName"
-             (input)="adminUserSearch()">
+<div class="container-fluid px-3 px-md-4 py-3 mt-5">
+  
+  <!-- Header with Search and Add Button -->
+  <div class="d-flex flex-column flex-md-row gap-3 mb-4 align-items-md-end">
+    
+    <!-- Search Section -->
+    <div class="flex-grow-1" *ngIf="!addFlag">
+      <label class="fw-semibold mb-1">Search by Name, Login ID or Email</label>
+      <div class="input-group">
+        <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+        <input type="text"
+               class="form-control"
+               placeholder="Search admin user..."
+               [(ngModel)]="searchName"
+               (input)="adminUserSearch()">
+      </div>
     </div>
+
+    <!-- Add / Back Button -->
+    <button class="btn text-white px-4 py-2"
+            style="background-color: #2563eb; transition: all 0.3s;"
+            (click)="addAdminUser()">
+      <i class="bi" [class.bi-arrow-left]="addFlag" [class.bi-person-plus]="!addFlag"></i>
+      {{ addFlag ? 'Back to Users' : 'Add Admin User' }}
+    </button>
   </div>
 
-  <!-- Add / Back -->
-  <button class="btn text-white"
-          style="background-color:#2563eb"
-          (click)="addAdminUser()">
-    {{ addFlag ? 'Back to Users' : 'Add Admin User' }}
-  </button>
+  <!-- Add New User Form -->
+  <div *ngIf="addFlag" class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+      <h5 class="fw-bold mb-3 text-primary">
+        <i class="bi bi-person-badge me-2"></i>Add New Admin User
+      </h5>
+      
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <label class="form-label fw-semibold">Login ID *</label>
+          <input class="form-control" placeholder="Enter login ID"
+                 [(ngModel)]="newAdminUser.loginId">
+        </div>
 
-</div>
-<div class="d-none d-md-block" *ngIf="!addFlag">
+        <div class="col-12 col-md-6">
+          <label class="form-label fw-semibold">Password *</label>
+          <input type="password" class="form-control" placeholder="Enter password (min 4 chars)"
+                 [(ngModel)]="newAdminUser.loginPassword">
+        </div>
 
-  <p-table [value]="adminUserList"
-           [paginator]="true"
-           [rows]="5"
-           [rowsPerPageOptions]="[5,10,20]"
-           responsiveLayout="scroll"
-           sortMode="multiple">
+        <div class="col-12 col-md-6">
+          <label class="form-label fw-semibold">First Name *</label>
+          <input class="form-control" placeholder="Enter first name"
+                 [(ngModel)]="newAdminUser.firstName">
+        </div>
 
-    <ng-template pTemplate="header">
-      <tr>
-        <th>ID</th>
-        <th>Login ID</th>
-        <th>Password</th>
-        <th>First</th>
-        <th>Last</th>
-        <th>Role</th>
-        <th>Email</th>
-        <th class="text-center">Actions</th>
-      </tr>
-    </ng-template>
+        <div class="col-12 col-md-6">
+          <label class="form-label fw-semibold">Last Name *</label>
+          <input class="form-control" placeholder="Enter last name"
+                 [(ngModel)]="newAdminUser.lastName">
+        </div>
 
-    <ng-template pTemplate="body" let-emp let-i="rowIndex">
-      <tr>
-        <td>{{ emp.userId }}</td>
-
-        <td><input class="form-control form-control-sm"
-                   [(ngModel)]="emp.loginId"
-                   [disabled]="!enabledEdit[i]"></td>
-
-        <td><input class="form-control form-control-sm"
-                   [(ngModel)]="emp.loginPassword"
-                   [disabled]="!enabledEdit[i]"></td>
-
-        <td><input class="form-control form-control-sm"
-                   [(ngModel)]="emp.firstName"
-                   [disabled]="!enabledEdit[i]"></td>
-
-        <td><input class="form-control form-control-sm"
-                   [(ngModel)]="emp.lastName"
-                   [disabled]="!enabledEdit[i]"></td>
-
-        <td>
-          <select class="form-select form-select-sm"
-                  [(ngModel)]="emp.userRole"
-                  [disabled]="!enabledEdit[i]">
-            <option *ngFor="let role of roles" [ngValue]="role">
+        <div class="col-12 col-md-6">
+          <label class="form-label fw-semibold">Role *</label>
+          <select class="form-select" [(ngModel)]="newAdminUser.userRole">
+            <option value="" disabled>Select Role</option>
+            <option *ngFor="let role of roles" [value]="role">
               {{ role }}
             </option>
           </select>
-        </td>
+        </div>
 
-        <td><input class="form-control form-control-sm"
-                   [(ngModel)]="emp.email"
-                   [disabled]="!enabledEdit[i]"></td>
-
-        <!-- Actions -->
-        <td class="text-center">
-          <button *ngIf="!enabledEdit[i]"
-                  class="btn btn-sm btn-primary me-1"
-                  (click)="startEdit(i)">
-            <i class="bi bi-pencil"></i>
-          </button>
-
-          <button *ngIf="enabledEdit[i]"
-                  class="btn btn-sm btn-success me-1"
-                  (click)="onSave(i)">
-            <i class="bi bi-check"></i>
-          </button>
-
-          <button class="btn btn-sm btn-danger"
-                  (click)="onDelete(i)">
-            <i class="bi bi-trash"></i>
-          </button>
-        </td>
-      </tr>
-    </ng-template>
-
-  </p-table>
-</div>
-<div class="d-md-none" *ngIf="!addFlag">
-
-  <div class="card shadow-sm mb-3"
-       *ngFor="let emp of adminUserList; let i = index">
-
-    <div class="card-body">
-
-      <h6 class="fw-bold text-primary mb-1">
-        {{ emp.firstName }} {{ emp.lastName }}
-      </h6>
-
-      <div class="small text-muted mb-1">
-        <b>Login ID:</b> {{ emp.loginId }}
+        <div class="col-12 col-md-6">
+          <label class="form-label fw-semibold">Email *</label>
+          <input type="email" class="form-control" placeholder="Enter email address"
+                 [(ngModel)]="newAdminUser.email">
+        </div>
       </div>
 
-      <div class="small mb-1">
-        <b>Role:</b> {{ emp.userRole }}
-      </div>
-
-      <div class="small mb-1">
-        <b>Email:</b> {{ emp.email }}
-      </div>
-
-      <div class="d-flex gap-2 mt-3">
-        <button class="btn btn-sm btn-primary flex-fill"
-                (click)="startEdit(i)">
-          <i class="bi bi-pencil"></i> Edit
+      <div class="mt-4 d-flex gap-2">
+        <button class="btn btn-success px-4" (click)="onSave(-1)">
+          <i class="bi bi-save me-1"></i> Save User
         </button>
-
-        <button class="btn btn-sm btn-danger flex-fill"
-                (click)="onDelete(i)">
-          <i class="bi bi-trash"></i> Delete
+        <button class="btn btn-outline-danger px-4" (click)="addAdminUser(); resetNewUserForm()">
+          <i class="bi bi-x-circle me-1"></i> Cancel
         </button>
       </div>
-
     </div>
   </div>
+
+  <!-- Desktop View: PrimeNG Table -->
+  <div class="d-none d-md-block" *ngIf="!addFlag">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-0">
+        <p-table [value]="adminUserList"
+                 [paginator]="true"
+                 [rows]="10"
+                 [rowsPerPageOptions]="[5,10,20,50]"
+                 responsiveLayout="scroll"
+                 sortMode="multiple"
+                 styleClass="p-datatable-sm">
+          
+          <ng-template pTemplate="header">
+            <tr class="bg-light">
+              <th class="fw-semibold">ID</th>
+              <th class="fw-semibold">Login ID</th>
+              <th class="fw-semibold">Password</th>
+              <th class="fw-semibold">First Name</th>
+              <th class="fw-semibold">Last Name</th>
+              <th class="fw-semibold">Role</th>
+              <th class="fw-semibold">Email</th>
+              <th class="fw-semibold text-center" style="width: 120px;">Actions</th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-emp let-i="rowIndex">
+            <tr [class.table-primary]="activeRow === i">
+              <td class="align-middle">{{ emp.userId }}</td>
+              
+              <td class="align-middle">
+                <input class="form-control form-control-sm"
+                       [(ngModel)]="emp.loginId"
+                       [disabled]="!enabledEdit[i]">
+              </td>
+              
+              <td class="align-middle">
+                <input type="password" class="form-control form-control-sm"
+                       [(ngModel)]="emp.loginPassword"
+                       [disabled]="!enabledEdit[i]"
+                       placeholder="••••••">
+              </td>
+              
+              <td class="align-middle">
+                <input class="form-control form-control-sm"
+                       [(ngModel)]="emp.firstName"
+                       [disabled]="!enabledEdit[i]">
+              </td>
+              
+              <td class="align-middle">
+                <input class="form-control form-control-sm"
+                       [(ngModel)]="emp.lastName"
+                       [disabled]="!enabledEdit[i]">
+              </td>
+              
+              <td class="align-middle">
+                <select class="form-select form-select-sm"
+                        [(ngModel)]="emp.userRole"
+                        [disabled]="!enabledEdit[i]">
+                  <option *ngFor="let role of roles" [value]="role">
+                    {{ role }}
+                  </option>
+                </select>
+              </td>
+              
+              <td class="align-middle">
+                <input class="form-control form-control-sm"
+                       [(ngModel)]="emp.email"
+                       [disabled]="!enabledEdit[i]">
+              </td>
+              
+              <td class="text-center align-middle">
+                <div class="d-flex gap-1 justify-content-center">
+                  <button *ngIf="!enabledEdit[i]"
+                          class="btn btn-sm btn-outline-primary"
+                          (click)="startEdit(i)"
+                          title="Edit">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  
+                  <button *ngIf="enabledEdit[i]"
+                          class="btn btn-sm btn-outline-success"
+                          (click)="onSave(i)"
+                          title="Save">
+                    <i class="bi bi-check-lg"></i>
+                  </button>
+                  
+                  <button *ngIf="enabledEdit[i]"
+                          class="btn btn-sm btn-outline-secondary"
+                          (click)="cancelEdit(i)"
+                          title="Cancel">
+                    <i class="bi bi-x-lg"></i>
+                  </button>
+                  
+                  <button class="btn btn-sm btn-outline-danger"
+                          (click)="onDelete(i)"
+                          title="Delete">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+          
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="8" class="text-center py-4 text-muted">
+                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                No admin users found.
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile View: Card Layout with Inline Editing -->
+  <div class="d-md-none" *ngIf="!addFlag">
+    <div class="row g-3">
+      <div class="col-12" *ngFor="let emp of adminUserList; let i = index">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-body">
+            
+            <!-- View Mode -->
+            <div *ngIf="!enabledEdit[i]">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <h6 class="fw-bold text-primary mb-0">
+                  {{ emp.firstName }} {{ emp.lastName }}
+                </h6>
+                <span class="badge" [class]="getRoleBadgeClass(emp.userRole)">
+                  {{ emp.userRole }}
+                </span>
+              </div>
+              
+              <div class="small text-muted mb-1">
+                <i class="bi bi-person-badge me-1"></i> ID: {{ emp.userId }}
+              </div>
+              
+              <div class="small mb-1">
+                <i class="bi bi-box-arrow-in-right me-1"></i> Login: {{ emp.loginId }}
+              </div>
+              
+              <div class="small mb-1">
+                <i class="bi bi-envelope me-1"></i> {{ emp.email }}
+              </div>
+              
+              <div class="d-flex gap-2 mt-3">
+                <button class="btn btn-sm btn-outline-primary flex-fill" (click)="startEdit(i)">
+                  <i class="bi bi-pencil"></i> Edit
+                </button>
+                <button class="btn btn-sm btn-outline-danger flex-fill" (click)="onDelete(i)">
+                  <i class="bi bi-trash"></i> Delete
+                </button>
+              </div>
+            </div>
+            
+            <!-- Edit Mode -->
+            <div *ngIf="enabledEdit[i]">
+              <div class="mb-2">
+                <label class="form-label small fw-semibold">Login ID</label>
+                <input class="form-control form-control-sm" [(ngModel)]="emp.loginId">
+              </div>
+              
+              <div class="mb-2">
+                <label class="form-label small fw-semibold">Password</label>
+                <input type="password" class="form-control form-control-sm" 
+                       [(ngModel)]="emp.loginPassword" placeholder="Leave blank to keep unchanged">
+              </div>
+              
+              <div class="row g-2 mb-2">
+                <div class="col-6">
+                  <label class="form-label small fw-semibold">First Name</label>
+                  <input class="form-control form-control-sm" [(ngModel)]="emp.firstName">
+                </div>
+                <div class="col-6">
+                  <label class="form-label small fw-semibold">Last Name</label>
+                  <input class="form-control form-control-sm" [(ngModel)]="emp.lastName">
+                </div>
+              </div>
+              
+              <div class="mb-2">
+                <label class="form-label small fw-semibold">Role</label>
+                <select class="form-select form-select-sm" [(ngModel)]="emp.userRole">
+                  <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
+                </select>
+              </div>
+              
+              <div class="mb-3">
+                <label class="form-label small fw-semibold">Email</label>
+                <input type="email" class="form-control form-control-sm" [(ngModel)]="emp.email">
+              </div>
+              
+              <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-success flex-fill" (click)="onSave(i)">
+                  <i class="bi bi-check-lg"></i> Save
+                </button>
+                <button class="btn btn-sm btn-secondary flex-fill" (click)="cancelEdit(i)">
+                  <i class="bi bi-x-lg"></i> Cancel
+                </button>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      
+      <!-- Empty State for Mobile -->
+      <div *ngIf="adminUserList.length === 0" class="col-12">
+        <div class="card shadow-sm border-0">
+          <div class="card-body text-center py-5 text-muted">
+            <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+            No admin users found.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
 </div>
-<div *ngIf="addFlag">
-  <h5 class="fw-bold mb-3">Add New Admin User</h5>
-
-  <div class="row g-3">
-    <div class="col-12 col-md-6">
-      <input class="form-control" placeholder="Login ID">
-    </div>
-
-    <div class="col-12 col-md-6">
-      <input type="password" class="form-control" placeholder="Password">
-    </div>
-
-    <div class="col-12 col-md-6">
-      <input class="form-control" placeholder="First Name">
-    </div>
-
-    <div class="col-12 col-md-6">
-      <input class="form-control" placeholder="Last Name">
-    </div>
-
-    <div class="col-12 col-md-6">
-      <select class="form-select">
-        <option value="">User Role</option>
-        <option *ngFor="let role of roles" [ngValue]="role">
-          {{ role }}
-        </option>
-      </select>
-    </div>
-
-    <div class="col-12 col-md-6">
-      <input type="email" class="form-control" placeholder="Email">
-    </div>
-  </div>
-
-  <div class="mt-4">
-    <button class="btn btn-success" (click)="onSave(-1)">
-      <i class="bi bi-save"></i> Save
-    </button>
-
-    <button class="btn btn-danger ms-2" (click)="addFlag=false">
-      Cancel
-    </button>
-  </div>
-</div>
-
