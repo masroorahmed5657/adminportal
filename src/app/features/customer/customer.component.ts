@@ -6,8 +6,14 @@ import { FormGroup, FormControl, Validators, AbstractControl, FormBuilder } from
 import { NgxPaginationModule } from 'ngx-pagination';
 import Swal from 'sweetalert2';
 import { CustomerService } from '../../shared/services/customer.service';
-import { Customer, Country, StateProvince, City, CodeMaster } from '../../shared/models/model-classes.model';
-import { faCoffee, faSignIn, faUndo, faSave, faHome, faDashboard, faToolbox, faCog, faEdit, faPlusCircle, faHistory, faFileInvoiceDollar, faShoppingCart, faSort, faSearch, faBell, faNewspaper, faPrint, faEllipsisV, faInfo } from '@fortawesome/free-solid-svg-icons';
+import {
+  Customer, Country, StateProvince, City, CodeMaster
+} from '../../shared/models/model-classes.model';
+import {
+  faCoffee, faSignIn, faUndo, faSave, faHome, faDashboard, faToolbox,
+  faCog, faEdit, faPlusCircle, faHistory, faFileInvoiceDollar, faShoppingCart,
+  faSort, faSearch, faBell, faNewspaper, faPrint, faEllipsisV, faInfo
+} from '@fortawesome/free-solid-svg-icons';
 import { faTwitter, faFacebook, faGoogle } from '@fortawesome/free-brands-svg-icons';
 
 @Component({
@@ -18,63 +24,72 @@ import { faTwitter, faFacebook, faGoogle } from '@fortawesome/free-brands-svg-ic
   styleUrls: ['./customer.component.scss']
 })
 export class CustomerComponent implements OnInit {
-  // UI flags
-  showAddFlag = false;
-  editMode = false;
-  isLoading = false;
-  isSaving = false;
 
-  // Pagination & search
+  // ── UI flags ────────────────────────────────────────────────────────────────
+  showAddFlag    = false;
+  editMode       = false;
+  isLoading      = false;
+  isSaving       = false;
+  showDetailModal = false;
+
+  // ── Pagination & search ─────────────────────────────────────────────────────
   p = 1;
   searchTerm = '';
   private searchDebounce: any;
 
-  // Data
+  // ── Data ────────────────────────────────────────────────────────────────────
   customerList: Customer[] = [];
-  customer: Customer = new Customer();
+  customer:     Customer   = new Customer();
+  viewCustomer: Customer   = new Customer();   // used by view-detail modal
 
-  // Form (kept for compatibility, but we use direct ngModel)
+  // ── Reactive form (kept for legacy compatibility) ───────────────────────────
   customerForm!: FormGroup;
 
-  // Other lists (from original)
-  countryList: Country[] = [];
-  provinceList: StateProvince[] = [];
-  citiesList: City[] = [];
-  provinceBillingList: StateProvince[] = [];
+  // ── Lookup lists ────────────────────────────────────────────────────────────
+  countryList:          Country[]       = [];
+  provinceList:         StateProvince[] = [];
+  citiesList:           City[]          = [];
+  provinceBillingList:  StateProvince[] = [];
+
   bestWayToContactList: CodeMaster[] = [
-    { code: 'TEXT', description: 'TEXT' },
+    { code: 'TEXT',  description: 'TEXT'  },
     { code: 'EMAIL', description: 'EMAIL' },
     { code: 'PHONE', description: 'PHONE' }
   ];
   bestTimeToContactList: CodeMaster[] = [
-    { code: 'MORNING', description: 'MORNING' },
+    { code: 'MORNING',   description: 'MORNING'   },
     { code: 'AFTERNOON', description: 'AFTERNOON' },
-    { code: 'EVENING', description: 'EVENING' },
-    { code: 'NIGHT', description: 'NIGHT' }
+    { code: 'EVENING',   description: 'EVENING'   },
+    { code: 'NIGHT',     description: 'NIGHT'     }
   ];
 
-  // FontAwesome icons
-  faCoffee = faCoffee; faTwitter = faTwitter; faFacebook = faFacebook; faGoogle = faGoogle;
-  faSignIn = faSignIn; faUndo = faUndo; faSave = faSave; faHome = faHome;
-  faDashboard = faDashboard; faToolbox = faToolbox; faCog = faCog; faEdit = faEdit;
-  faPlusCircle = faPlusCircle; faHistory = faHistory; faFileInvoiceDollar = faFileInvoiceDollar;
-  faShoppingCart = faShoppingCart; faSort = faSort; faSearch = faSearch; faBell = faBell;
-  faNewspaper = faNewspaper; faPrint = faPrint; faEllipsisV = faEllipsisV; faInfo = faInfo;
+  // ── FontAwesome icons ────────────────────────────────────────────────────────
+  faCoffee = faCoffee; faTwitter = faTwitter; faFacebook = faFacebook;
+  faGoogle = faGoogle; faSignIn = faSignIn; faUndo = faUndo; faSave = faSave;
+  faHome = faHome; faDashboard = faDashboard; faToolbox = faToolbox;
+  faCog = faCog; faEdit = faEdit; faPlusCircle = faPlusCircle;
+  faHistory = faHistory; faFileInvoiceDollar = faFileInvoiceDollar;
+  faShoppingCart = faShoppingCart; faSort = faSort; faSearch = faSearch;
+  faBell = faBell; faNewspaper = faNewspaper; faPrint = faPrint;
+  faEllipsisV = faEllipsisV; faInfo = faInfo;
 
-  // Other variables from original
-  sendSmsFlag = false; sendEmailFlag = false; contactMethod: any; conactedselect: any;
-  add = false; navigateFlag = true; submitted = false; registerFlag = false;
-  errorMsg = ''; bsnsFlag = false; error = ''; showDiv = false; showDiv1 = false;
-  dynamicData = 'Dynamic Placeholder'; bestwayToContact: any; customerFlag = false;
-  signInUser = ''; title = 'Registration'; editFlag = false; selectedCountry = 'USA';
+  // ── Legacy variables (kept for compatibility) ────────────────────────────────
+  sendSmsFlag = false; sendEmailFlag = false; contactMethod: any;
+  conactedselect: any; add = false; navigateFlag = true; submitted = false;
+  registerFlag = false; errorMsg = ''; bsnsFlag = false; error = '';
+  showDiv = false; showDiv1 = false; dynamicData = 'Dynamic Placeholder';
+  bestwayToContact: any; customerFlag = false; signInUser = '';
+  title = 'Registration'; editFlag = false; selectedCountry = 'Pakistan';
 
+  // ────────────────────────────────────────────────────────────────────────────
   constructor(
     private customerService: CustomerService,
-    private router: Router,
-    private activateRoute: ActivatedRoute,
-    private fb: FormBuilder
+    private router:          Router,
+    private activateRoute:   ActivatedRoute,
+    private fb:              FormBuilder
   ) {}
 
+  // ────────────────────────────────────────────────────────────────────────────
   ngOnInit(): void {
     this.loadCustomers();
     this.initForm();
@@ -82,6 +97,7 @@ export class CustomerComponent implements OnInit {
     this.checkEditMode();
   }
 
+  // ── Data loading ─────────────────────────────────────────────────────────────
   loadCustomers(): void {
     this.isLoading = true;
     this.customerService.getAllCustomers().subscribe({
@@ -99,90 +115,137 @@ export class CustomerComponent implements OnInit {
 
   initForm(): void {
     this.customerForm = this.fb.group({
-      firstName: ['', Validators.required],
-      lastName: [''],
-      email: ['', Validators.email],
-      phone1: [''],
-      custType: ['REGULAR'],
-      address: [''],
-      city: [''],
-      stateProvince: [''],
-      country: ['Pakistan'],
-      postalCode: [''],
-      discountAmount: [0],
-      discountPercentage: [0]
+      firstName:        ['', Validators.required],
+      lastName:         [''],
+      email:            ['', Validators.email],
+      phone1:           [''],
+      phone2:           [''],
+      custType:         ['REGULAR'],
+      profession:       [''],
+      priority:         [0],
+      businessFlag:     [false],
+      joiningDate:      [''],
+      bestWay:          [''],
+      bestTime:         [''],
+      sendSmsFlag:      [false],
+      sendEmailFlag:    [false],
+      address:          [''],
+      city:             [''],
+      stateProvince:    [''],
+      country:          ['Pakistan'],
+      postalCode:       [''],
+      billingAddress:   [''],
+      billingCity:      [''],
+      billingStateProvince: [''],
+      billingCountry:   [''],
+      billingPostalCode:[''],
+      loginId:          [''],
+      loginPassword:    [''],
+      salesRep:         [''],
+      subsPlan:         [''],
+      subsExpiry:       [''],
+      discountAmount:   [0],
+      discountPercentage:[0]
     });
   }
 
   loadCountryData(): void {
-    this.customerService.getCountryList().subscribe((data: Country[]) => this.countryList = data);
-    this.customerService.getProvinceList().subscribe((data: StateProvince[]) => {
-      this.provinceList = data;
-      this.provinceBillingList = data;
-    });
+    this.customerService.getCountryList().subscribe(
+      (data: Country[]) => this.countryList = data
+    );
+    this.customerService.getProvinceList().subscribe(
+      (data: StateProvince[]) => {
+        this.provinceList = data;
+        this.provinceBillingList = data;
+      }
+    );
   }
 
   checkEditMode(): void {
     const source = this.activateRoute.snapshot.paramMap.get('source');
     if (source === 'EDIT') {
-      this.title = 'Edit Profile';
+      this.title    = 'Edit Profile';
       this.editFlag = true;
       const user = sessionStorage.getItem('currentUser');
       if (user) {
         const customer = JSON.parse(user);
         this.convertToForm(customer);
         this.selectedCountry = customer.country;
-        this.customerService.getProvinceCityList(this.selectedCountry).subscribe(data => this.provinceList = data);
+        this.customerService
+          .getProvinceCityList(this.selectedCountry)
+          .subscribe(data => this.provinceList = data);
       }
     } else {
-      this.title = 'Registration';
+      this.title    = 'Registration';
       this.editFlag = false;
       this.customerForm.reset();
     }
   }
 
-  // ---------- Search with debounce ----------
+  // ── Search with debounce ─────────────────────────────────────────────────────
   onSearchInput(): void {
     clearTimeout(this.searchDebounce);
-    this.searchDebounce = setTimeout(() => {
-      this.p = 1;
-    }, 300);
+    this.searchDebounce = setTimeout(() => { this.p = 1; }, 300);
   }
 
   get filteredCustomers(): Customer[] {
     if (!this.searchTerm.trim()) return this.customerList;
     const term = this.searchTerm.toLowerCase();
     return this.customerList.filter(c =>
-      c.firstName?.toLowerCase().includes(term) ||
-      c.lastName?.toLowerCase().includes(term) ||
-      c.email?.toLowerCase().includes(term) ||
-      c.phone1?.includes(term)
+      c.firstName?.toLowerCase().includes(term)  ||
+      c.lastName?.toLowerCase().includes(term)   ||
+      c.custName?.toLowerCase().includes(term)   ||
+      c.email?.toLowerCase().includes(term)      ||
+      c.phone1?.includes(term)                   ||
+      c.phone2?.includes(term)                   ||
+      c.profession?.toLowerCase().includes(term) ||
+      c.city?.toLowerCase().includes(term)       ||
+      c.country?.toLowerCase().includes(term)
     );
   }
 
-  // ---------- Add / Edit ----------
+  // ── Add / Edit / View ────────────────────────────────────────────────────────
   addCustomer(): void {
+    this.showAddFlag = false;   // reset first to force change detection
+    this.editMode    = false;
+    this.customer    = new Customer();
+    this.customer.country    = 'Pakistan';
+    this.customer.custType   = 'REGULAR';
+    this.customer.priority   = 0;
+    this.customer.discountAmount     = 0;
+    this.customer.discountPercentage = 0;
+    this.customer.businessFlag  = false;
+    this.customer.sendSmsFlag   = false;
+    this.customer.sendEmailFlag = false;
     this.showAddFlag = true;
-    this.editMode = false;
-    this.customer = new Customer();
-    this.customer.country = 'Pakistan';
-    this.customer.custType = 'REGULAR';
   }
 
   editCustomer(cust: Customer): void {
-    this.showAddFlag = true;
-    this.editMode = true;
-    this.customer = JSON.parse(JSON.stringify(cust));
+    this.showAddFlag  = true;
+    this.editMode     = true;
+    this.customer     = JSON.parse(JSON.stringify(cust));   // deep clone
     if (!this.customer.country) this.customer.country = 'Pakistan';
+  }
+
+  /**
+   * Opens the view-detail modal for a given customer.
+   */
+  viewDetail(cust: Customer): void {
+    this.viewCustomer   = JSON.parse(JSON.stringify(cust)); // deep clone
+    this.showDetailModal = true;
+  }
+
+  closeDetail(): void {
+    this.showDetailModal = false;
   }
 
   goToList(): void {
     this.showAddFlag = false;
-    this.editMode = false;
-    this.customer = new Customer();
+    this.editMode    = false;
+    this.customer    = new Customer();
   }
 
-  // ---------- Save (with loading spinner) ----------
+  // ── Save ─────────────────────────────────────────────────────────────────────
   save(): void {
     // Basic validation
     if (!this.customer.firstName?.trim()) {
@@ -194,7 +257,7 @@ export class CustomerComponent implements OnInit {
       return;
     }
     if (!this.customer.phone1?.trim()) {
-      Swal.fire('Validation', 'Phone is required', 'warning');
+      Swal.fire('Validation', 'Phone 1 is required', 'warning');
       return;
     }
 
@@ -213,10 +276,8 @@ export class CustomerComponent implements OnInit {
         }
       });
     } else {
-      this.customer.custType = this.customer.custType || 'REGULAR';
-      this.customer.priority = this.customer.priority || 0;
       this.customerService.saveCustomer(this.customer).subscribe({
-        next: (res) => {
+        next: (res: any) => {
           if (res?.customer?.custId) {
             Swal.fire('Success', 'Customer added successfully', 'success');
             this.onSaveComplete();
@@ -234,14 +295,14 @@ export class CustomerComponent implements OnInit {
   }
 
   private onSaveComplete(): void {
-    this.isSaving = false;
+    this.isSaving    = false;
     this.showAddFlag = false;
-    this.editMode = false;
-    this.loadCustomers();  // refresh list
-    this.customer = new Customer();
+    this.editMode    = false;
+    this.customer    = new Customer();
+    this.loadCustomers();
   }
 
-  // ---------- Delete with loading ----------
+  // ── Delete ───────────────────────────────────────────────────────────────────
   onDelete(custId: any): void {
     Swal.fire({
       title: 'Are you sure?',
@@ -268,25 +329,49 @@ export class CustomerComponent implements OnInit {
     });
   }
 
-  // ---------- Legacy methods (kept for compatibility) ----------
+  // ── Legacy / compatibility methods ───────────────────────────────────────────
   get f(): { [key: string]: AbstractControl } { return this.customerForm.controls; }
 
   convertToForm(customer: Customer): void {
     this.customerForm.patchValue({
-      firstName: customer.firstName, lastName: customer.lastName, email: customer.email,
-      phone1: customer.phone1, address: customer.address, city: customer.city,
-      stateProvince: customer.stateProvince, country: customer.country,
-      postalCode: customer.postalCode, profession: customer.profession,
-      businessFlag: customer.businessFlag
+      firstName:           customer.firstName,
+      lastName:            customer.lastName,
+      email:               customer.email,
+      phone1:              customer.phone1,
+      phone2:              customer.phone2,
+      address:             customer.address,
+      city:                customer.city,
+      stateProvince:       customer.stateProvince,
+      country:             customer.country,
+      postalCode:          customer.postalCode,
+      profession:          customer.profession,
+      businessFlag:        customer.businessFlag,
+      billingAddress:      customer.billingAddress,
+      billingCity:         customer.billingCity,
+      billingStateProvince:customer.billingStateProvince,
+      billingCountry:      customer.billingCountry,
+      billingPostalCode:   customer.billingPostalCode,
+      loginId:             customer.loginId,
+      subsPlan:            customer.subsPlan,
+      subsExpiry:          customer.subsExpiry,
+      discountAmount:      customer.discountAmount,
+      discountPercentage:  customer.discountPercentage,
+      salesRep:            customer.salesRep,
+      priority:            customer.priority,
+      bestWay:             customer.bestWay,
+      bestTime:            customer.bestTime,
+      sendSmsFlag:         customer.sendSmsFlag,
+      sendEmailFlag:       customer.sendEmailFlag,
+      joiningDate:         customer.joiningDate
     });
   }
 
   updateFlags(contactMethod: any, customer: Customer): void {
     customer.sendEmailFlag = false;
-    customer.sendSmsFlag = false;
-    if (contactMethod === 'sendSmsFlag') customer.sendSmsFlag = true;
+    customer.sendSmsFlag   = false;
+    if (contactMethod === 'sendSmsFlag')   customer.sendSmsFlag   = true;
     else if (contactMethod === 'sendEmailFlag') customer.sendEmailFlag = true;
-    else if (contactMethod === 'businessFlag') customer.businessFlag = true;
+    else if (contactMethod === 'businessFlag') customer.businessFlag  = true;
   }
 
   alertWithSuccess(userId: any): void {
@@ -294,23 +379,39 @@ export class CustomerComponent implements OnInit {
   }
 
   onClear(): void { this.customerForm.reset(); }
-  infoClick(): void { this.router.navigate(['info']); }
-  reportClick(): void { this.router.navigate(['report']); }
-  settingClick(): void { this.router.navigate(['settings']); }
+  infoClick():         void { this.router.navigate(['info']); }
+  reportClick():       void { this.router.navigate(['report']); }
+  settingClick():      void { this.router.navigate(['settings']); }
   notificationClick(): void { this.router.navigate(['notification']); }
-  onBsnsChk(): void { this.bsnsFlag = !this.bsnsFlag; }
+  onBsnsChk():         void { this.bsnsFlag = !this.bsnsFlag; }
+
   onCountryChange(): void {
-    const selectedCountry = this.customerForm.get('country')?.value;
-    if (selectedCountry) this.customerService.getProvinceCityList(selectedCountry).subscribe(data => this.provinceList = data);
+    const selected = this.customerForm.get('country')?.value;
+    if (selected) {
+      this.customerService
+        .getProvinceCityList(selected)
+        .subscribe(data => this.provinceList = data);
+    }
   }
+
   onStateChange(): void {
-    const selectedState = this.customerForm.get('stateProvince')?.value;
-    if (selectedState) this.customerService.getCityList(selectedState).subscribe(data => this.citiesList = data);
+    const selected = this.customerForm.get('stateProvince')?.value;
+    if (selected) {
+      this.customerService
+        .getCityList(selected)
+        .subscribe(data => this.citiesList = data);
+    }
   }
-  toggleDiv(): void { this.showDiv = !this.showDiv; }
+
+  toggleDiv():  void { this.showDiv  = !this.showDiv;  }
   toggleDiv1(): void { this.showDiv1 = !this.showDiv1; }
+
   onCountryChangeBilling(): void {
-    const billingCountry = this.customerForm.get('billingCountry')?.value;
-    if (billingCountry) this.customerService.getProvinceCityList(billingCountry).subscribe(data => this.provinceBillingList = data);
+    const billing = this.customerForm.get('billingCountry')?.value;
+    if (billing) {
+      this.customerService
+        .getProvinceCityList(billing)
+        .subscribe(data => this.provinceBillingList = data);
+    }
   }
 }
