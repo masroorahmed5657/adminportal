@@ -403,6 +403,9 @@ this.customerForm = this.fb.group({
           this.editFlag=false;
           this.editMode=false;
 
+          delay(30000);
+          window.location.reload();
+
           this.cache.set('reload', 'F');
           // this.router.navigate(['/']);
         }
@@ -625,7 +628,7 @@ this.customerForm = this.fb.group({
     }
   }
 
-  onDelete() {
+  onDelete(custId: any) {
 
     //Ask confirmation msg
 
@@ -641,11 +644,11 @@ this.customerForm = this.fb.group({
       if (response.value) {
 
 
-        let custId: any = this.customerList;
-        // this.customerService.deleteCustomer(custId).subscribe(()=>{
-        //   delay(30000);
-        //   window.location.reload();
-        // });
+        
+         this.customerService.deleteCustomer(custId).subscribe(()=>{
+           delay(30000);
+           window.location.reload();
+         });
 
 
 
@@ -687,12 +690,18 @@ save(){
     this.onCustomerSave('EDIT', this.customer);
   }
   else{
-    let customer = new Customer();
-    customer = this.convertCustFormToVar(customer);
-    customer.custType = 'C';
-    customer.priority = 1;
+    //let customer = new Customer();
+    //customer = this.convertCustFormToVar(customer);
+    if (this.customer.custType === null || this.customer.custType === undefined){
+      this.customer.custType = 'REGULAR';
+    }
+    if (this.customer.priority === null || this.customer.priority === undefined){
+      this.customer.priority = 0;
+    }
+    //this.customer.custType = 'C';
+    //this.customer.priority = 1;
 
-    this.onCustomerSave('ADD', customer);
+    this.onCustomerSave('ADD', this.customer);
   }
 
 
@@ -712,7 +721,8 @@ save(){
 
  addCustomer(): void {
   this.showAddFlag=true;
-   // this.router.navigate(['/customers/add']);
+  this.customer = new Customer(); // Initialize a new customer object
+  // this.router.navigate(['/customers/add']);
   }
 
   goToList(){

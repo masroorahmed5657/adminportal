@@ -31,6 +31,7 @@
     <thead class="bg-light">
       <tr>
         <th>ID</th>
+        <th>Cust Name</th>
         <th>First</th>
         <th>Last</th>
         <th>Email</th>
@@ -47,6 +48,7 @@
     <tbody>
       <tr *ngFor="let customer of customerList | paginate:{itemsPerPage:5,currentPage:p}">
         <td>{{ customer.custId }}</td>
+        <td>{{ customer.custName }}</td>
         <td>{{ customer.firstName }}</td>
         <td>{{ customer.lastName }}</td>
         <td>{{ customer.email }}</td>
@@ -63,7 +65,7 @@
             <i class="bi bi-pencil"></i>
           </button>
           <button class="btn btn-sm btn-danger"
-                  (click)="onDelete()">
+                  (click)="onDelete(customer.custId)">
             <i class="bi bi-trash"></i>
           </button>
         </td>
@@ -109,7 +111,7 @@
         </button>
 
         <button class="btn btn-sm btn-danger flex-fill"
-                (click)="onDelete()">
+                (click)="onDelete(customer.custId)">
           <i class="bi bi-trash"></i> Delete
         </button>
       </div>
@@ -149,7 +151,20 @@
       <!-- <form [formGroup]="customerForm"> -->
 
         <div class="row">
+          ID: {{ customer.custId }}
+        </div>  
 
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label>Cust Name</label>
+
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="customer.custName"
+              name="custName">
+          </div>
+          
           <div class="col-md-6 mb-3">
             <label>First Name</label>
 
