@@ -27,6 +27,9 @@
             class="ri-price-tag-3-fill me-2"></i> <span>Brands</span></a>
         <a routerLink="/layout/category" routerLinkActive="active" class="admin-sidebar__link"><i
             class="ri-grid-fill me-2"></i> <span>Category</span></a>
+        <a routerLink="/layout/departments" routerLinkActive="active" class="admin-sidebar__link"><i
+            class="ri-building-fill me-2"></i> <span>Departments</span></a>
+
         
         <a routerLink="/layout/customer" routerLinkActive="active" class="admin-sidebar__link"><i
             class="ri-user-3-fill me-2"></i> <span>Customer</span></a>
@@ -132,25 +135,34 @@
       </div>
 
       <!-- SETTINGS -->
-      <!-- <div class="admin-sidebar__section">
+      <div class="admin-sidebar__section">
         <h6 class="admin-sidebar__title">Settings</h6>
-        <a routerLink="/layout/settings" routerLinkActive="active" class="admin-sidebar__link"><i
-            class="ri-settings-3-fill me-2"></i> <span>Settings</span></a>
-
-        <a routerLink="/layout/my-messages" routerLinkActive="active" class="admin-sidebar__link"><i
-            class="ri-mail-unread-fill me-2"></i> <span>My Messages</span></a>
+        <a routerLink="/layout/cashier-shift" routerLinkActive="active" class="admin-sidebar__link">
+            <i class="ri-line-chart-fill me-2"></i> <span>Cashier Shift</span></a>
+            
+        <a routerLink="/layout/device-register" routerLinkActive="active" class="admin-sidebar__link">
+            <i class="ri-device-fill me-2"></i> <span>Device Register</span></a>
 
         <a routerLink="/layout/newstracker" routerLinkActive="active" class="admin-sidebar__link"><i
             class="ri-notification-2-fill me-2"></i> <span> News Tracker </span></a>
 
-      <!-- </div> -->
+        <a routerLink="/layout/error-logs" routerLinkActive="active" class="admin-sidebar__link">
+            <i class="ri-device-fill me-2"></i> <span>Error Logs</span></a>
+        
+        <a routerLink="/layout/store-hours" routerLinkActive="active" class="admin-sidebar__link">
+            <i class="ri-device-fill me-2"></i> <span>Store Hours</span></a>
+    
+
+       </div> 
     </div> 
 
     <!-- Bottom -->
     <div class="admin-sidebar__footer text-center border-top py-3">
-      <button class="admin-sidebar__link w-75" (click)="themeShowHide()">
+      <!-- <button class="admin-sidebar__link w-75" (click)="themeShowHide()">
         <i class="ri-moon-clear-fill me-2"></i> <span>{{ isDarkTheme ? 'Light Mode' : 'Dark Mode' }}</span>
-      </button>
+      </button> -->
+
+
       <button class="admin-sidebar__link w-75" style="color: red;" (click)="signOut()">
         <i class="ri-logout-box-r-fill me-2"></i> <span>Log Out</span>
       </button>

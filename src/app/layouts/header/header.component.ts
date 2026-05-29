@@ -56,6 +56,10 @@ export class HeaderComponent {
     '/layout/profit-loss': 'Profit & Loss',
     '/layout/purchase-order-add': 'PO Add',
     '/layout/purchase-order-edit/:purchaseOrderId': 'PO Edit',
+    '/layout/cashier-shift': 'Cashier Shift',
+    '/layout/device-register': 'Device Register',
+    '/layout/error-logs': 'Error Logs',
+
     
 
 

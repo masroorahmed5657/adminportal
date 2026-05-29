@@ -47,6 +47,10 @@ import { UserListComponent } from './features/user-list/user-list.component';
 import { ProductMasterAddComponent } from './features/product-master-add/product-master-add.component';
 import { ProductSimpleEditComponent } from './features/product-simple-edit/product-simple-edit.component';
 import { ProductSimpleAddComponent } from './features/product-simple-add/product-simple-add.component';
+import { DepartmentsComponent } from './features/departments/departments.component';
+import { CashierShiftComponent } from './features/cashier-shift/cashier-shift.component';
+import { DeviceRegisterComponent } from './features/device-register/device-register.component';
+import { ErrorLogsComponent } from './features/error-logs/error-logs.component';
 
 export const routes: Routes = [
        {
@@ -85,6 +89,11 @@ export const routes: Routes = [
                 path: 'category',
                 component: CategoryComponent
             },
+            {
+                path: 'departments',
+                component: DepartmentsComponent
+            },
+
             {
                 path: 'customer',
                 component: CustomerComponent
@@ -245,6 +254,18 @@ export const routes: Routes = [
                 path: 'vendor',
                 component: VendorComponent
             },
+            {
+                path: 'cashier-shift',
+                component: CashierShiftComponent
+            },
+            {
+                path: 'device-register',
+                component: DeviceRegisterComponent
+            },
+            {
+                path: 'error-logs',
+                component: ErrorLogsComponent
+            }
 
         ]
 

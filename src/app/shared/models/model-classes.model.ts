@@ -1568,3 +1568,33 @@ export class ReceiveProductItemsView{
    amount:any;
 
 }
+export class CashierShift {
+  shiftId: any;
+  userId: any;
+  deviceId: any;
+  openingBalance: any;
+  closingBalance: any;
+  openedAt: any;
+  closedAt: any;
+  shiftStatus: any;
+}
+
+export class DeviceRegister {
+  device_id: any;
+  device_name: any;
+  branch_id: any;
+  device_uuid: any;
+  active_flag: any;
+}
+
+export class ErrorLogs {
+
+  error_id: any;
+  class_name: any;
+  method_name: any;
+  log_time: any;
+  error_msg: any;
+  stack_msg: any;
+
+}
+

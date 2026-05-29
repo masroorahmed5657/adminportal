@@ -1959,7 +1959,10 @@ export class ProductsComponent implements OnInit {
         </style>
 
       </head>
-      <body onload="window.print();window.close()">`;
+      <body onload=" window.print();
+              window.onafterprint = function() {
+              window.close(); // closes AFTER print dialog
+            };">`;
 
     let footerTag = ` </body>
     </html>`;

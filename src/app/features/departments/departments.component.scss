@@ -1,0 +1,39 @@
+/* departments.component.scss */
+
+.card {
+    border-radius: 18px;
+}
+
+.table td,
+.table th {
+    vertical-align: middle;
+}
+
+img {
+    object-fit: cover;
+}
+
+.badge {
+    font-size: 12px;
+    padding: 6px 10px;
+}
+
+.form-control,
+.form-select {
+    border-radius: 10px;
+}
+
+.btn {
+    border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+
+    .table {
+        font-size: 13px;
+    }
+
+    .btn {
+        font-size: 13px;
+    }
+}
