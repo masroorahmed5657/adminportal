@@ -1,91 +1,107 @@
-<div class="card border border-2 " style="margin-top: 4em;">
-    <div class="card-body ">
+<div class="card border-0 shadow-sm mt-5">
+  <div class="card-body p-0">
 
-        <div class="row mb-3">
-            <div class="col-md-4">
-                <input type="text" placeholder="Search" class="form-control">
-
-            </div>
-            <div class="col-md-4">    
-                <button type="button" class="btn btn-primary">
-                    <a (click)="addNewstracker()">Add Newstracker</a>
-                </button>
-            </div>
-            <div class="col-md-4" *ngIf="addFlag">    
-                <button type="button" class="btn btn-info">
-                    <a (click)="newstrackerList()">List Newstracker</a>
-                </button>
-            </div>
-
-
+    <!-- Excel‑style toolbar -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 p-3 bg-light border-bottom">
+      <div class="d-flex gap-2 flex-grow-1" style="max-width: 350px;">
+        <div class="input-group">
+          <span class="input-group-text bg-white"><fa-icon [icon]="faSearch"></fa-icon></span>
+          <input type="text" class="form-control" placeholder="Search news or site..."
+                 [(ngModel)]="searchText" (input)="p = 1">
         </div>
-
-        <div class="row">
-            <div class="table-responsive">
-                <table id="tbldeptList" class="table table-striped no-wrap dept-table mb-0">
-                    <thead>
-                        <tr style="width: 100%; font-size: 15px; text-transform: capitalize;">
-                            <th scope="col" class="border-0 text-capitalize font-medium">newsId</th>
-                            <th scope="col" class="border-0 text-capitalize font-medium">News</th>
-                            <th scope="col" class="border-0 text-capitalize font-medium">site</th>
-                        </tr>
-                    </thead>
-                    <tbody *ngIf="!addFlag">
-
-                        <tr *ngFor="let news of newstrackerlist let row = index;" [ngClass]="{'table-active': activeRow === row}">
-
-
-                            <td>
-                                <input type="text" class="form-control" id="newsId-{{row}}" [(ngModel)]="news.newsId"
-                                    [disabled]="!enabledEdit[row]" value=''>
-                            </td>
-                            <td> <input type="text" class="form-control" id="news-{{row}}" style="width:100%"
-                                    [(ngModel)]="news.news" [disabled]="!enabledEdit[row]"></td>
-
-
-                            <td>
-                                <select id="site-{{row}}" class="form-select" [(ngModel)]="news.site">
-                                    <option>Mobile App</option>
-                                    <option>Back Office</option>
-                                    <option>Public Website</option>
-                                </select>
-                            </td>
-                            <td>
-                                <button class="btn btn-primary" (click)="startEdit(row)">
-                                    
-                                    <fa-icon [icon]="faEdit"></fa-icon>
-                                </button>&nbsp;
-                                <button class="btn btn-danger" (click)="onDelete(row)">
-                                    <fa-icon [icon]="faRemove"></fa-icon>
-                                    
-                                </button>&nbsp;
-                                <button class="btn btn-info" (click)="onSave(row)">
-                                    <fa-icon [icon]="faSave"></fa-icon>
-                                    
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tbody *ngIf="addFlag">
-                        <tr>
-                            <td scope="row"> &nbsp;</td>
-                            <td> <input type="text" class="form-control" id="news-new" style="width:100%" value=''>
-                            </td>
-                            <td><select id="site-new" class="form-select">
-                                    <option>Mobile App</option>
-                                    <option>Back Office</option>
-                                    <option>Public Website</option>
-                                </select></td>
-                            <td><button class="btn btn-info" (click)="onSave(-1)">
-                                <fa-icon [icon]="faSave"></fa-icon>
-                                </button></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-        </div>
-
-
+      </div>
+      <div class="d-flex gap-2">
+        <button type="button" class="btn btn-sm btn-primary" (click)="addNewstracker()">
+          <fa-icon [icon]="faPlusCircle"></fa-icon> Add News
+        </button>
+        <button *ngIf="addFlag" type="button" class="btn btn-sm btn-outline-secondary" (click)="newstrackerList()">
+          <fa-icon [icon]="faList"></fa-icon> List News
+        </button>
+      </div>
     </div>
+
+    <!-- Table wrapper with horizontal scroll -->
+    <div class="table-responsive" style="overflow-x: auto;">
+      <table class="table table-bordered table-sm align-middle mb-0"
+             style="min-width: 600px; border-color: #dee2e6;">
+        <thead class="bg-light" style="border-bottom: 2px solid #adb5bd;">
+          <tr class="text-center">
+            <th style="width: 80px;">News ID</th>
+            <th>News Content</th>
+            <th style="width: 170px;">Site</th>
+            <th style="width: 140px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody *ngIf="!addFlag">
+          <!-- Display filtered + paginated list -->
+          <tr *ngFor="let news of filteredNewsList | paginate: { itemsPerPage: 10, currentPage: p }; let row = index"
+              [ngClass]="{'table-active bg-light': activeRow === row}">
+            <!-- News ID (editable) -->
+            <td class="text-center">
+              <input type="text" class="form-control form-control-sm text-center"
+                     id="newsId-{{row}}" [(ngModel)]="news.newsId"
+                     [disabled]="!enabledEdit[row]">
+            </td>
+            <!-- News text -->
+            <td>
+              <input type="text" class="form-control form-control-sm"
+                     id="news-{{row}}" [(ngModel)]="news.news"
+                     [disabled]="!enabledEdit[row]">
+            </td>
+            <!-- Site dropdown -->
+            <td>
+              <select class="form-select form-select-sm" id="site-{{row}}" [(ngModel)]="news.site"
+                      [disabled]="!enabledEdit[row]">
+                <option>Mobile App</option>
+                <option>Back Office</option>
+                <option>Public Website</option>
+              </select>
+            </td>
+            <!-- Action buttons -->
+            <td class="text-center text-nowrap">
+              <button class="btn btn-sm btn-outline-primary me-1" (click)="startEdit(row)" title="Edit">
+                <fa-icon [icon]="faEdit"></fa-icon>
+              </button>
+              <button class="btn btn-sm btn-outline-danger me-1" (click)="onDelete(row)" title="Delete">
+                <fa-icon [icon]="faRemove"></fa-icon>
+              </button>
+              <button class="btn btn-sm btn-outline-success" (click)="onSave(row)" title="Save">
+                <fa-icon [icon]="faSave"></fa-icon>
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="filteredNewsList.length === 0">
+            <td colspan="4" class="text-center text-muted py-4">No news entries found.</td>
+          </tr>
+        </tbody>
+        <tbody *ngIf="addFlag">
+          <tr class="table-info">
+            <td class="text-center">—</td>
+            <td>
+              <input type="text" class="form-control form-control-sm" id="news-new"
+                     placeholder="Enter news..." [(ngModel)]="newNewsText">
+            </td>
+            <td>
+              <select class="form-select form-select-sm" id="site-new" [(ngModel)]="newSite">
+                <option>Mobile App</option>
+                <option>Back Office</option>
+                <option>Public Website</option>
+              </select>
+            </td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-success" (click)="onSave(-1)">
+                <fa-icon [icon]="faSave"></fa-icon> Save
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination controls -->
+    <div class="d-flex justify-content-center mt-3" *ngIf="!addFlag && filteredNewsList.length > 0">
+      <pagination-controls (pageChange)="p = $event"></pagination-controls>
+    </div>
+
+  </div>
 </div>

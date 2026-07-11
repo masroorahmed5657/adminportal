@@ -1,164 +1,174 @@
 import { Component, OnInit } from '@angular/core';
-import { NewsTracker } from '../../shared/models/model-classes.model';
-import { NewstrackerService } from '../../shared/services/newstracker.service';
-import Swal from "sweetalert2";
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { faDeleteLeft, faSortAlphaUp, faPrint, faUpload, faBarcode, faPlusSquare, faDashboard, faRemove, faRupeeSign, faDollar, faCar, faHome, faSave, faUndo, faFilter, faEdit, faPlusCircle, faHistory, faFileInvoiceDollar, faShoppingCart, faSort, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NgxPaginationModule } from 'ngx-pagination';
+import Swal from 'sweetalert2';
+
+import { NewsTracker } from '../../shared/models/model-classes.model';
+import { NewstrackerService } from '../../shared/services/newstracker.service';
+
+import {
+  faSave,
+  faEdit,
+  faRemove,
+  faPlusCircle,
+  faSearch,
+  faList
+} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-newstracker',
-  imports: [CommonModule,FormsModule, FontAwesomeModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule, FontAwesomeModule, NgxPaginationModule],
   templateUrl: './newstracker.component.html',
-  styleUrl: './newstracker.component.scss'
+  styleUrls: ['./newstracker.component.scss']
 })
 export class NewstrackerComponent implements OnInit {
-
-
-  enabledEdit: any[] = [];
+  // Data
   newstrackerlist: NewsTracker[] = [];
 
+  // UI flags
   addFlag = false;
-  preview = '';
-  currentUser: any;
+  enabledEdit: boolean[] = [];
+  activeRow: number | null = null;
 
-  faSave=faSave;
-  faDeleteLeft=faDeleteLeft;
-  faRemove=faRemove;
-  faEdit=faEdit;
+  // Search & pagination
+  searchText = '';
+  p = 1;
 
-  activeRow: number | null = null; // highlight ke liye
+  // Add form fields
+  newNewsText = '';
+  newSite = 'Mobile App';
 
-  constructor(private newsService: NewstrackerService) { }
+  // FontAwesome icons
+  faSave = faSave;
+  faEdit = faEdit;
+  faRemove = faRemove;
+  faPlusCircle = faPlusCircle;
+  faSearch = faSearch;
+  faList = faList;
+
+  constructor(private newsService: NewstrackerService) {}
 
   ngOnInit(): void {
-    this.newsService.getNewsTrackerList().subscribe((data: NewsTracker[]) => {
-      this.newstrackerlist = data;
-
-    });
-
+    this.loadNews();
   }
 
-  /* ******************************************************** */
-  onSave(row: any) {
+  loadNews(): void {
+    this.newsService.getNewsTrackerList().subscribe({
+      next: (data) => {
+        this.newstrackerlist = data;
+        // reset edit flags
+        this.enabledEdit = new Array(data.length).fill(false);
+      },
+      error: () => Swal.fire('Error', 'Failed to load news', 'error')
+    });
+  }
 
-    let newstracker: NewsTracker = new NewsTracker();
+  // Filtered list for search
+  get filteredNewsList(): NewsTracker[] {
+    if (!this.searchText.trim()) return this.newstrackerlist;
+    const term = this.searchText.toLowerCase();
+    return this.newstrackerlist.filter(item =>
+      item.news?.toLowerCase().includes(term) ||
+      item.site?.toLowerCase().includes(term)
+    );
+  }
+
+  // Enable edit mode for a specific row
+  startEdit(row: number): void {
+    // Reset all edit flags
+    this.enabledEdit.fill(false);
+    this.enabledEdit[row] = true;
+    this.activeRow = row;
+  }
+
+  // Save (add or edit)
+  onSave(row: number): void {
+    const newsItem: NewsTracker = new NewsTracker();
 
     if (row < 0) {
-      //Add dept
-      newstracker.newsId=null;
-      newstracker.news = (document.getElementById('news-new') as HTMLInputElement).value;
-      let bFound = false;
-      //Check deptId exist in system?
-      for (let i = 0; i < this.newstrackerlist.length; i++) {
-        if (newstracker.news === this.newstrackerlist[i].news) {
-          bFound = true;
-          break;
-        }
-
-      }
-      if (bFound) {
-        Swal.fire('Error', 'News Ticker Already Exists', 'error');
+      // ADD mode
+      if (!this.newNewsText.trim()) {
+        Swal.fire('Validation', 'News text is required', 'warning');
         return;
       }
-
-      newstracker.news = (document.getElementById('news-new') as HTMLInputElement).value;
-      let site = (document.getElementById('site-new') as HTMLSelectElement);
-      newstracker.site = site.options[site.selectedIndex].value;
-
-    }
-    else {
-      //EDIT
+      // Check for duplicate news text
+      const exists = this.newstrackerlist.some(
+        item => item.news?.toLowerCase() === this.newNewsText.toLowerCase()
+      );
+      if (exists) {
+        Swal.fire('Error', 'News Ticker already exists', 'error');
+        return;
+      }
+      newsItem.newsId = null;
+      newsItem.news = this.newNewsText;
+      newsItem.site = this.newSite;
+    } else {
+      // EDIT mode
       if (!this.enabledEdit[row]) {
-        return;
+        return; // not in edit mode
       }
-      let i = 0;
-      this.addFlag = false;//for deptId
-      newstracker.newsId = this.newstrackerlist[row].newsId;
+      newsItem.newsId = this.newstrackerlist[row].newsId;
+      newsItem.news = this.newstrackerlist[row].news;
+      newsItem.site = this.newstrackerlist[row].site;
+      this.enabledEdit[row] = false; // disable after save
+    }
 
-      newstracker.news = (document.getElementById('news-' + row) as HTMLInputElement).value;
-      let site = (document.getElementById('site-' + row) as HTMLSelectElement);
-      newstracker.site = site.options[site.selectedIndex].value;
-      this.enabledEdit[row] = false; //Disable Edit after save
-
-    }//edit
-
-
-    this.newsService.save(newstracker).subscribe(
-      (data: NewsTracker) => {
-        let ret = data;
-        if (data !== null) {
-          if (data === undefined) {
-            Swal.fire('Error', 'Error in saving News Ticker', 'error');
+    this.newsService.save(newsItem).subscribe({
+      next: (saved) => {
+        if (saved && saved.newsId) {
+          Swal.fire('Success', `News Ticker ${saved.newsId} saved successfully`, 'success');
+          this.activeRow = null;
+          this.loadNews();       // refresh the list
+          if (row < 0) {
+            // clear add form and hide it
+            this.addFlag = false;
+            this.newNewsText = '';
+            this.newSite = 'Mobile App';
           }
-          else {
-            if (ret.newsId !== null) {
-              this.activeRow = null; // highlight remove
-              Swal.fire('Submit', 'You have saved News Ticker ' + ret.newsId + ' Succesfully!', 'success');
-              window.location.reload();
-            }
-          }
+        } else {
+          Swal.fire('Error', 'Failed to save news ticker', 'error');
         }
-
-      });
-
+      },
+      error: () => Swal.fire('Error', 'Error saving news ticker', 'error')
+    });
   }
 
-  /* ********************************************************************* */
-
-  onDelete(row: any) {
-
+  // Delete
+  onDelete(row: number): void {
+    const id = this.newstrackerlist[row].newsId;
     Swal.fire({
-      title: 'Are you sure want to delete News Ticker?',
-      text: 'You can not recover News Tciker!!',
+      title: 'Are you sure?',
+      text: 'You will not be able to recover this news ticker!',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes, delete it!',
       cancelButtonText: 'No, keep it'
-    }).then((response: any) => {
-
-      if (response.value) {
-
-        this.newsService.delete(this.newstrackerlist[row].newsId).subscribe(() => {
-          this.activeRow = null; // highlight remove
-          window.location.reload();
-        })
-
-      } else if (response.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire(
-          'Cancelled',
-          'Your Newstracker is safe',
-          'error'
-        )
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.newsService.delete(id).subscribe({
+          next: () => {
+            Swal.fire('Deleted!', 'News ticker has been deleted.', 'success');
+            this.activeRow = null;
+            this.loadNews();
+          },
+          error: () => Swal.fire('Error', 'Delete failed', 'error')
+        });
       }
     });
-
   }
 
-  /* ********************************************************** */
-
-  startEdit(row: any) {
-    this.enabledEdit = [];
-    this.enabledEdit[row] = true;
-
-    this.activeRow = row; // ye row highlight hoga
-    
-  }
-
-  /* ********************************************************** */
-
-  addNewstracker() {
+  // Show add form
+  addNewstracker(): void {
     this.addFlag = true;
-    /*let newsTracker: NewsTracker = new NewsTracker();//empty dept
-    this.newstrackerlist.push(newsTracker);
-    this.enabledEdit[this.newstrackerlist.length - 1] = true;
-    */
-
+    this.newNewsText = '';
+    this.newSite = 'Mobile App';
   }
 
-  newstrackerList(){
+  // Return to list view
+  newstrackerList(): void {
     this.addFlag = false;
   }
-
 }

@@ -1,0 +1,324 @@
+<!-- device-register.component.html -->
+
+<div class="container-fluid py-3">
+
+  <!-- PAGE HEADER -->
+  <div class="row mb-3">
+
+    <div class="col-12 d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+
+      <div>
+        <h3 class="fw-bold mb-1">
+          Device Register Management
+        </h3>
+
+        <small class="text-muted">
+          EZPZ Admin Portal - Add / Edit / Delete / List Devices
+        </small>
+      </div>
+
+      <button class="btn btn-primary mt-3 mt-md-0"
+              (click)="resetForm()">
+
+        <i class="bi bi-plus-circle me-2"></i>
+        Add Device
+      </button>
+
+    </div>
+
+  </div>
+
+  <div class="row g-3">
+
+    <!-- FORM SECTION -->
+    <div class="col-12 col-lg-4">
+
+      <div class="card border-0 shadow-sm rounded-4">
+
+        <div class="card-header bg-white border-0 pt-3">
+
+          <h5 class="mb-0">
+            {{ device.device_id ? 'Edit Device' : 'New Device' }}
+          </h5>
+
+        </div>
+
+        <div class="card-body">
+
+          <!-- DEVICE NAME -->
+          <div class="mb-3">
+
+            <label class="form-label fw-semibold">
+              Device Name
+            </label>
+
+            <input type="text"
+                   class="form-control"
+                   placeholder="Enter Device Name"
+                   [(ngModel)]="device.device_name">
+
+          </div>
+
+          <!-- BRANCH ID -->
+          <div class="mb-3">
+
+            <label class="form-label fw-semibold">
+              Branch ID
+            </label>
+
+            <input type="number"
+                   class="form-control"
+                   placeholder="Enter Branch ID"
+                   [(ngModel)]="device.branch_id">
+
+          </div>
+
+          <!-- DEVICE UUID -->
+          <div class="mb-3">
+
+            <label class="form-label fw-semibold">
+              Device UUID
+            </label>
+
+            <input type="text"
+                   class="form-control"
+                   placeholder="Enter Device UUID"
+                   [(ngModel)]="device.device_uuid">
+
+          </div>
+
+          <!-- ACTIVE FLAG -->
+          <div class="mb-3">
+
+            <label class="form-label fw-semibold d-block">
+              Status
+            </label>
+
+            <div class="form-check form-switch">
+
+              <input class="form-check-input"
+                     type="checkbox"
+                     [checked]="device.active_flag == 1"
+                     
+                     >
+                     <!-- (change)="device.active_flag = $event.target.checked ? 1 : 0" -->
+
+              <label class="form-check-label">
+                Active Device
+              </label>
+
+            </div>
+
+          </div>
+
+          <!-- BUTTONS -->
+          <div class="d-grid gap-2 d-md-flex">
+
+            <button class="btn btn-success flex-fill"
+                    (click)="saveDevice()">
+
+              <i class="bi bi-check-circle me-2"></i>
+
+              {{ device.device_id ? 'Update' : 'Save' }}
+
+            </button>
+
+            <button class="btn btn-secondary flex-fill"
+                    (click)="resetForm()">
+
+              <i class="bi bi-arrow-clockwise me-2"></i>
+              Reset
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- LIST SECTION -->
+    <div class="col-12 col-lg-8">
+
+      <div class="card border-0 shadow-sm rounded-4">
+
+        <div class="card-header bg-white border-0 pt-3">
+
+          <div class="row g-2 align-items-center">
+
+            <div class="col-12 col-md-6">
+              <h5 class="mb-0">
+                Devices List
+              </h5>
+            </div>
+
+            <div class="col-12 col-md-6">
+
+              <input type="text"
+                     class="form-control"
+                     placeholder="Search Device..."
+                     [(ngModel)]="searchText">
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="card-body">
+
+          <!-- DESKTOP TABLE -->
+          <div class="table-responsive d-none d-md-block">
+
+            <table class="table table-hover align-middle">
+
+              <thead class="table-light">
+
+                <tr>
+                  <th>#</th>
+                  <th>Device Name</th>
+                  <th>Branch ID</th>
+                  <th>Device UUID</th>
+                  <th>Status</th>
+                  <th class="text-center">Actions</th>
+                </tr>
+
+              </thead>
+
+              <tbody>
+
+                <tr *ngFor="let item of filteredDevices(); let i = index">
+
+                  <td>
+                    {{ i + 1 }}
+                  </td>
+
+                  <td>
+                    <div class="fw-semibold">
+                      {{ item.device_name }}
+                    </div>
+                  </td>
+
+                  <td>
+                    {{ item.branch_id }}
+                  </td>
+
+                  <td>
+                    <small class="text-muted">
+                      {{ item.device_uuid }}
+                    </small>
+                  </td>
+
+                  <td>
+
+                    <span class="badge"
+                          [ngClass]="item.active_flag == 1
+                          ? 'bg-success'
+                          : 'bg-danger'">
+
+                      {{ item.active_flag == 1 ? 'ACTIVE' : 'INACTIVE' }}
+
+                    </span>
+
+                  </td>
+
+                  <td class="text-center">
+
+                    <button class="btn btn-primary btn-sm me-2"
+                            (click)="editDevice(item)">
+
+                      <i class="bi bi-pencil-square"></i>
+                    </button>
+
+                    <button class="btn btn-danger btn-sm"
+                            (click)="deleteDevice(item)">
+
+                      <i class="bi bi-trash"></i>
+                    </button>
+
+                  </td>
+
+                </tr>
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+          <!-- MOBILE CARD VIEW -->
+          <div class="d-block d-md-none">
+
+            <div class="card border mb-3 shadow-sm rounded-4"
+                 *ngFor="let item of filteredDevices()">
+
+              <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-start">
+
+                  <div>
+
+                    <h6 class="mb-1">
+                      {{ item.device_name }}
+                    </h6>
+
+                    <small class="text-muted d-block">
+                      Branch ID: {{ item.branch_id }}
+                    </small>
+
+                    <small class="text-muted d-block">
+                      UUID: {{ item.device_uuid }}
+                    </small>
+
+                  </div>
+
+                  <span class="badge"
+                        [ngClass]="item.active_flag == 1
+                        ? 'bg-success'
+                        : 'bg-danger'">
+
+                    {{ item.active_flag == 1 ? 'ACTIVE' : 'INACTIVE' }}
+
+                  </span>
+
+                </div>
+
+                <hr>
+
+                <div class="d-flex justify-content-between">
+
+                  <button class="btn btn-primary btn-sm"
+                          (click)="editDevice(item)">
+
+                    <i class="bi bi-pencil-square me-1"></i>
+                    Edit
+
+                  </button>
+
+                  <button class="btn btn-danger btn-sm"
+                          (click)="deleteDevice(item)">
+
+                    <i class="bi bi-trash me-1"></i>
+                    Delete
+
+                  </button>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

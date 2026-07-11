@@ -1,0 +1,134 @@
+<!-- salary.component.html -->
+<div class="container-fluid px-2 px-md-3 py-3 mt-5">
+  <!-- Add Button -->
+  <div class="d-flex justify-content-end mb-3">
+    <button class="btn btn-primary" (click)="openAddModal()">
+      <i class="bi bi-plus-circle"></i> Add Salary
+    </button>
+  </div>
+
+  <!-- Salary Table -->
+  <div class="table-responsive">
+    <table class="table table-hover align-middle bg-white rounded shadow-sm">
+      <thead class="bg-light">
+        <tr>
+          <th>Employee ID</th>
+          <th>Basic Salary</th>
+          <th>Allowances</th>
+          <th>Bonuses</th>
+          <th>Deductions</th>
+          <th>Taxes</th>
+          <th>Net Salary</th>
+          <th>Salary Month</th>
+          <th>Payment Mode</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let salary of salaryList">
+          <td>{{ salary.empId }}</td>
+          <td>{{ salary.basicSalary | currency }}</td>
+          <td>{{ salary.allowances | currency }}</td>
+          <td>{{ salary.bonuses | currency }}</td>
+          <td>{{ salary.deductions | currency }}</td>
+          <td>{{ salary.taxes | currency }}</td>
+          <td><strong>{{ salary.netSalary | currency }}</strong></td>
+          <td>{{ salary.salaryMonth }}</td>
+          <td>{{ salary.paymentMode }}</td>
+          <td>
+            <span class="badge" [class.bg-success]="salary.status === 'PAID'" [class.bg-warning]="salary.status !== 'PAID'">
+              {{ salary.status || 'PENDING' }}
+            </span>
+          </td>
+          <td>
+            <button class="btn btn-sm btn-outline-primary me-1" (click)="onEdit(salary)">
+              <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger" (click)="onDelete(salary.salaryId)">
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="salaryList.length === 0">
+          <td colspan="11" class="text-center text-muted">No salary records found.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal for Add/Edit -->
+<div class="modal fade" id="salaryModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">{{ isEdit ? 'Edit Salary' : 'Add Salary' }}</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Employee ID</label>
+              <input type="number" class="form-control" [(ngModel)]="formData.empId" name="empId" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Basic Salary</label>
+              <input type="number" class="form-control" [(ngModel)]="formData.basicSalary" name="basicSalary">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Allowances</label>
+              <input type="number" class="form-control" [(ngModel)]="formData.allowances" name="allowances">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Bonuses</label>
+              <input type="number" class="form-control" [(ngModel)]="formData.bonuses" name="bonuses">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Deductions</label>
+              <input type="number" class="form-control" [(ngModel)]="formData.deductions" name="deductions">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Taxes</label>
+              <input type="number" class="form-control" [(ngModel)]="formData.taxes" name="taxes">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Net Salary (auto-calculated if needed)</label>
+              <input type="number" class="form-control" [(ngModel)]="formData.netSalary" name="netSalary">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Salary Month (YYYY-MM)</label>
+              <input type="month" class="form-control" [(ngModel)]="formData.salaryMonth" name="salaryMonth">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Payment Mode</label>
+              <select class="form-select" [(ngModel)]="formData.paymentMode" name="paymentMode">
+                <option value="">Select</option>
+                <option value="CASH">Cash</option>
+                <option value="BANK_TRANSFER">Bank Transfer</option>
+                <option value="CHEQUE">Cheque</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Payment Date</label>
+              <input type="date" class="form-control" [(ngModel)]="formData.paymentDate" name="paymentDate">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Status</label>
+              <select class="form-select" [(ngModel)]="formData.status" name="status">
+                <option value="PENDING">Pending</option>
+                <option value="PAID">Paid</option>
+                <option value="CANCELLED">Cancelled</option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="onSave()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>

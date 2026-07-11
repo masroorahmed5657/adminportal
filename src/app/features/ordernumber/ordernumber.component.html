@@ -1,0 +1,200 @@
+<div class="container-fluid px-2 px-md-3 py-3 mt-5">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h5 class="fw-bold text-primary mb-0"><i class="bi bi-hash me-2"></i>Order Numbers</h5>
+    <button class="btn btn-primary rounded-pill px-4 fw-semibold" (click)="openAddModal()">
+      <i class="bi bi-plus-circle me-1"></i> Generate Order Number
+    </button>
+  </div>
+
+  <!-- Search -->
+  <div class="card shadow-sm border-0 rounded-3 mb-3">
+    <div class="card-body p-3">
+      <div class="row g-2 align-items-end">
+        <div class="col-12 col-md-4">
+          <label class="form-label small fw-semibold text-muted">Order Number</label>
+          <input type="text" class="form-control form-control-sm" [(ngModel)]="search.orderNumber" placeholder="Search order number..." />
+        </div>
+        <div class="col-12 col-md-4">
+          <label class="form-label small fw-semibold text-muted">Order Type</label>
+          <select class="form-select form-select-sm" [(ngModel)]="search.orderType">
+            <option value="">All</option>
+            <option *ngFor="let t of orderTypeList" [value]="t.id">{{ t.text }}</option>
+          </select>
+        </div>
+        <div class="col-12 col-md-4 d-flex gap-2">
+          <button class="btn btn-primary btn-sm rounded-pill px-3 fw-semibold w-100" (click)="onSearch()">
+            <i class="bi bi-search me-1"></i> Search
+          </button>
+          <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 fw-semibold w-100" (click)="onClear()">
+            <i class="bi bi-x-circle me-1"></i> Clear
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Desktop Table -->
+  <div class="table-responsive d-none d-md-block">
+    <table class="table table-hover align-middle bg-white rounded shadow-sm mb-0">
+      <thead class="bg-light">
+        <tr>
+          <th class="py-3 px-3">#</th>
+          <th class="py-3 px-3">Order Number</th>
+          <th class="py-3 px-3">Order Type</th>
+          <th class="py-3 px-3">Customer</th>
+          <th class="py-3 px-3">Status</th>
+          <th class="py-3 px-3">Grand Total</th>
+          <th class="py-3 px-3">Create Date</th>
+          <th class="py-3 px-3 text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="orderList.length === 0">
+          <td colspan="8" class="text-center text-muted py-4">No orders found.</td>
+        </tr>
+        <tr *ngFor="let o of orderList; let i = index">
+          <td class="px-3">{{ i + 1 }}</td>
+          <td class="px-3"><span class="fw-semibold text-primary">#{{ o.orderNum }}</span></td>
+          <td class="px-3">{{ o.orderType }}</td>
+          <td class="px-3">{{ o.custId }}</td>
+          <td class="px-3">
+            <span class="badge rounded-pill"
+              [ngClass]="{'bg-success': o.orderStatus === 'COMPLETED', 'bg-warning text-dark': o.orderStatus === 'PENDING', 'bg-danger': o.orderStatus === 'CANCELLED', 'bg-info text-dark': o.orderStatus === 'PROCESSING'}">
+              {{ o.orderStatus || 'N/A' }}
+            </span>
+          </td>
+          <td class="px-3">{{ o.grandTotal }}</td>
+          <td class="px-3">{{ o.createDate | date:'dd MMM yyyy' }}</td>
+          <td class="px-3 text-center">
+            <div class="d-flex justify-content-center gap-1">
+              <button class="btn btn-sm btn-outline-info rounded-pill px-2" (click)="onView(o)" title="View"><i class="bi bi-eye"></i></button>
+              <button class="btn btn-sm btn-outline-primary rounded-pill px-2" (click)="onEdit(o)" title="Edit"><i class="bi bi-pencil"></i></button>
+              <button class="btn btn-sm btn-outline-danger rounded-pill px-2" (click)="onDelete(o.orderId)" title="Delete"><i class="bi bi-trash"></i></button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Mobile Cards -->
+  <div class="d-block d-md-none">
+    <div class="row g-3">
+      <div *ngIf="orderList.length === 0" class="col-12 text-center text-muted py-4">No orders found.</div>
+      <div class="col-12" *ngFor="let o of orderList">
+        <div class="card shadow-sm border-0 rounded-3">
+          <div class="card-body p-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="fw-bold text-primary mb-0">#{{ o.orderNum }}</h6>
+              <span class="badge rounded-pill"
+                [ngClass]="{'bg-success': o.orderStatus === 'COMPLETED', 'bg-warning text-dark': o.orderStatus === 'PENDING', 'bg-danger': o.orderStatus === 'CANCELLED'}">
+                {{ o.orderStatus || 'N/A' }}
+              </span>
+            </div>
+            <div class="row g-1 small text-muted mb-2">
+              <div class="col-6"><span class="fw-semibold">Type:</span> {{ o.orderType }}</div>
+              <div class="col-6"><span class="fw-semibold">Grand Total:</span> {{ o.grandTotal }}</div>
+              <div class="col-6"><span class="fw-semibold">Customer:</span> {{ o.custId }}</div>
+              <div class="col-6"><span class="fw-semibold">Date:</span> {{ o.createDate | date:'dd MMM yyyy' }}</div>
+            </div>
+            <div class="d-flex gap-2">
+              <button class="btn btn-sm btn-outline-primary rounded-pill px-3 w-100" (click)="onEdit(o)"><i class="bi bi-pencil me-1"></i>Edit</button>
+              <button class="btn btn-sm btn-outline-danger rounded-pill px-3 w-100" (click)="onDelete(o.orderId)"><i class="bi bi-trash me-1"></i>Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Modal -->
+  <div class="modal fade" id="orderViewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content rounded-3 border-0 shadow">
+        <div class="modal-header bg-info text-white rounded-top-3">
+          <h5 class="modal-title fw-bold"><i class="bi bi-eye me-2"></i>Order Details</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4" *ngIf="selectedOrder">
+          <div class="row g-3">
+            <div class="col-6 col-md-4"><span class="small text-muted d-block">Order Number</span><strong>#{{ selectedOrder.orderNum }}</strong></div>
+            <div class="col-6 col-md-4"><span class="small text-muted d-block">Order Type</span><strong>{{ selectedOrder.orderType }}</strong></div>
+            <div class="col-6 col-md-4"><span class="small text-muted d-block">Status</span><strong>{{ selectedOrder.orderStatus }}</strong></div>
+            <div class="col-6 col-md-4"><span class="small text-muted d-block">Grand Total</span><strong>{{ selectedOrder.grandTotal }}</strong></div>
+            <div class="col-6 col-md-4"><span class="small text-muted d-block">Tax</span><strong>{{ selectedOrder.tax }}</strong></div>
+            <div class="col-6 col-md-4"><span class="small text-muted d-block">Shipping</span><strong>{{ selectedOrder.shippingHandling }}</strong></div>
+            <div class="col-12"><span class="small text-muted d-block">Notes</span><strong>{{ selectedOrder.notes || 'N/A' }}</strong></div>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Modal -->
+  <div class="modal fade" id="orderModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content rounded-3 border-0 shadow">
+        <div class="modal-header bg-primary text-white rounded-top-3">
+          <h5 class="modal-title fw-bold"><i class="bi bi-hash me-2"></i>{{ isEdit ? 'Edit' : 'Add' }} Order</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4">
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <label class="form-label small fw-semibold">Order Number</label>
+              <input type="text" class="form-control" [(ngModel)]="formData.orderNum" placeholder="Order Number" />
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label small fw-semibold">Order Type</label>
+              <select class="form-select" [(ngModel)]="formData.orderType">
+                <option value="">Select Type</option>
+                <option *ngFor="let t of orderTypeList" [value]="t.id">{{ t.text }}</option>
+              </select>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label small fw-semibold">Customer ID</label>
+              <input type="text" class="form-control" [(ngModel)]="formData.custId" placeholder="Customer ID" />
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label small fw-semibold">Order Status</label>
+              <select class="form-select" [(ngModel)]="formData.orderStatus">
+                <option value="">Select Status</option>
+                <option value="PENDING">Pending</option>
+                <option value="PROCESSING">Processing</option>
+                <option value="COMPLETED">Completed</option>
+                <option value="CANCELLED">Cancelled</option>
+              </select>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label small fw-semibold">Grand Total</label>
+              <input type="number" class="form-control" [(ngModel)]="formData.grandTotal" placeholder="0.00" />
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label small fw-semibold">Tax</label>
+              <input type="number" class="form-control" [(ngModel)]="formData.tax" placeholder="0.00" />
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label small fw-semibold">Shipping &amp; Handling</label>
+              <input type="number" class="form-control" [(ngModel)]="formData.shippingHandling" placeholder="0.00" />
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-semibold">Notes</label>
+              <textarea class="form-control" rows="2" [(ngModel)]="formData.notes" placeholder="Order notes..."></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-primary rounded-pill px-4 fw-semibold" (click)="onSave()">
+            <i class="bi bi-save me-1"></i> Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

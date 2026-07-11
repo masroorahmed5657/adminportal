@@ -47,6 +47,18 @@ import { UserListComponent } from './features/user-list/user-list.component';
 import { ProductMasterAddComponent } from './features/product-master-add/product-master-add.component';
 import { ProductSimpleEditComponent } from './features/product-simple-edit/product-simple-edit.component';
 import { ProductSimpleAddComponent } from './features/product-simple-add/product-simple-add.component';
+import { DepartmentEmployee, Departments, Employees } from './shared/models/model-classes.model';
+import { DepartmentComponent } from './features/department/department.component';
+import { DeviceRegisterComponent } from './features/device-register/device-register.component';
+import { ErrorLogsComponent } from './features/error-logs/error-logs.component';
+import { EmployeesComponent } from './features/employees/employees.component';
+import { ExpensesCategoryComponent } from './features/expenses-category/expenses-category.component';
+import { EzpzTaxComponent } from './features/ezpz-tax/ezpz-tax.component';
+import { PaymentComponent } from './features/payment/payment.component';
+import { OrderNumberComponent } from './features/ordernumber/ordernumber.component';
+import { DepartmentManagerComponent } from './features/departmentmanagers/departmentmanagers.component';
+import { DepartmentEmployeeComponent } from './features/departmentemployee/departmentemployee.component';
+import { SalaryComponent } from './features/salary/salary.component';
 
 export const routes: Routes = [
        {
@@ -78,6 +90,10 @@ export const routes: Routes = [
                 component: AddUserComponent
             },
             {
+    path: 'departments',
+    component: DepartmentComponent
+},
+            {
                 path: 'brands',
                 component: BrandsComponent
             },
@@ -105,6 +121,10 @@ export const routes: Routes = [
                 path: 'adminuser',
                 component: AdminUserComponent
             },
+            {
+                path: 'departments',
+                component: DepartmentComponent
+            },
 
             {
                 path: 'import-products',
@@ -131,6 +151,10 @@ export const routes: Routes = [
                 path: 'newstracker',
                 component: NewstrackerComponent
             },
+            // {
+            //     path: 'employees',
+            //     component: Em
+            // },
             {
                 path: 'notifications',
                 component: NotificationsComponent
@@ -245,6 +269,44 @@ export const routes: Routes = [
                 path: 'vendor',
                 component: VendorComponent
             },
+
+            {
+                path: 'device-register',
+                component: DeviceRegisterComponent
+            },
+            {
+                path: 'error-logs',
+                component: ErrorLogsComponent
+            },
+            {
+                path: 'employees',
+                component: EmployeesComponent
+            },
+            {
+                path: 'expense-category',
+                component: ExpensesCategoryComponent
+            },
+            {
+                path: 'ezpz-tax',
+                component: EzpzTaxComponent
+            },
+            {
+                path: 'payment',
+                component: PaymentComponent
+            },
+            {
+                path: 'order-number',
+                component: OrderNumberComponent
+            },
+            {
+                path: 'departmentmanager',
+                component: DepartmentManagerComponent
+            },
+            {
+                path: 'departmentemployee',
+                component: DepartmentEmployeeComponent
+            },
+           { path: 'salary', component: SalaryComponent }
 
         ]
 
