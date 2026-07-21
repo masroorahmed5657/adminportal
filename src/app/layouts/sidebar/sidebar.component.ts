@@ -19,14 +19,16 @@ import Swal from "sweetalert2";
 export class SidebarComponent {
 
   isSidebarCollapsed = false;
+  productsMenuOpen = false;
   title = 'menuresp';
+
   /*=============== DARK LIGHT THEME ===============*/
   themeButton: any;
   darkTheme = 'dark-theme';
   iconTheme = 'ri-sun-fill';
   activeMenu: string = 'inventory'
   versionNumber = environment.versionNumber;
-  showExpenseFlag=environment.showExpenseFlag;
+  showExpenseFlag = environment.showExpenseFlag;
 
   selectedTheme: any;
   selectedIcon: any;
@@ -56,9 +58,8 @@ export class SidebarComponent {
   isDarkTheme: boolean = false;
 
   themeShowHide() {
-    this.themeService.toggleTheme();
-    this.isDarkTheme = !this.isDarkTheme
-
+    this.isDarkTheme = !this.isDarkTheme;
+    document.body.classList.toggle('dark-theme', this.isDarkTheme);
   }
 
   // We obtain the current theme that the interface has by validating the dark-theme class

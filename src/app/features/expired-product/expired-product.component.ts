@@ -7,6 +7,7 @@ import { CategoryService } from '../../shared/services/category.service';
 import { ProductsService } from '../../shared/services/products.service';
 import { faPlusSquare, faRemove, faDollar, faCar, faHome, faSave, faUndo, faFilter, faEdit, faPlusCircle, faHistory, faFileInvoiceDollar, faShoppingCart, faSort, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { DatePipe } from '@angular/common';
+import { environment } from '../../../environments/environment';
 
 
 @Component({
@@ -64,9 +65,21 @@ export class ExpiredProductComponent implements OnInit {
 
   formatDate(timestamp: any) {
     let retDate = this.datePipe.transform(timestamp, 'yyyy-MM-dd');
-    
+
     return retDate;
   }
+
+ viewProduct(product: ProductView): void {
+  if (!product) {
+    return;
+  }
+
+  if (environment.showSimpleProduct) {
+    this.router.navigate(['/layout/products-simple-edit', product.productId]);
+  } else {
+    this.router.navigate(['/layout/products-master-edit', product.productId]);
+  }
+}
 
   /* *********************************************************************** */
   productDecorator(productList: ProductView[]): any {

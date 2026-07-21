@@ -59,11 +59,12 @@ import { OrderNumberComponent } from './features/ordernumber/ordernumber.compone
 import { DepartmentManagerComponent } from './features/departmentmanagers/departmentmanagers.component';
 import { DepartmentEmployeeComponent } from './features/departmentemployee/departmentemployee.component';
 import { SalaryComponent } from './features/salary/salary.component';
+import { LandingComponent } from './landing/landing.component';
 
 export const routes: Routes = [
-       {
+    {
         path: '',
-        component: LoginComponent
+        component: LandingComponent
     },
     {
         path: 'login',
@@ -79,7 +80,7 @@ export const routes: Routes = [
             {
                 path: 'home',
                 component: HomeComponent,
-                canActivate:[AuthGuard]
+                canActivate: [AuthGuard]
             },
             {
                 path: 'add-invoice',
@@ -90,9 +91,9 @@ export const routes: Routes = [
                 component: AddUserComponent
             },
             {
-    path: 'departments',
-    component: DepartmentComponent
-},
+                path: 'departments',
+                component: DepartmentComponent
+            },
             {
                 path: 'brands',
                 component: BrandsComponent
@@ -138,7 +139,7 @@ export const routes: Routes = [
                 path: 'invoice',
                 component: InvoiceComponent
             },
-           
+
             {
                 path: 'list-invoice',
                 component: ListInvoiceComponent
@@ -180,11 +181,11 @@ export const routes: Routes = [
                 path: 'products-add',
                 component: ProductsAddComponent
             },
-             {
+            {
                 path: 'products-master-add',
                 component: ProductMasterAddComponent
             },
-             {
+            {
                 path: 'products-simple-add',
                 component: ProductSimpleAddComponent
             },
@@ -256,7 +257,7 @@ export const routes: Routes = [
                 path: 'store-hours',
                 component: StoreHoursComponent
             },
-         
+
             {
                 path: 'supplier',
                 component: SupplierComponent
@@ -306,7 +307,7 @@ export const routes: Routes = [
                 path: 'departmentemployee',
                 component: DepartmentEmployeeComponent
             },
-           { path: 'salary', component: SalaryComponent }
+            { path: 'salary', component: SalaryComponent }
 
         ]
 

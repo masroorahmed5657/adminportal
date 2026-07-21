@@ -12,8 +12,8 @@ import { ChartOptions } from '../dashboard/dashboard.component';
 import { faSignOut, faBook, faCog } from '@fortawesome/free-solid-svg-icons';
 import { HeaderComponent } from "../../layouts/header/header.component";
 import { CommonModule } from '@angular/common';
-
-
+//import ApexCharts from 'apexcharts';
+import ApexCharts, { ApexOptions } from 'apexcharts';
 @Component({
   selector: 'app-home',
   imports: [CommonModule],
@@ -50,7 +50,7 @@ export class HomeComponent implements OnInit {
   appName = environment.appName;
   grandTotalCountSales: number = 0;
   grandTotalWeekly: number = 0;
-  
+
 
   recentOrders: any[] = [
 
@@ -152,7 +152,7 @@ export class HomeComponent implements OnInit {
   ];
 
 
-currentUser: any;
+  currentUser: any;
 
   constructor(
     private reportsService: ReportsService,
@@ -171,12 +171,12 @@ currentUser: any;
   ngOnInit(): void {
 
 
-     let currentUserRaw = sessionStorage.getItem('currentUser');
-  if (currentUserRaw) {
-    try { this.currentUser = JSON.parse(currentUserRaw); } catch { }
-  }
+    let currentUserRaw = sessionStorage.getItem('currentUser');
+    if (currentUserRaw) {
+      try { this.currentUser = JSON.parse(currentUserRaw); } catch { }
+    }
 
-  this.appName = this.currentUser?.loginId;
+    this.appName = this.currentUser?.loginId;
 
     //  this.todaytotalearningList=[{id:1,name:"today",total:1000}];
     //  this.weeklytotalearningList=[{id:1,name:"weekly",total:2000}];
@@ -344,8 +344,8 @@ currentUser: any;
       colors: ['#1273eb', '#59a2fb'],
     }
     var chart = new ApexCharts(
-      document.querySelector("#revenue"),
-      revenue
+      document.querySelector("#revenue")!,
+      revenue as unknown as ApexOptions,
     );
     chart.render();
 
@@ -422,8 +422,8 @@ currentUser: any;
     }
 
     var chart = new ApexCharts(
-      document.querySelector("#visitorsGraph"),
-      visitorsGraph
+      document.querySelector("#visitorsGraph")!,
+      visitorsGraph as unknown as ApexOptions
     );
 
     chart.render();
@@ -500,8 +500,8 @@ currentUser: any;
       colors: ['#1273eb', '#59a2fb'],
     }
     var chart = new ApexCharts(
-      document.querySelector("#sales"),
-      sales
+      document.querySelector("#sales")!,
+      sales as unknown as ApexOptions,
     );
     chart.render();
 
@@ -546,8 +546,8 @@ currentUser: any;
     }
 
     var chart = new ApexCharts(
-      document.querySelector("#ordersGraph"),
-      ordersGraph
+      document.querySelector("#ordersGraph")!,
+      ordersGraph as unknown as ApexOptions
     );
     chart.render();
 
@@ -625,8 +625,8 @@ currentUser: any;
       colors: ['#f16a5d', '#1273eb'],
     }
     var chart = new ApexCharts(
-      document.querySelector("#earningsGraph"),
-      earningsGraph
+      document.querySelector("#earningsGraph")!,
+      earningsGraph as unknown as ApexOptions
     );
     chart.render();
 
@@ -711,8 +711,8 @@ currentUser: any;
     }
 
     var chart = new ApexCharts(
-      document.querySelector("#ordersGraph1"),
-      ordersGraph1
+      document.querySelector("#ordersGraph1")!,
+      ordersGraph1 as unknown as ApexOptions
     );
 
     chart.render();
