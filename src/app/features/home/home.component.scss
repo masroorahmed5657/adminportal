@@ -1,4 +1,7 @@
+/* ===== Page Layout ===== */
 .page-wrapper {
+    background: #f1f2f4;
+    min-height: 100vh;
     padding: 1.5rem;
 }
 
@@ -11,207 +14,406 @@
     overflow-x: auto;
 }
 
+.content-wrapper {
+    font-size: 0.875rem;
+    color: #202223;
+}
+
+/* ===== Card (Shopify style) ===== */
 .card {
-    border: none;
+    border: 1px solid #e1e3e5 !important;
     border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    background-color: #fff;
-    transition: transform 0.2s;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    background-color: #ffffff;
+    transition: box-shadow 0.15s ease;
+    margin-bottom: 0;
 }
 
 .card:hover {
-    transform: translateY(-5px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    transform: none;
 }
 
 .card-header {
-    background-color: transparent;
-    border-bottom: 1px solid #e2e8f0;
-    padding: 1.5rem;
-    font-size: 1.25rem;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e1e3e5;
+    padding: 1.1rem 1.25rem;
+    font-size: 1rem;
     font-weight: 600;
-    color: #1e293b;
+    color: #1a1a1a;
+    border-radius: 12px 12px 0 0 !important;
+}
+
+.card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1a1a1a;
 }
 
 .card-body {
-    padding: 1.5rem;
+    padding: 1.25rem;
 }
 
+/* ===== Dashboard Header ===== */
 .dashboard-header {
+    border: 1px solid #e1e3e5 !important;
     border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    background-color: #fff;
-    padding: 2rem;
+    background-color: #ffffff;
+    padding: 1.75rem 2rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.dashboard-header-content>span {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6d7175;
 }
 
 .welcome-title h1 {
-    font-size: 2.5rem;
+    font-size: 1.85rem;
     font-weight: 700;
-    color: #1e293b;
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
 .welcome-title span {
-    color: #3b82f6;
+    color: #2563eb;
+}
+
+.winner-icon {
+    display: inline-flex;
+    align-items: center;
+}
+
+/* ===== Sales Tiles (top KPI cards) ===== */
+.sales-tile-container {
+    margin-top: 0.5rem;
 }
 
 .sales-tile {
-    background-color: #f8fafc;
-    border-radius: 8px;
-    padding: 1.5rem;
+    background-color: #fafbfb;
+    border: 1px solid #e1e3e5;
+    border-radius: 10px;
+    padding: 1.25rem 1rem;
     text-align: center;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.sales-tile:hover {
+    border-color: #c9cccf;
+    background-color: #ffffff;
 }
 
 .sales-tile h1 {
-    font-size: 2rem;
+    font-size: 1.7rem;
     font-weight: 700;
-    color: #3b82f6;
-    margin-bottom: 0.5rem;
+    color: #1a1a1a;
+    margin-bottom: 0.25rem;
 }
 
 .sales-tile h6 {
-    font-size: 0.9rem;
-    color: #64748b;
+    font-size: 0.78rem;
+    color: #6d7175;
     font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin: 0;
 }
 
+/* ===== Monthly Earnings Blocks ===== */
 .monthly-earnings {
-    background-color: #f8fafc;
-    border-radius: 8px;
-    padding: 1.5rem;
+    background-color: #fafbfb;
+    border: 1px solid #e1e3e5;
+    border-radius: 10px;
+    padding: 1.1rem;
+    text-align: center;
+}
+
+.monthly-earnings p {
+    font-size: 0.78rem;
+    color: #6d7175;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
 }
 
 .monthly-earnings h4 {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 700;
-    color: #3b82f6;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+/* ===== Stats List (Products Overview / Latest Products cards) ===== */
+.stats-list-container {
+    margin: 0;
 }
 
 .stats-list-item {
-    background-color: #f8fafc;
-    border-radius: 8px;
-    padding: 1rem;
+    background-color: #fafbfb;
+    border: 1px solid #e1e3e5;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    transition: background 0.15s ease;
 }
 
-.stats-list-item h6 {
+.stats-list-item:hover {
+    background-color: #f1f2f4;
+}
+
+.stats-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    background: #eef2ff;
+    color: #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.stats-title {
+    font-size: 0.85rem;
     font-weight: 600;
-    color: #1e293b;
+    color: #1a1a1a;
 }
 
-.stats-list-item p {
-    font-size: 0.9rem;
-    color: #64748b;
+.stats-amount {
+    font-size: 0.8rem;
+    color: #6d7175;
 }
 
+/* ===== Table (Latest Products) ===== */
 .table {
-    border-radius: 8px;
+    border-radius: 10px;
     overflow: hidden;
+    border: 1px solid #e1e3e5;
+    margin-bottom: 0;
 }
 
 .table th,
 .table td {
     border: none;
-    padding: 1rem;
+    border-bottom: 1px solid #f1f1f2;
+    padding: 0.75rem 1rem;
     vertical-align: middle;
+    font-size: 0.85rem;
 }
 
 .table th {
-    background-color: #f8fafc;
-    color: #64748b;
-    font-weight: 500;
+    background-color: #fafbfb;
+    color: #6d7175;
+    font-weight: 600;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
 }
 
+.table tbody tr:hover {
+    background-color: #fafbfb;
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.products-table img.user {
+    border: 1px solid #e1e3e5;
+}
+
+/* ===== Badges (Shopify pill style) ===== */
 .badge {
-    font-size: 0.85rem;
-    padding: 0.5em 1em;
-    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.3em 0.75em;
+    border-radius: 20px;
+    letter-spacing: 0.2px;
+}
+
+.shippedBadge {
+    background-color: #d3f2dc;
+    color: #0a7c3e;
+}
+
+.movingBadge {
+    background-color: #ECF3FF;
+    color: #2563eb;
+}
+
+.pendingBadge {
+    background-color: #FFFAEB;
+    color: #b25e09;
+}
+
+.cancelledBadge {
+    background-color: #fde3e3;
+    color: #c0272d;
+}
+
+/* ===== Recent / Expiring Orders List ===== */
+.recent-orders {
+    margin: 0;
 }
 
 .recent-orders li {
-    background-color: #f8fafc;
-    border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 1rem;
+    background-color: #fafbfb;
+    border: 1px solid #e1e3e5;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.75rem;
+    transition: background 0.15s ease;
 }
 
-.recent-orders .order-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #1e293b;
+.recent-orders li:hover {
+    background-color: #f1f2f4;
 }
 
-.recent-orders .order-desc {
+.recent-orders li:last-child {
+    margin-bottom: 0;
+}
+
+.order-item {
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+}
+
+.order-img img {
+    border: 1px solid #e1e3e5;
+}
+
+.order-title {
     font-size: 0.9rem;
-    color: #64748b;
+    font-weight: 600;
+    color: #1a1a1a;
 }
 
-.recent-orders .order-date {
-    font-size: 0.85rem;
+.order-desc {
+    font-size: 0.78rem;
+    color: #6d7175;
+}
+
+.order-date {
+    font-size: 0.75rem;
     color: #94a3b8;
 }
 
+.order-badge {
+    white-space: nowrap;
+}
+
+/* ===== Tiles list (Today's Sale Breakdown) ===== */
 .tiles-list {
-    background-color: #f8fafc;
-    border-radius: 8px;
-    padding: 1.5rem;
+    background-color: #fafbfb;
+    border: 1px solid #e1e3e5;
+    border-radius: 10px;
+    padding: 1.25rem 1rem;
     text-align: center;
+    transition: border-color 0.15s ease;
+}
+
+.tiles-list:hover {
+    border-color: #c9cccf;
 }
 
 .tiles-list h2 {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     font-weight: 700;
-    color: #3b82f6;
+    color: #1a1a1a;
+    margin-bottom: 0.25rem;
 }
 
 .tiles-list p {
-    font-size: 0.9rem;
-    color: #64748b;
+    font-size: 0.78rem;
+    color: #6d7175;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin: 0;
+}
+
+/* ===== Bottom Stats Tiles (Customers/Products/Sales/LowStock) ===== */
+.row.g-4.bg-white {
+    border: 1px solid #e1e3e5 !important;
+    border-radius: 12px !important;
+    padding: 1.25rem !important;
+    margin-top: 0.5rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 .stats-tile3 {
-    background-color: #f8fafc;
-    border-radius: 8px;
-    padding: 1.5rem;
+    background-color: #fafbfb;
+    border: 1px solid #e1e3e5;
+    border-radius: 10px;
+    padding: 1.1rem 1.25rem;
+    transition: background 0.15s ease;
+}
+
+.stats-tile3:hover {
+    background-color: #f1f2f4;
 }
 
 .stats-tile3 h3 {
-    font-size: 1.75rem;
+    font-size: 1.4rem;
     font-weight: 700;
-    color: #3b82f6;
+    color: #1a1a1a;
+    margin-bottom: 0.2rem;
 }
 
 .stats-tile3 p {
-    font-size: 0.9rem;
-    color: #64748b;
+    font-size: 0.78rem;
+    color: #6d7175;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin: 0;
 }
 
+.sale-icon3 img {
+    opacity: 0.85;
+}
+
+/* ===== Buttons ===== */
 .btn-outline-primary {
-    border-color: #3b82f6;
-    color: #3b82f6;
-    border-radius: 6px;
-    padding: 0.5rem 1rem;
+    border: 1px solid #c9cccf;
+    color: #202223;
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 0.4rem 0.9rem;
     font-weight: 500;
+    font-size: 0.8rem;
+    transition: all 0.15s ease;
 }
 
 .btn-outline-primary:hover {
-    background-color: #3b82f6;
-    color: #fff;
+    background-color: #f6f6f7;
+    border-color: #c9cccf;
+    color: #1a1a1a;
 }
 
 .btn-group .btn {
-    border-radius: 6px;
-    margin-right: 0.5rem;
+    border-radius: 8px;
+    margin-right: 0.4rem;
+    font-size: 0.8rem;
+    padding: 0.4rem 0.9rem;
 }
 
 .btn-group .btn.active {
-    background-color: #3b82f6;
-    color: #fff;
+    background-color: #1a1a1a;
+    color: #ffffff;
+    border-color: #1a1a1a;
 }
 
+/* ===== Custom Scrollbar ===== */
 .customScroll250 {
     max-height: 350px;
     overflow-y: auto;
     scrollbar-width: thin;
-    scrollbar-color: #cbd5e1 #f8fafc;
+    scrollbar-color: #c9cccf transparent;
 }
 
 .customScroll250::-webkit-scrollbar {
@@ -219,50 +421,134 @@
 }
 
 .customScroll250::-webkit-scrollbar-track {
-    background: #f8fafc;
+    background: transparent;
 }
 
 .customScroll250::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
+    background: #c9cccf;
     border-radius: 3px;
 }
 
+.customScroll250::-webkit-scrollbar-thumb:hover {
+    background: #9ea3a8;
+}
+
+/* ===== Chart Placeholder (empty state) ===== */
 .chart-placeholder {
-    background-color: #f8fafc;
+    background-color: #fafbfb;
+    border: 1px dashed #e1e3e5;
     height: 200px;
-    border-radius: 8px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #64748b;
-    font-size: 1rem;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    text-align: center;
+    padding: 1rem;
 }
 
-.shippedBadge {
+/* ===== Responsive ===== */
+@media (max-width: 992px) {
+    .welcome-title h1 {
+        font-size: 1.5rem;
+    }
 
-    background-color: #e5fff0;
-    color: #039855;
+    .sales-tile h1 {
+        font-size: 1.4rem;
+    }
 
+    .dashboard-header {
+        padding: 1.5rem;
+    }
 }
 
-.movingBadge {
+@media (max-width: 768px) {
+    .page-wrapper {
+        padding: 1rem;
+    }
 
-    background-color: #ECF3FF;
-    color: #465FFF;
+    .card-body {
+        padding: 1rem;
+    }
 
+    .card-header {
+        padding: 0.9rem 1rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .welcome-title h1 {
+        font-size: 1.3rem;
+    }
+
+    .sales-tile-container {
+        row-gap: 0.75rem;
+    }
+
+    .table th,
+    .table td {
+        font-size: 0.78rem;
+        padding: 0.6rem 0.7rem;
+    }
+
+    .stats-tile3 {
+        padding: 0.9rem 1rem;
+    }
+
+    .btn-group {
+        flex-wrap: wrap;
+        gap: 0.4rem;
+    }
+
+    .btn-group .btn {
+        margin-right: 0;
+    }
 }
 
-.pendingBadge {
+@media (max-width: 576px) {
+    .page-wrapper {
+        padding: 0.75rem;
+    }
 
-    background-color: #FFFAEB;
-    color: #DC6803;
+    .dashboard-header {
+        padding: 1.1rem;
+    }
 
+    .welcome-title h1 {
+        font-size: 1.15rem;
+    }
+
+    .winner-icon img {
+        height: 28px !important;
+    }
+
+    .sales-tile h1 {
+        font-size: 1.2rem;
+    }
+
+    .monthly-earnings h4 {
+        font-size: 1.05rem;
+    }
+
+    .chart-placeholder {
+        height: 160px;
+        font-size: 0.78rem;
+    }
+
+    .stats-list-item {
+        padding: 0.65rem 0.75rem;
+    }
+
+    .order-title {
+        font-size: 0.82rem;
+    }
+
+    .card-header {
+        font-size: 0.9rem;
+    }
+
+    .table-responsive {
+        font-size: 0.75rem;
+    }
 }
-
-.cancelledBadge {
-
-    background-color: #FEF3F2;
-    color: #E02D20;
-
-}
-
