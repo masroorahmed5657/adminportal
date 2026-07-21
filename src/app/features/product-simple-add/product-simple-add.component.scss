@@ -1,202 +1,403 @@
-    body { background: #f5f7fb; font-size: 0.95rem; }
-    .sticky-actions {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      background: white;
-      border-bottom: 1px solid #dee2e6;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-    .card-header {
-      background: #0d6efd;
-      color: white;
-      font-weight: 600;
-    }
-    .form-label {
-      font-weight: 500;
-      color: #495057;
-      margin-bottom: 0.35rem;
-    }
-    .section-title {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: #0d6efd;
-      margin: 1.5rem 0 1rem;
-      border-bottom: 2px solid #0d6efd;
-      padding-bottom: 0.5rem;
-      display: inline-block;
-    }
-    .dropzone {
-      border: 2px dashed #0d6efd;
-      border-radius: 0.5rem;
-      padding: 2.5rem;
-      text-align: center;
-      background: #f8f9fa;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .dropzone:hover { background: #e7f1ff; }
-    .preview-img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 0.375rem;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
+body {
+    background: #f1f2f4;
+}
 
-    /******** 10.7.1 Controls ********/
-.form-control {
-    border: 1px solid #dbdaea;
-    border-radius: 2px;
-    color: #8a96a0;
-    font-size: small;
-    //min-height: 40px;
-    color: black;
-    //font-weight: bold;
-  }
+/* ===== Top bar ===== */
+.shopify-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: #f1f2f4;
+    padding: 1rem 2rem 0.5rem;
+}
 
-  .form-control:hover {
-    border: 1px solid #1273eb;
-  }
+.shopify-topbar__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
 
-  .form-control:focus {
-    border-color: #1273eb;
-    -webkit-box-shadow: none;
-            box-shadow: none;
-    border-radius: 2px;
-    outline: auto !important;
-    outline-color: #1273eb !important;
-  }
+.shopify-topbar__breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #6d7175;
+}
 
-  .form-control:disabled, .form-control[readonly] {
-    background: #f8f8fb;
-    cursor: not-allowed;
-  }
+.shopify-topbar__breadcrumb i {
+    font-size: 1rem;
+    color: #1a1a1a;
+}
 
-  .col-form-label {
-    padding-top: calc(.595rem + 1px);
-    padding-bottom: calc(.595rem + 1px);
-    min-height: 40px;
-  }
+.shopify-topbar__current {
+    font-weight: 600;
+    color: #1a1a1a;
+    font-size: 1.1rem;
+}
 
-  .form-select:disabled {
-    background-color: #f8f8fb;
-    cursor: not-allowed;
-    font-size: small;
-  }
+.shopify-topbar__sep {
+    color: #c9cccf;
+}
 
-  .form-select {
-    
-    
-    font-size: small;
-  }
+.shopify-topbar__actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
 
-  .input-group-text {
-    border: 1px solid #dbdaea;
-    background:#f8f8fb;
-    font-weight: bold;
-    border-radius: 2px;
-    font-size: .75rem;
-    min-height: 40px;
+/* ===== Buttons ===== */
+.btn-shopify {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-shopify--outline {
+    background: #ffffff;
+    color: #202223;
+    border-color: #c9cccf;
+}
+
+.btn-shopify--outline:hover {
+    background: #f6f6f7;
+}
+
+.btn-shopify--primary {
+    background: #1a1a1a;
+    color: #ffffff;
+}
+
+.btn-shopify--primary:hover {
+    background: #303030;
+}
+
+/* ===== Page layout ===== */
+.shopify-add-product {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0.5rem 2rem 3rem;
+    color: #202223;
+    font-size: 0.875rem;
+}
+
+.shopify-add-product__grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.25rem;
+    align-items: start;
+}
+
+.shopify-add-product__main,
+.shopify-add-product__sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* ===== Card ===== */
+.shopify-card {
+    background: #ffffff;
+    border: 1px solid #e1e3e5;
+    border-radius: 12px;
+}
+
+.shopify-card__body {
+    padding: 1.25rem;
+}
+
+/* ===== Fields ===== */
+.shopify-field-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 0.5rem;
+}
+
+.shopify-field-label--sm {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #6d7175;
+    margin-top: 0.75rem;
+}
+
+.shopify-input,
+.shopify-select {
+    width: 100%;
+    border: 1px solid #c9cccf;
+    border-radius: 8px;
+    background: #ffffff;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.85rem;
+    color: #202223;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.shopify-input:focus,
+.shopify-select:focus {
+    outline: none;
+    border-color: #1a1a1a;
+    box-shadow: 0 0 0 1px #1a1a1a;
+}
+
+textarea.shopify-input {
+    resize: vertical;
+}
+
+.shopify-error {
+    color: #c0272d;
+    font-size: 0.78rem;
+    margin-top: 0.3rem;
+}
+
+.shopify-input-group {
+    display: flex;
+    align-items: stretch;
+}
+
+.shopify-input-group__prefix {
+    display: flex;
+    align-items: center;
+    padding: 0 0.7rem;
+    background: #f6f6f7;
+    border: 1px solid #c9cccf;
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #6d7175;
+}
+
+.shopify-input-group .shopify-input {
+    border-radius: 0 8px 8px 0;
+}
+
+/* ===== Grid helpers ===== */
+.shopify-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.shopify-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.shopify-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+}
+
+/* ===== Dropzone / Media ===== */
+.shopify-dropzone {
+    border: 1px dashed #c9cccf;
+    border-radius: 10px;
+    padding: 2rem;
+    text-align: center;
+    background: #fafbfb;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.shopify-dropzone:hover {
+    background: #f1f2f4;
+}
+
+.shopify-dropzone__actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+.shopify-dropzone__or {
+    font-size: 0.85rem;
+    color: #2563eb;
+    cursor: pointer;
+}
+
+.shopify-media-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.shopify-media-item {
+    position: relative;
+    border: 1px solid #e1e3e5;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.shopify-media-item img {
+    width: 100%;
+    height: 110px;
+    object-fit: cover;
+    display: block;
+}
+
+.shopify-media-item__remove {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0, 0, 0, 0.6);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* ===== Tabs ===== */
+.shopify-tabs {
+    display: flex;
+    gap: 0.25rem;
+    list-style: none;
+    padding: 0;
     margin: 0;
-    color: black;
-  }
-
-  .input-group-text i {
-    color: black;  // #6c7882;
-  }
-
-  .form-text {
-    color: black;  // #9aa5af;
-  }
-
-  .form-label {
-    margin-bottom: .3rem;
-    font-size: larger;
-    font-weight: bold;
-  }
-
-  /******** 10.7.2 Validations ********/
-  .form-control.is-valid, .was-validated .form-control:valid {
-    border-color: rgba(25, 135, 84, 0.9);
-  }
-
-  .form-control.is-invalid, .was-validated .form-control:invalid {
-    border-color: rgba(220, 53, 69, 0.9);
-  }
-  /******** 10.7.4 Checkbox and Radio ********/
-.form-check {
-  margin: 0 1rem 0 0;
+    border-bottom: 1px solid #e1e3e5;
 }
 
-.form-check .form-check-label {
-  font-weight: 400;
-  font-size: medium;
-  margin: 0 0 0 5px;
+.shopify-tabs__link {
+    border: none;
+    background: transparent;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #6d7175;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
 }
 
-.form-check .form-check-input[type=checkbox] {
-  border-radius: 2px;
-  width: 1rem !important;
-  height: 1rem !important;
-  margin-top: .15em;
-  min-height: auto;
-  padding: 0;
+.shopify-tabs__link.active {
+    color: #1a1a1a;
+    font-weight: 600;
+    border-bottom-color: #1a1a1a;
 }
 
-.form-check .form-check-input[type=radio] {
-  border-radius: 50px;
-  width: 1rem !important;
-  height: 1rem !important;
-  margin-top: .15em;
-  min-height: auto;
-  padding: 0;
+/* ===== Toggle switch (Shopify style) ===== */
+.shopify-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.4rem 0;
+    font-size: 0.85rem;
 }
 
-/* Hidden default checkbox */
-.checkbox-container input[type="checkbox"] {
-  position: absolute;
-  opacity: 0;
-  cursor: pointer;
+.shopify-switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 22px;
 }
 
-/* Custom checkbox design */
-.custom-checkbox {
-  width: 20px;
-  height: 20px;
-  border: 2px solid #3498db;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 10px;
-  cursor: pointer;
+.shopify-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
 }
 
-/* Checkmark icon (hidden by default) */
-.custom-checkbox::before {
-  content: '\2713'; /* Unicode checkmark character */
-  color: #fff;
-  font-size: 14px;
-  display: none;
+.shopify-switch__slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: #c9cccf;
+    border-radius: 22px;
+    transition: 0.2s;
 }
 
-/* Styling for checked state */
-.checkbox-container input[type="checkbox"]:checked + .custom-checkbox {
-  background-color: #3498db;
-  border-color: #3498db;
+.shopify-switch__slider::before {
+    content: '';
+    position: absolute;
+    height: 16px;
+    width: 16px;
+    left: 3px;
+    top: 3px;
+    background: #ffffff;
+    border-radius: 50%;
+    transition: 0.2s;
 }
 
-.checkbox-container input[type="checkbox"]:checked + .custom-checkbox::before {
-  display: block; /* Show checkmark icon when checked */
-
-
-  .formLabel{
-    font-size:x-large;font-weight:bold; font-family: 'Times New Roman', Times, serif;
-  }
-  
-
+.shopify-switch input:checked+.shopify-switch__slider {
+    background: #1a1a1a;
 }
 
-.buttonMargins{
-  margin-bottom: 5px; margin-right: 10px;
+.shopify-switch input:checked+.shopify-switch__slider::before {
+    transform: translateX(18px);
+}
+
+/* ===== Overlay panels (brand/category inline) ===== */
+.shopify-overlay-panel {
+    background: #ffffff;
+    border: 1px solid #e1e3e5;
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+/* ===== Loading ===== */
+.shopify-loading {
+    text-align: center;
+    padding: 2rem 0;
+    color: #6d7175;
+}
+
+.shopify-loading .spinner-border {
+    color: #1a1a1a;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 900px) {
+    .shopify-add-product__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .shopify-grid-3,
+    .shopify-grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .shopify-add-product {
+        padding: 0.5rem 1rem 3rem;
+    }
+
+    .shopify-topbar {
+        padding: 1rem 1rem 0.5rem;
+    }
+
+    .shopify-grid-2,
+    .shopify-grid-3,
+    .shopify-grid-4 {
+        grid-template-columns: 1fr;
+    }
+
+    .shopify-topbar__actions {
+        width: 100%;
+    }
+
+    .btn-shopify {
+        flex: 1 1 auto;
+    }
 }

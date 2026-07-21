@@ -6,6 +6,7 @@
         <div class="content-wrapper-scroll">
             <!-- Content wrapper start -->
             <div class="content-wrapper container-fluid px-4">
+
                 <!-- Row start -->
                 <div class="row g-4">
                     <div class="col-12">
@@ -13,20 +14,18 @@
                         <div class="dashboard-header border border-2">
                             <div class="dashboard-header-content">
                                 <span class="mb-5">Home</span>
-                                <!-- Welcome Title -->
                                 <div class="welcome-title mb-4">
                                     <h1 class="display-5 fw-bold">Welcome to <span>{{appName}}</span>
                                         <span class="winner-icon ms-2">
-                                            <img src="./assets/img/trophy.svg" alt="" class="img-fluid"
-                                                style="height: 40px;">
+                                            <img src="./assets/img/trophy.svg" alt="" class="img-fluid" style="height: 40px;">
                                         </span>
                                     </h1>
                                 </div>
-                                <!-- Sales Tiles Container -->
+
                                 <div class="sales-tile-container row row-cols-1 row-cols-md-3 row-cols-lg-5 g-3">
                                     <div class="col">
                                         <div class="sales-tile">
-                                            <h1 class="fw-bold">{{grandTotalCountSales}}</h1>
+                                            <h1 class="fw-bold">{{grandTotalCountSales || 0}}</h1>
                                             <h6 class="text-muted">Sales</h6>
                                         </div>
                                     </div>
@@ -50,7 +49,7 @@
                                     </div>
                                     <div class="col">
                                         <div class="sales-tile">
-                                            <h1 class="fw-bold">{{0}}</h1>
+                                            <h1 class="fw-bold">{{totalReviewsList.length || 0}}</h1>
                                             <h6 class="text-muted">Reviews</h6>
                                         </div>
                                     </div>
@@ -62,7 +61,7 @@
                 </div>
                 <!-- Row end -->
 
-                <!-- Row start -->
+                <!-- Earnings Row -->
                 <div class="row g-4">
                     <div class="col-12">
                         <div class="card border border-2">
@@ -70,24 +69,27 @@
                                 <h5 class="card-title mb-0">Earnings</h5>
                             </div>
                             <div class="card-body">
-                                <div id="sales2" class="chart-placeholder mb-4">Earnings Chart Placeholder</div>
+                                <div id="sales2" class="chart-placeholder mb-4"
+                                    *ngIf="!dailySaleList.length && !weeklySaleList.length">
+                                    No earnings data yet
+                                </div>
                                 <div class="row row-cols-1 row-cols-md-3 g-3 justify-content-center text-center">
                                     <div class="col" *ngFor="let count of dailySaleList">
                                         <div class="monthly-earnings">
-                                            <p class="text-muted mb-1">Today Earnings</p>
-                                            <h4 class="fw-bold">{{(count.totalSale).toFixed(2)}}</h4>
+                                            <p class="text-muted mb-1">{{count.orderType}} — Today</p>
+                                            <h4 class="fw-bold">Rs {{(count.totalSale || 0).toFixed(2)}}</h4>
                                         </div>
                                     </div>
                                     <div class="col">
                                         <div class="monthly-earnings">
                                             <p class="text-muted mb-1">Weekly Earnings</p>
-                                            <h4 class="fw-bold">{{grandTotalWeekly}}</h4>
+                                            <h4 class="fw-bold">Rs {{grandTotalWeekly.toFixed(2)}}</h4>
                                         </div>
                                     </div>
                                     <div class="col" *ngFor="let count of monthlySaleList">
                                         <div class="monthly-earnings">
-                                            <p class="text-muted mb-1">Monthly Earnings</p>
-                                            <h4 class="fw-bold">{{(count.totalSale).toFixed(2)}}</h4>
+                                            <p class="text-muted mb-1">{{count.orderType}} — Monthly</p>
+                                            <h4 class="fw-bold">Rs {{(count.totalSale || 0).toFixed(2)}}</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -97,7 +99,7 @@
                 </div>
                 <!-- Row end -->
 
-                <!-- Row start -->
+                <!-- Charts Row -->
                 <div class="row g-4">
                     <div class="col-lg-8">
                         <div class="card border border-2">
@@ -105,164 +107,156 @@
                                 <h5 class="card-title mb-0">Weekly Sales</h5>
                             </div>
                             <div class="card-body">
-                                <div id="sales" class="chart-placeholder">Weekly Sales Chart Placeholder</div>
+                                <div id="sales" class="chart-placeholder" *ngIf="!weeklySaleList.length">
+                                    No weekly sales data available
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-4">
                         <div class="card border border-2">
                             <div class="card-header">
-                                <h5 class="card-title mb-0">Revenue</h5>
+                                <h5 class="card-title mb-0">Monthly Revenue Breakdown</h5>
                             </div>
                             <div class="card-body">
-                                <div id="revenue" class="chart-placeholder">Revenue Chart Placeholder</div>
+                                <div id="revenue" class="chart-placeholder" *ngIf="!monthlySaleList.length">
+                                    No monthly data available
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <!-- Row end -->
 
-                <!-- Row start -->
+                <!-- Products Health / Latest Products / Expiring Products Row -->
                 <div class="row g-4">
                     <div class="col-lg-4 col-md-6">
                         <div class="card border border-2">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="card-title mb-0">Visitors</h5>
-                                <button type="button" class="btn btn-outline-primary btn-sm">Export</button>
+                                <h5 class="card-title mb-0">Products Overview</h5>
                             </div>
                             <div class="card-body">
-                                <div id="visitorsGraph" class="chart-placeholder mb-4">Visitors Graph Placeholder</div>
+                                <div id="ordersGraph" class="chart-placeholder mb-4"
+                                    *ngIf="!totalCountProductsList && !totalProductsCount">
+                                    No product data available
+                                </div>
                                 <ul class="stats-list-container list-unstyled">
                                     <li class="stats-list-item d-flex align-items-center mb-3">
-                                        <div class="stats-icon me-3">
-                                            <i class="bi bi-calendar"></i>
-                                        </div>
+                                        <div class="stats-icon me-3"><i class="bi bi-box-seam"></i></div>
                                         <div class="stats-info">
-                                            <h6 class="stats-title mb-1">Week 1</h6>
-                                            <p class="stats-amount mb-0">25</p>
+                                            <h6 class="stats-title mb-1">Active Products</h6>
+                                            <p class="stats-amount mb-0">{{totalCountProductsList || 0}}</p>
                                         </div>
                                     </li>
                                     <li class="stats-list-item d-flex align-items-center">
-                                        <div class="stats-icon me-3">
-                                            <i class="bi bi-calendar"></i>
-                                        </div>
+                                        <div class="stats-icon me-3"><i class="bi bi-boxes"></i></div>
                                         <div class="stats-info">
-                                            <h6 class="stats-title mb-1">Week 2</h6>
-                                            <p class="stats-amount mb-0">32</p>
+                                            <h6 class="stats-title mb-1">Total Products</h6>
+                                            <p class="stats-amount mb-0">{{totalProductsCount || 0}}</p>
                                         </div>
                                     </li>
                                 </ul>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Latest Products (dynamic, real data) -->
                     <div class="col-lg-4 col-md-6">
                         <div class="card border border-2">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="card-title mb-0">Orders</h5>
-                                <button type="button" class="btn btn-outline-primary btn-sm">View All</button>
+                                <h5 class="card-title mb-0">Latest Products</h5>
+                                <a routerLink="/layout/products" class="btn btn-outline-primary btn-sm">View All</a>
                             </div>
                             <div class="card-body">
-                                <div id="ordersGraph" class="chart-placeholder mb-4">Orders Graph Placeholder</div>
-                                <ul class="stats-list-container list-unstyled">
-                                    <li class="stats-list-item d-flex align-items-center mb-3">
-                                        <div class="stats-icon me-3">
-                                            <i class="bi bi-box"></i>
-                                        </div>
+                                <ul class="stats-list-container list-unstyled" *ngIf="latestProducts.length; else noLatest">
+                                    <li class="stats-list-item d-flex align-items-center mb-3"
+                                        *ngFor="let product of latestProducts.slice(0,4)">
+                                        <div class="stats-icon me-3"><i class="bi bi-box"></i></div>
                                         <div class="stats-info">
-                                            <h6 class="stats-title mb-1">New</h6>
-                                            <p class="stats-amount mb-0">15</p>
-                                        </div>
-                                    </li>
-                                    <li class="stats-list-item d-flex align-items-center">
-                                        <div class="stats-icon me-3">
-                                            <i class="bi bi-truck"></i>
-                                        </div>
-                                        <div class="stats-info">
-                                            <h6 class="stats-title mb-1">Delivered</h6>
-                                            <p class="stats-amount mb-0">10</p>
+                                            <h6 class="stats-title mb-1">{{product.productName}}</h6>
+                                            <p class="stats-amount mb-0">Rs {{product.salePrice || product.unitPrice}}</p>
                                         </div>
                                     </li>
                                 </ul>
+                                <ng-template #noLatest>
+                                    <p class="text-muted mb-0">No products found</p>
+                                </ng-template>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Expiring Products (dynamic, real data) -->
                     <div class="col-lg-4 col-md-12">
                         <div class="card border border-2">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="card-title mb-0">Earnings</h5>
-                                <button type="button" class="btn btn-outline-primary btn-sm">Download</button>
+                                <h5 class="card-title mb-0">Expiring Soon (30 days)</h5>
+                                <a routerLink="/layout/expired-product" class="btn btn-outline-primary btn-sm">View All</a>
                             </div>
                             <div class="card-body">
-                                <div id="earningsGraph" class="chart-placeholder mb-4">Earnings Graph Placeholder</div>
-                                <ul class="stats-list-container list-unstyled">
-                                    <li class="stats-list-item d-flex align-items-center mb-3">
-                                        <div class="stats-icon me-3">
-                                            <i class="bi bi-briefcase"></i>
-                                        </div>
+                                <ul class="stats-list-container list-unstyled" *ngIf="expiringProducts.length; else noExpiring">
+                                    <li class="stats-list-item d-flex align-items-center mb-3"
+                                        *ngFor="let product of expiringProducts.slice(0,4)">
+                                        <div class="stats-icon me-3"><i class="bi bi-exclamation-triangle text-warning"></i></div>
                                         <div class="stats-info">
-                                            <h6 class="stats-title mb-1">Today</h6>
-                                            <p class="stats-amount mb-0">$25</p>
-                                        </div>
-                                    </li>
-                                    <li class="stats-list-item d-flex align-items-center">
-                                        <div class="stats-icon me-3">
-                                            <i class="bi bi-briefcase"></i>
-                                        </div>
-                                        <div class="stats-info">
-                                            <h6 class="stats-title mb-1">Yesterday</h6>
-                                            <p class="stats-amount mb-0">$18</p>
+                                            <h6 class="stats-title mb-1">{{product.productName}}</h6>
+                                            <p class="stats-amount mb-0">Exp: {{product.expiryDate | date:'dd/MM/yyyy'}}</p>
                                         </div>
                                     </li>
                                 </ul>
+                                <ng-template #noExpiring>
+                                    <p class="text-muted mb-0">No products expiring soon</p>
+                                </ng-template>
                             </div>
                         </div>
                     </div>
                 </div>
                 <!-- Row end -->
 
-                <!-- Row start -->
+                <!-- Latest Products table + Expiring list -->
                 <div class="row g-4">
                     <div class="col-lg-12 col-md-6">
                         <div class="card border border-2">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="card-title mb-0">Recent Orders</h5>
-                                <button type="button" class="btn btn-outline-primary btn-sm">Export to Excel</button>
+                                <h5 class="card-title mb-0">Latest Products</h5>
+                                <a routerLink="/layout/products" class="btn btn-outline-primary btn-sm">View All Products</a>
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
                                     <table class="table table-bordered products-table table-hover align-middle">
                                         <thead>
                                             <tr>
-                                                <th>Order No.</th>
-                                                <th>Ordered Date</th>
                                                 <th>Product</th>
-                                                <th>Delivery Status</th>
-                                                <th>Amount</th>
-                                                <th>Discount</th>
-                                                <th>Location</th>
-                                                <th>Est Delivery Date</th>
+                                                <th>SKU</th>
+                                                <th>Barcode</th>
+                                                <th>Category</th>
+                                                <th>Stock Status</th>
+                                                <th>Price</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr *ngFor="let order of recentOrders">
-                                                <td>#{{order.orderNo}}</td>
-                                                <td>{{order.orderDate}}</td>
+                                            <tr *ngIf="!latestProducts.length">
+                                                <td colspan="6" class="text-center text-muted">No products found</td>
+                                            </tr>
+                                            <tr *ngFor="let product of latestProducts">
                                                 <td>
-                                                    <img class="user rounded" [src]="order.product" alt="Product Image"
-                                                        style="width: 50px; height: 50px;">
+                                                    <img class="user rounded" *ngIf="product.productImage"
+                                                        [src]="'data:' + product.imageMimeType + ';base64,' + product.productImage"
+                                                        alt="Product Image" style="width: 50px; height: 50px; object-fit:cover;">
+                                                    <span class="ms-2">{{product.productName}}</span>
                                                 </td>
+                                                <td>{{product.sku}}</td>
+                                                <td>{{product.upc}}</td>
+                                                <td>{{product.category}}</td>
                                                 <td>
                                                     <span class="badge fw-medium" [ngClass]="{
-                              'movingBadge': order.deliveryStatus === 'moving',
-                              'pendingBadge': order.deliveryStatus === 'pending',
-                              'cancelledBadge': order.deliveryStatus === 'cancelled',
-                              'shippedBadge': order.deliveryStatus === 'shipped'
-                            }">{{order.deliveryStatus}}</span>
+                                                        'shippedBadge': product.quantity > 10,
+                                                        'pendingBadge': product.quantity > 0 && product.quantity <= 10,
+                                                        'cancelledBadge': product.quantity === 0
+                                                    }">
+                                                        {{ product.quantity === 0 ? 'Out of Stock' : (product.quantity <= 10 ? 'Low Stock' : 'In Stock') }}
+                                                    </span>
                                                 </td>
-                                                <td>${{order.amount}}</td>
-                                                <td>{{order.discount}}%</td>
-                                                <td>{{order.location}}</td>
-                                                <td>{{order.estDeliveryDate}}</td>
+                                                <td>Rs {{product.salePrice || product.unitPrice}}</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -270,108 +264,67 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="col-lg-12 col-md-6">
                         <div class="card border border-2">
-                            <div
-                                class="card-header bg-white d-flex justify-content-between align-items-center">
-                                <h5 class="card-title mb-0">Orders</h5>
+                            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">Expiring Products</h5>
                             </div>
                             <div class="card-body">
                                 <div class="customScroll250">
-                                    <ul class="recent-orders list-unstyled mb-0">
-                                        <li *ngFor="let order of orders"
+                                    <ul class="recent-orders list-unstyled mb-0" *ngIf="expiringProducts.length; else noExpiringList">
+                                        <li *ngFor="let product of expiringProducts"
                                             class="d-flex justify-content-between align-items-center">
 
                                             <div class="d-flex align-items-center p-2 rounded mb-3 order-item">
-                                                <!-- Image + Badge -->
                                                 <div class="order-img me-3 position-relative">
-                                                    <img [src]="order.img" [alt]="order.title" class="rounded"
+                                                    <img *ngIf="product.productImage"
+                                                        [src]="'data:' + product.imageMimeType + ';base64,' + product.productImage"
+                                                        [alt]="product.productName" class="rounded"
                                                         style="width: 65px; height: 65px; object-fit: cover;">
                                                 </div>
-                                                <!-- Order Details -->
                                                 <div class="order-details flex-grow-1">
-                                                    <h6 class="order-title fw-semibold mb-1">{{ order.title }}</h6>
-                                                    <p class="order-desc mb-1 text-muted small">{{ order.desc }}</p>
-                                                    <span class="order-date text-muted small">{{ order.date }}</span>
+                                                    <h6 class="order-title fw-semibold mb-1">{{ product.productName }}</h6>
+                                                    <p class="order-desc mb-1 text-muted small">SKU: {{ product.sku }}</p>
+                                                    <span class="order-date text-muted small">
+                                                        Expires: {{ product.expiryDate | date:'dd/MM/yyyy' }}
+                                                    </span>
                                                 </div>
                                             </div>
 
                                             <div>
                                                 <span class="badge order-badge" [ngClass]="{
-                                                    'shippedBadge': order.status === 'Delivered',
-                                                    'pendingBadge': order.status === 'On Hold',
-                                                    'movingBadge': order.status === 'Processing',
-                                                    }">
-                                                    {{ order.status }}
+                                                    'cancelledBadge': product.quantity === 0,
+                                                    'pendingBadge': product.quantity > 0
+                                                }">
+                                                    {{ product.quantity === 0 ? 'Out of Stock' : product.quantity + ' left' }}
                                                 </span>
                                             </div>
                                         </li>
                                     </ul>
+                                    <ng-template #noExpiringList>
+                                        <p class="text-muted mb-0 text-center py-4">No products expiring soon</p>
+                                    </ng-template>
                                 </div>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Daily Sale Breakdown chart (dynamic, replaces food tiles) -->
                     <div class="col-12">
                         <div class="card border border-2">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="card-title mb-0">Orders</h5>
-                                <div class="graph-day-selection btn-group" role="group">
-                                    <button type="button" class="btn btn-outline-primary btn-sm active">Today</button>
-                                    <button type="button" class="btn btn-outline-primary btn-sm">Weekly</button>
-                                    <button type="button" class="btn btn-outline-primary btn-sm">Monthly</button>
-                                </div>
+                                <h5 class="card-title mb-0">Today's Sale Breakdown</h5>
                             </div>
                             <div class="card-body">
-                                <div id="ordersGraph1" class="chart-placeholder mb-4">Orders Graph Placeholder</div>
-                                <div
-                                    class="stats-tiles-list row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3 text-center">
-                                    <div class="col">
+                                <div id="ordersGraph1" class="chart-placeholder mb-4" *ngIf="!dailySaleList.length">
+                                    No sale data for today
+                                </div>
+                                <div class="stats-tiles-list row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3 text-center">
+                                    <div class="col" *ngFor="let sale of dailySaleList">
                                         <div class="tiles-list">
-                                            <img src="./assets/img/food/pizza.svg" alt="Pizzas" class="img-fluid mb-2"
-                                                style="height: 40px;">
-                                            <h2 class="fw-bold">120</h2>
-                                            <p class="text-muted mb-0">Pizzas</p>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="tiles-list">
-                                            <img src="./assets/img/food/donut.svg" alt="Burgers" class="img-fluid mb-2"
-                                                style="height: 40px;">
-                                            <h2 class="fw-bold">320</h2>
-                                            <p class="text-muted mb-0">Donuts</p>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="tiles-list">
-                                            <img src="./assets/img/food/biscuit.svg" alt="Biscuits"
-                                                class="img-fluid mb-2" style="height: 40px;">
-                                            <h2 class="fw-bold">260</h2>
-                                            <p class="text-muted mb-0">Biscuits</p>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="tiles-list">
-                                            <img src="./assets/img/food/ice-cream.svg" alt="Ice Cream"
-                                                class="img-fluid mb-2" style="height: 40px;">
-                                            <h2 class="fw-bold">490</h2>
-                                            <p class="text-muted mb-0">Ice Cream</p>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="tiles-list">
-                                            <img src="./assets/img/food/cupcake.svg" alt="Cakes" class="img-fluid mb-2"
-                                                style="height: 40px;">
-                                            <h2 class="fw-bold">580</h2>
-                                            <p class="text-muted mb-0">Cakes</p>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="tiles-list">
-                                            <img src="./assets/img/food/tea-cup.svg" alt="Coffee" class="img-fluid mb-2"
-                                                style="height: 40px;">
-                                            <h2 class="fw-bold">310</h2>
-                                            <p class="text-muted mb-0">Coffee</p>
+                                            <h2 class="fw-bold">{{sale.totalCount || 0}}</h2>
+                                            <p class="text-muted mb-0">{{sale.orderType}}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -381,18 +334,17 @@
                 </div>
                 <!-- Row end -->
 
-                <!-- Row start -->
+                <!-- Bottom Stats Row (all dynamic, no dummy numbers) -->
                 <div class="row g-4 bg-white shadow-sm border border-2 rounded-4">
                     <div class="col-lg-6 col-md-6">
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="stats-tile3 d-flex align-items-center">
                                     <div class="sale-icon3 me-3">
-                                        <img src="./assets/img/svg/customer.svg" alt="Customers" class="img-fluid"
-                                            style="height: 40px;">
+                                        <img src="./assets/img/svg/customer.svg" alt="Customers" class="img-fluid" style="height: 40px;">
                                     </div>
                                     <div class="sale-details3">
-                                        <h3 class="fw-bold">8,500</h3>
+                                        <h3 class="fw-bold">{{totalCountSignupList.length || 0}}</h3>
                                         <p class="text-muted mb-0">New Customers</p>
                                     </div>
                                 </div>
@@ -400,12 +352,11 @@
                             <div class="col-md-6">
                                 <div class="stats-tile3 d-flex align-items-center">
                                     <div class="sale-icon3 me-3">
-                                        <img src="./assets/img/svg/box.svg" alt="Products" class="img-fluid"
-                                            style="height: 40px;">
+                                        <img src="./assets/img/svg/box.svg" alt="Products" class="img-fluid" style="height: 40px;">
                                     </div>
                                     <div class="sale-details3">
-                                        <h3 class="fw-bold">1,650</h3>
-                                        <p class="text-muted mb-0">New Products</p>
+                                        <h3 class="fw-bold">{{totalCountProductsList || 0}}</h3>
+                                        <p class="text-muted mb-0">Active Products</p>
                                     </div>
                                 </div>
                             </div>
@@ -416,33 +367,30 @@
                             <div class="col-md-6">
                                 <div class="stats-tile3 d-flex align-items-center">
                                     <div class="sale-icon3 me-3">
-                                        <img src="./assets/img/svg/income.svg" alt="Sales" class="img-fluid"
-                                            style="height: 40px;">
+                                        <img src="./assets/img/svg/income.svg" alt="Sales" class="img-fluid" style="height: 40px;">
                                     </div>
                                     <div class="sale-details3 flex-grow-1">
-                                        <h3 class="fw-bold">4.5M</h3>
-                                        <p class="text-muted mb-0">Today Sales</p>
+                                        <h3 class="fw-bold">Rs {{grandTotalCountSales || 0}}</h3>
+                                        <p class="text-muted mb-0">Today Sales Count</p>
                                     </div>
-                                    <!-- <div id="sparklineLine1" class="stats-graph3 chart-placeholder">Sales Graph Placeholder</div> -->
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="stats-tile3 d-flex align-items-center">
                                     <div class="sale-icon3 me-3">
-                                        <img src="./assets/img/svg/commissions.svg" alt="Commissions" class="img-fluid"
-                                            style="height: 40px;">
+                                        <img src="./assets/img/svg/commissions.svg" alt="Low Stock" class="img-fluid" style="height: 40px;">
                                     </div>
                                     <div class="sale-details3 flex-grow-1">
-                                        <h3 class="fw-bold">2,500</h3>
-                                        <p class="text-muted mb-0">Commissions</p>
+                                        <h3 class="fw-bold">{{expiringProducts.length || 0}}</h3>
+                                        <p class="text-muted mb-0">Expiring / Low Stock</p>
                                     </div>
-                                    <!-- <div id="sparklineLine2" class="stats-graph3 chart-placeholder">Commissions Graph Placeholder</div> -->
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <!-- Row end -->
+
             </div>
             <!-- Content wrapper end -->
         </div>
