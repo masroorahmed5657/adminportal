@@ -131,3 +131,103 @@
   justify-content: center;
   align-items: center;
 }
+
+.admin-sidebar__footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.admin-sidebar__footer .admin-sidebar__link {
+  justify-content: center;
+  margin: 0 auto 4px auto;
+}
+
+.admin-sidebar__parent {
+  cursor: pointer;
+}
+
+.admin-sidebar__parent i.ms-auto {
+  transition: transform 0.2s ease;
+}
+
+.admin-sidebar__parent i.rotated {
+  transform: rotate(180deg);
+}
+
+.admin-sidebar__submenu {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-left: 1.2rem;
+}
+
+.admin-sidebar__sublink {
+  font-size: 0.9rem;
+  padding: 8px 12px;
+}
+
+/* ================= COLLAPSED SIDEBAR ================= */
+
+.admin-sidebar.collapsed .admin-sidebar__submenu {
+  display: none;
+}
+
+.admin-sidebar.collapsed .admin-sidebar__parent i.ms-auto {
+  display: none;
+}
+
+/* Keep parent icons centered */
+.admin-sidebar.collapsed .admin-sidebar__parent {
+  justify-content: center;
+}
+
+/* Keep icons visible */
+.admin-sidebar.collapsed .admin-sidebar__parent>i:first-child {
+  display: block;
+  margin-right: 0 !important;
+}
+
+/* =========================================================
+   RESPONSIVE SIDEBAR
+   ========================================================= */
+
+/* Tablets and smaller screens */
+@media (max-width: 992px) {
+
+  .admin-sidebar {
+    width: 280px;
+  }
+
+}
+
+
+/* Mobile devices - including iPhone 12 Pro */
+@media (max-width: 768px) {
+
+  .admin-sidebar {
+    width: 280px;
+    transform: translateX(-100%);
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+  }
+
+  /*
+    When show-sidebar is added,
+    sidebar becomes visible
+  */
+  .admin-sidebar.show-sidebar {
+    transform: translateX(0);
+  }
+
+}
+
+
+/* Small mobile screens */
+@media (max-width: 480px) {
+
+  .admin-sidebar {
+    width: 85%;
+    max-width: 300px;
+  }
+
+}

@@ -1,6 +1,11 @@
+/* ===============================
+   DEFAULT DESKTOP LAYOUT
+================================ */
+
 .app-body {
   margin-left: 280px;
-  transition: all 0.3s ease;
+  min-height: 100vh;
+  transition: margin-left 0.3s ease;
 }
 
 .app-body.sidebar-collapsed {
@@ -9,4 +14,50 @@
 
 #mainPage {
   padding: 20px;
+}
+
+
+/* ===============================
+   TABLET
+================================ */
+
+@media (max-width: 992px) {
+
+  .app-body {
+    margin-left: 80px;
+  }
+
+}
+
+
+/* ===============================
+   MOBILE - iPhone 12 Pro
+================================ */
+
+@media (max-width: 768px) {
+
+  .app-body,
+  .app-body.sidebar-collapsed {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  #mainPage {
+    width: 100%;
+    padding: 12px;
+  }
+
+}
+
+
+/* ===============================
+   SMALL MOBILE
+================================ */
+
+@media (max-width: 480px) {
+
+  #mainPage {
+    padding: 10px;
+  }
+
 }

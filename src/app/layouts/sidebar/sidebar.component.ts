@@ -26,7 +26,7 @@ export class SidebarComponent {
   themeButton: any;
   darkTheme = 'dark-theme';
   iconTheme = 'ri-sun-fill';
-  activeMenu: string = 'inventory'
+  activeMenu: string = '';
   versionNumber = environment.versionNumber;
   showExpenseFlag = environment.showExpenseFlag;
 
@@ -109,6 +109,9 @@ export class SidebarComponent {
   linkColor(): any {
     // this.sidebarLink.forEach(()=> this.classList.remove('active-link'));
     //this.classList.add('active-link');
+  }
+  toggleSection(section: string) {
+    this.activeMenu = this.activeMenu === section ? '' : section;
   }
 
 

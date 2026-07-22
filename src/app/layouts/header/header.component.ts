@@ -56,58 +56,57 @@ export class HeaderComponent {
     '/layout/profit-loss': 'Profit & Loss',
     '/layout/purchase-order-add': 'PO Add',
     '/layout/purchase-order-edit/:purchaseOrderId': 'PO Edit',
-    
+
 
 
   };
 
-  constructor(private router: Router, ) { }
+  constructor(private router: Router,) { }
 
   theme: string = 'light';
   headerColor: string = '#FF6713';
 
   ngOnInit(): void {
 
-
-    // Watch for route changes
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
-        this.updatePageTitle((event as NavigationEnd).urlAfterRedirects || (event as NavigationEnd).url);
+        this.updatePageTitle(
+          (event as NavigationEnd).urlAfterRedirects || event.url
+        );
       });
 
-
-      this.showHideMenuBar();
-    // Initialize with current route
-      this.updatePageTitle(this.router.url);
+    this.updatePageTitle(this.router.url);
   }
 
   showHideMenuBar() {
-    this.isSidebarCollapsed = !this.isSidebarCollapsed;
-
     const sidebar = document.getElementById('sidebar');
     const header = document.getElementById('header');
-    const main = document.getElementById('main'); // 🔥 yeh add kiya
+    const main = document.getElementById('main');
 
+    if (window.innerWidth <= 768) {
 
-    // toggle class on sidebar
-    sidebar?.classList.toggle('collapsed', this.isSidebarCollapsed);
+      // Mobile: open/close sidebar
+      sidebar?.classList.toggle('show-sidebar');
 
-    // toggle class on header
-    header?.classList.toggle('sidebar-collapsed', this.isSidebarCollapsed);
+    } else {
 
-    //toggle class on main page
-    //main-content.sidebar-collapsed
-    main?.classList.toggle('sidebar-collapsed', this.isSidebarCollapsed);
+      // Desktop: collapse/expand sidebar
+      this.isSidebarCollapsed = !this.isSidebarCollapsed;
+
+      sidebar?.classList.toggle('collapsed', this.isSidebarCollapsed);
+      header?.classList.toggle('sidebar-collapsed', this.isSidebarCollapsed);
+      main?.classList.toggle('sidebar-collapsed', this.isSidebarCollapsed);
+
+    }
   }
-
   updatePageTitle(url: string): void {
     //const matchingRoute = Object.keys(this.pageTitles).find(route => url.startsWith(route));
     //this.currentPageTitle = matchingRoute ? this.pageTitles[matchingRoute] : 'TechMaci';
 
     this.currentPageTitle = url ? this.pageTitles[url] : 'TechMaci';
 
-    let i=0;
+    let i = 0;
   }
 
   /* ************************************************************** */
