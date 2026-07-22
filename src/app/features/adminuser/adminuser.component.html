@@ -1,186 +1,245 @@
-<div class="d-flex flex-column flex-md-row gap-3 mb-4 align-items-md-end py-5">
+<!-- ============================================================
+     ADMIN USER — LIST VIEW
+     ============================================================ -->
+<div class="shopify-main-container" *ngIf="!addFlag">
 
-  <!-- Search -->
-  <div class="flex-grow-1" *ngIf="!addFlag">
-    <label class="fw-semibold">Search Name</label>
-    <div class="input-group">
-      <span class="input-group-text"><i class="bi bi-search"></i></span>
-      <input type="text"
-             class="form-control"
-             placeholder="Search admin user"
-             [(ngModel)]="searchName"
-             (input)="adminUserSearch()">
+  <h2 class="shopify-page-title">Admin Users</h2>
+
+  <!-- Search row -->
+  <div class="shopify-search-row">
+    <div>
+      <label class="shopify-field-label" for="searchName">Search Name</label>
+      <div class="shopify-input-group">
+        <span class="shopify-input-group__prefix"><i class="bi bi-search"></i></span>
+        <input type="text" class="shopify-input" placeholder="Search admin user" id="searchName"
+          [(ngModel)]="searchName" (input)="adminUserSearch()">
+      </div>
     </div>
   </div>
 
-  <!-- Add / Back -->
-  <button class="btn text-white"
-          style="background-color:#2563eb"
-          (click)="addAdminUser()">
-    {{ addFlag ? 'Back to Users' : 'Add Admin User' }}
-  </button>
+  <!-- Actions row -->
+  <div class="shopify-actions-row">
+    <button type="button" class="btn-shopify btn-shopify--primary" (click)="addAdminUser()">
+      <i class="bi bi-plus-lg"></i> Add Admin User
+    </button>
+  </div>
 
+  <!-- Loader -->
+  <div class="shopify-loading" *ngIf="spinnerDataLoad">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p>Loading admin users...</p>
+  </div>
+
+  <ng-container *ngIf="!spinnerDataLoad">
+
+    <!-- Empty state -->
+    <div class="shopify-empty" *ngIf="adminUserList.length === 0">
+      <h5>Admin user not found</h5>
+      <p>No admin users match your search.</p>
+    </div>
+
+    <ng-container *ngIf="adminUserList.length > 0">
+
+      <!-- Desktop table -->
+      <div class="shopify-table-wrap">
+        <table class="shopify-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Login ID</th>
+              <th>Password</th>
+              <th>First</th>
+              <th>Last</th>
+              <th>Role</th>
+              <th>Email</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let emp of pagedAdminUserList; let i = index"
+              [ngClass]="{'is-active': activeRow === rowIndex(i)}">
+              <td>{{ emp.userId }}</td>
+              <td>
+                <input type="text" class="shopify-input" [(ngModel)]="emp.loginId"
+                  [disabled]="!enabledEdit[rowIndex(i)]">
+              </td>
+              <td>
+                <input type="text" class="shopify-input" [(ngModel)]="emp.loginPassword"
+                  [disabled]="!enabledEdit[rowIndex(i)]">
+              </td>
+              <td>
+                <input type="text" class="shopify-input" [(ngModel)]="emp.firstName"
+                  [disabled]="!enabledEdit[rowIndex(i)]">
+              </td>
+              <td>
+                <input type="text" class="shopify-input" [(ngModel)]="emp.lastName"
+                  [disabled]="!enabledEdit[rowIndex(i)]">
+              </td>
+              <td>
+                <select class="shopify-input" [(ngModel)]="emp.userRole" [disabled]="!enabledEdit[rowIndex(i)]">
+                  <option *ngFor="let role of roles" [ngValue]="role">
+                    {{ role }}
+                  </option>
+                </select>
+              </td>
+              <td>
+                <input type="text" class="shopify-input" [(ngModel)]="emp.email"
+                  [disabled]="!enabledEdit[rowIndex(i)]">
+              </td>
+              <td>
+                <div class="shopify-table__actions">
+                  <button *ngIf="!enabledEdit[rowIndex(i)]" class="btn-shopify btn-shopify--outline btn-shopify--icon"
+                    title="Edit" (click)="startEdit(rowIndex(i))">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button *ngIf="enabledEdit[rowIndex(i)]" class="btn-shopify btn-shopify--success btn-shopify--icon"
+                    title="Save" (click)="onSave(rowIndex(i))">
+                    <i class="bi bi-check-lg"></i>
+                  </button>
+                  <button class="btn-shopify btn-shopify--danger btn-shopify--icon" title="Delete"
+                    (click)="onDelete(rowIndex(i))">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile cards -->
+      <div class="shopify-mobile-list">
+        <div class="shopify-mobile-card" *ngFor="let emp of pagedAdminUserList; let i = index"
+          [ngClass]="{'is-active': activeRow === rowIndex(i)}">
+
+          <h6 class="fw-bold mb-2">{{ emp.firstName }} {{ emp.lastName }}</h6>
+
+          <div class="shopify-mobile-card__field">
+            <label class="shopify-field-label--sm">Login ID</label>
+            <input type="text" class="shopify-input" [(ngModel)]="emp.loginId"
+              [disabled]="!enabledEdit[rowIndex(i)]">
+          </div>
+          <div class="shopify-mobile-card__field">
+            <label class="shopify-field-label--sm">Password</label>
+            <input type="text" class="shopify-input" [(ngModel)]="emp.loginPassword"
+              [disabled]="!enabledEdit[rowIndex(i)]">
+          </div>
+          <div class="shopify-mobile-card__field">
+            <label class="shopify-field-label--sm">First Name</label>
+            <input type="text" class="shopify-input" [(ngModel)]="emp.firstName"
+              [disabled]="!enabledEdit[rowIndex(i)]">
+          </div>
+          <div class="shopify-mobile-card__field">
+            <label class="shopify-field-label--sm">Last Name</label>
+            <input type="text" class="shopify-input" [(ngModel)]="emp.lastName"
+              [disabled]="!enabledEdit[rowIndex(i)]">
+          </div>
+          <div class="shopify-mobile-card__field">
+            <label class="shopify-field-label--sm">Role</label>
+            <select class="shopify-input" [(ngModel)]="emp.userRole" [disabled]="!enabledEdit[rowIndex(i)]">
+              <option *ngFor="let role of roles" [ngValue]="role">
+                {{ role }}
+              </option>
+            </select>
+          </div>
+          <div class="shopify-mobile-card__field">
+            <label class="shopify-field-label--sm">Email</label>
+            <input type="text" class="shopify-input" [(ngModel)]="emp.email"
+              [disabled]="!enabledEdit[rowIndex(i)]">
+          </div>
+
+          <div class="shopify-mobile-card__actions">
+            <button *ngIf="!enabledEdit[rowIndex(i)]" class="btn-shopify btn-shopify--outline btn-shopify--sm"
+              (click)="startEdit(rowIndex(i))">
+              <i class="bi bi-pencil"></i> Edit
+            </button>
+            <button *ngIf="enabledEdit[rowIndex(i)]" class="btn-shopify btn-shopify--success btn-shopify--sm"
+              (click)="onSave(rowIndex(i))">
+              <i class="bi bi-check-lg"></i> Save
+            </button>
+            <button class="btn-shopify btn-shopify--danger btn-shopify--sm" (click)="onDelete(rowIndex(i))">
+              <i class="bi bi-trash"></i> Delete
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination (Shopify-style Previous / Next) -->
+      <div class="shopify-pager" *ngIf="totalPages > 1">
+        <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="page <= 1"
+          (click)="goToPage(page - 1)">
+          <i class="bi bi-chevron-left"></i> Previous
+        </button>
+        <span class="shopify-pager__info">Page {{ page }} of {{ totalPages }}</span>
+        <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="page >= totalPages"
+          (click)="goToPage(page + 1)">
+          Next <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+
+    </ng-container>
+  </ng-container>
 </div>
-<div class="d-none d-md-block" *ngIf="!addFlag">
 
-  <p-table [value]="adminUserList"
-           [paginator]="true"
-           [rows]="5"
-           [rowsPerPageOptions]="[5,10,20]"
-           responsiveLayout="scroll"
-           sortMode="multiple">
+<!-- ============================================================
+     ADMIN USER — ADD FORM
+     ============================================================ -->
+<div class="shopify-main-container" *ngIf="addFlag">
 
-    <ng-template pTemplate="header">
-      <tr>
-        <th>ID</th>
-        <th>Login ID</th>
-        <th>Password</th>
-        <th>First</th>
-        <th>Last</th>
-        <th>Role</th>
-        <th>Email</th>
-        <th class="text-center">Actions</th>
-      </tr>
-    </ng-template>
+  <div class="shopify-actions-row">
+    <button class="btn-shopify btn-shopify--outline" (click)="addAdminUser()">
+      <i class="bi bi-arrow-left"></i> Back to Users
+    </button>
+  </div>
 
-    <ng-template pTemplate="body" let-emp let-i="rowIndex">
-      <tr>
-        <td>{{ emp.userId }}</td>
+  <div class="shopify-card">
+    <div class="shopify-card__header">Add New Admin User</div>
+    <div class="shopify-card__body">
 
-        <td><input class="form-control form-control-sm"
-                   [(ngModel)]="emp.loginId"
-                   [disabled]="!enabledEdit[i]"></td>
-
-        <td><input class="form-control form-control-sm"
-                   [(ngModel)]="emp.loginPassword"
-                   [disabled]="!enabledEdit[i]"></td>
-
-        <td><input class="form-control form-control-sm"
-                   [(ngModel)]="emp.firstName"
-                   [disabled]="!enabledEdit[i]"></td>
-
-        <td><input class="form-control form-control-sm"
-                   [(ngModel)]="emp.lastName"
-                   [disabled]="!enabledEdit[i]"></td>
-
-        <td>
-          <select class="form-select form-select-sm"
-                  [(ngModel)]="emp.userRole"
-                  [disabled]="!enabledEdit[i]">
+      <div class="shopify-grid-3">
+        <div>
+          <label class="shopify-field-label">Login ID</label>
+          <input type="text" class="shopify-input" id="loginId-new" placeholder="Login ID">
+        </div>
+        <div>
+          <label class="shopify-field-label">Password</label>
+          <input type="password" class="shopify-input" id="loginPassword-new" placeholder="Password">
+        </div>
+        <div>
+          <label class="shopify-field-label">First Name</label>
+          <input type="text" class="shopify-input" id="firstName-new" placeholder="First Name">
+        </div>
+        <div>
+          <label class="shopify-field-label">Last Name</label>
+          <input type="text" class="shopify-input" id="lastName-new" placeholder="Last Name">
+        </div>
+        <div>
+          <label class="shopify-field-label">User Role</label>
+          <select class="shopify-input" id="userRole-new">
+            <option value="">User Role</option>
             <option *ngFor="let role of roles" [ngValue]="role">
               {{ role }}
             </option>
           </select>
-        </td>
-
-        <td><input class="form-control form-control-sm"
-                   [(ngModel)]="emp.email"
-                   [disabled]="!enabledEdit[i]"></td>
-
-        <!-- Actions -->
-        <td class="text-center">
-          <button *ngIf="!enabledEdit[i]"
-                  class="btn btn-sm btn-primary me-1"
-                  (click)="startEdit(i)">
-            <i class="bi bi-pencil"></i>
-          </button>
-
-          <button *ngIf="enabledEdit[i]"
-                  class="btn btn-sm btn-success me-1"
-                  (click)="onSave(i)">
-            <i class="bi bi-check"></i>
-          </button>
-
-          <button class="btn btn-sm btn-danger"
-                  (click)="onDelete(i)">
-            <i class="bi bi-trash"></i>
-          </button>
-        </td>
-      </tr>
-    </ng-template>
-
-  </p-table>
-</div>
-<div class="d-md-none" *ngIf="!addFlag">
-
-  <div class="card shadow-sm mb-3"
-       *ngFor="let emp of adminUserList; let i = index">
-
-    <div class="card-body">
-
-      <h6 class="fw-bold text-primary mb-1">
-        {{ emp.firstName }} {{ emp.lastName }}
-      </h6>
-
-      <div class="small text-muted mb-1">
-        <b>Login ID:</b> {{ emp.loginId }}
+        </div>
+        <div>
+          <label class="shopify-field-label">Email</label>
+          <input type="email" class="shopify-input" id="email-new" placeholder="Email">
+        </div>
       </div>
 
-      <div class="small mb-1">
-        <b>Role:</b> {{ emp.userRole }}
-      </div>
-
-      <div class="small mb-1">
-        <b>Email:</b> {{ emp.email }}
-      </div>
-
-      <div class="d-flex gap-2 mt-3">
-        <button class="btn btn-sm btn-primary flex-fill"
-                (click)="startEdit(i)">
-          <i class="bi bi-pencil"></i> Edit
+      <div class="shopify-actions-row mt-3">
+        <button class="btn-shopify btn-shopify--primary" (click)="onSave(-1)">
+          <i class="bi bi-save"></i> Save
         </button>
-
-        <button class="btn btn-sm btn-danger flex-fill"
-                (click)="onDelete(i)">
-          <i class="bi bi-trash"></i> Delete
+        <button class="btn-shopify btn-shopify--outline" (click)="addFlag=false">
+          Cancel
         </button>
       </div>
 
     </div>
   </div>
+
 </div>
-<div *ngIf="addFlag">
-  <h5 class="fw-bold mb-3">Add New Admin User</h5>
-
-  <div class="row g-3">
-    <div class="col-12 col-md-6">
-      <input class="form-control" placeholder="Login ID">
-    </div>
-
-    <div class="col-12 col-md-6">
-      <input type="password" class="form-control" placeholder="Password">
-    </div>
-
-    <div class="col-12 col-md-6">
-      <input class="form-control" placeholder="First Name">
-    </div>
-
-    <div class="col-12 col-md-6">
-      <input class="form-control" placeholder="Last Name">
-    </div>
-
-    <div class="col-12 col-md-6">
-      <select class="form-select">
-        <option value="">User Role</option>
-        <option *ngFor="let role of roles" [ngValue]="role">
-          {{ role }}
-        </option>
-      </select>
-    </div>
-
-    <div class="col-12 col-md-6">
-      <input type="email" class="form-control" placeholder="Email">
-    </div>
-  </div>
-
-  <div class="mt-4">
-    <button class="btn btn-success" (click)="onSave(-1)">
-      <i class="bi bi-save"></i> Save
-    </button>
-
-    <button class="btn btn-danger ms-2" (click)="addFlag=false">
-      Cancel
-    </button>
-  </div>
-</div>
-

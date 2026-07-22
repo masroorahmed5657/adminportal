@@ -33,6 +33,32 @@ export class BrandsComponent implements OnInit {
 
   spinnerDataLoad: boolean = false;
 
+  /* ===== Pagination (Shopify-style Previous / Next) ===== */
+  page: number = 1;
+  pageSize: number = 5; // same page size PrimeNG paginator used before
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.brandList.length / this.pageSize));
+  }
+
+  get pagedBrandList(): Brands[] {
+    const start = (this.page - 1) * this.pageSize;
+    return this.brandList.slice(start, start + this.pageSize);
+  }
+
+  // Maps the index of a row *within the current page* back to its
+  // absolute index inside brandList — needed because startEdit/onSave/onDelete
+  // all operate on the full-list index.
+  rowIndex(i: number): number {
+    return (this.page - 1) * this.pageSize + i;
+  }
+
+  goToPage(p: number) {
+    if (p < 1 || p > this.totalPages) return;
+    this.page = p;
+    this.activeRow = null;
+  }
+
   constructor(
     private brandsService: BrandsService, private router: Router) { }
 
@@ -49,6 +75,7 @@ export class BrandsComponent implements OnInit {
       next: (data: Brands[]) => {
         this.brandList = data.reverse();
         this.brandMasterList = data.reverse();
+        this.page = 1; // reset to first page on fresh load
         this.spinnerDataLoad = false; // 👈 Loader stop
       },
       error: (err) => {
@@ -165,6 +192,7 @@ export class BrandsComponent implements OnInit {
           if (row < 0) {
             // Add brand to list without reload
             this.brandList.unshift(data); // newest on top
+            this.page = 1; // jump to first page so the new brand is visible
           } else {
             // Update existing brand in list
             this.brandList[row] = { ...data };
@@ -210,6 +238,11 @@ export class BrandsComponent implements OnInit {
 
             // Trigger Angular change detection by assigning a new array
             this.brandList = [...this.brandList];
+
+            // If we deleted the last item on the last page, step back a page
+            if (this.page > this.totalPages) {
+              this.page = this.totalPages;
+            }
 
             Swal.fire('Deleted!', 'Brand has been deleted.', 'success');
           },
@@ -292,6 +325,8 @@ export class BrandsComponent implements OnInit {
 
       return matchesCode && matchesName;
     });
+
+    this.page = 1; // reset to first page whenever the search changes
   }
 
   saveBrand() {

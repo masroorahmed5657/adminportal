@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NgxPaginationModule } from 'ngx-pagination';
 import Swal from 'sweetalert2';
 import { DepartmentsService } from '../../shared/services/departments.service';
 import { Departments } from '../../shared/models/model-classes.model';
@@ -9,7 +8,7 @@ import { Departments } from '../../shared/models/model-classes.model';
 @Component({
   selector: 'app-department',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgxPaginationModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './department.component.html',
   styleUrls: ['./department.component.scss']
 })
@@ -20,10 +19,8 @@ export class DepartmentComponent implements OnInit {
   isLoading = false;
   isSaving = false;
   showDetailModal = false;
-  showDiv = false; // for optional fields (if any, kept for consistency)
 
-  // Pagination & search
-  p = 1;
+  // Search
   searchTerm = '';
   private searchDebounce: any;
 
@@ -34,6 +31,24 @@ export class DepartmentComponent implements OnInit {
 
   // Selected file for upload
   selectedFile: File | null = null;
+
+  /* ===== Pagination (Shopify-style Previous / Next) ===== */
+  page: number = 1;
+  pageSize: number = 10;
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredDepartments.length / this.pageSize));
+  }
+
+  get pagedDepartments(): Departments[] {
+    const start = (this.page - 1) * this.pageSize;
+    return this.filteredDepartments.slice(start, start + this.pageSize);
+  }
+
+  goToPage(p: number) {
+    if (p < 1 || p > this.totalPages) return;
+    this.page = p;
+  }
 
   constructor(private deptService: DepartmentsService) {}
 
@@ -59,6 +74,7 @@ export class DepartmentComponent implements OnInit {
     this.deptService.getDepartmentList().subscribe({
       next: (data) => {
         this.departmentsList = data;
+        this.page = 1; // reset to first page on fresh load
         this.isLoading = false;
       },
       error: (err) => {
@@ -73,7 +89,7 @@ export class DepartmentComponent implements OnInit {
   onSearchInput(): void {
     clearTimeout(this.searchDebounce);
     this.searchDebounce = setTimeout(() => {
-      this.p = 1;
+      this.page = 1; // reset to first page whenever the search changes
     }, 300);
   }
 

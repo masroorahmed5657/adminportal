@@ -4,7 +4,6 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { environment } from '../../../../environments/environment';
 import { OrderSaleReport, OrderSaleDailyReport, PaymentMethodResponse, PaymentMethodReport, OrderSaleReportResponse, ReportRequest } from '../../../shared/models/model-classes.model';
 import { ReportsService } from '../../../shared/services/reports.service';
-// import { ChartOptions } from '../reports.component';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { faSignOut } from '@fortawesome/free-solid-svg-icons';
@@ -49,7 +48,7 @@ export type ChartOptions = {
 
 @Component({
   selector: 'app-daily-sale-report',
-  imports: [RouterModule,CommonModule,FontAwesomeModule,FormsModule,NgApexchartsModule],
+  imports: [RouterModule, CommonModule, FontAwesomeModule, FormsModule, NgApexchartsModule],
   templateUrl: './daily-sale-report.component.html',
   styleUrl: './daily-sale-report.component.scss'
 })

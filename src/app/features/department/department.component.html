@@ -1,134 +1,150 @@
 <!-- ============================================================
-     SEARCH + ADD BUTTON
+     DEPARTMENT — LIST VIEW
      ============================================================ -->
-<div class="d-flex flex-column flex-md-row align-items-md-end gap-3 mb-4 py-4">
-  <div class="flex-grow-1">
-    <label class="fw-semibold fs-5 mb-2">Search Department</label>
-    <div class="input-group">
-      <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
-      <input type="search" [(ngModel)]="searchTerm" (input)="onSearchInput()"
-             placeholder="Search by name, printer ID..." class="form-control">
-    </div>
-  </div>
-  <button class="btn text-white px-4" style="background-color:#198754" (click)="addDepartment()">
-    <i class="bi bi-building-add me-1"></i> Add Department
-  </button>
-</div>
+<div class="shopify-main-container" *ngIf="!showAddFlag">
 
-<!-- ============================================================
-     LOADING SPINNER
-     ============================================================ -->
-<div *ngIf="isLoading" class="text-center py-5">
-  <div class="spinner-border text-primary" role="status">
-    <span class="visually-hidden">Loading...</span>
-  </div>
-  <p class="mt-2 text-muted">Loading departments...</p>
-</div>
+  <h2 class="shopify-page-title">Departments</h2>
 
-<!-- ============================================================
-     DEPARTMENT LIST (visible when form is NOT shown)
-     ============================================================ -->
-<div *ngIf="!showAddFlag && !isLoading">
-
-  <!-- ── DESKTOP TABLE ── -->
-  <div class="d-none d-md-block">
-    <div class="table-responsive">
-      <table class="table table-bordered table-sm border-dark align-middle mb-0"
-             style="background-color:white; font-size:0.82rem;">
-        <thead class="bg-secondary text-white" style="--bs-bg-opacity:.9;">
-          <tr class="text-center">
-            <th>ID</th>
-            <th>Image</th>
-            <th>Department Name</th>
-            <th>Printer Name</th>
-            <th>Status</th>
-            <th>Updated Date</th>
-            <th>Manage</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let dept of filteredDepartments | paginate:{itemsPerPage:10,currentPage:p}; let i = index"
-              [ngClass]="{'table-light': i % 2 === 0}">
-            <td class="text-center fw-semibold">{{ dept.deptId }}</td>
-            <td class="text-center">
-              <img *ngIf="dept.finalImage" [src]="dept.finalImage" width="40" height="40" class="rounded-circle object-fit-cover">
-              <span *ngIf="!dept.finalImage" class="text-muted">—</span>
-            </td>
-            <td>{{ dept.deptName }}</td>
-            <td>{{ dept.printerName }}</td>
-            <td class="text-center">
-              <span class="badge" [ngClass]="dept.activeFlag === 'Y' ? 'bg-success' : 'bg-secondary'">
-                {{ dept.activeFlag === 'Y' ? 'Active' : 'Inactive' }}
-              </span>
-            </td>
-            <td class="text-center">{{ dept.updatedDate | date:'dd/MM/yyyy' }}</td>
-            <td class="text-center" style="white-space:nowrap;">
-              <button class="btn btn-sm btn-info me-1" title="View Detail" (click)="viewDetail(dept)">
-                <i class="bi bi-eye-fill"></i>
-              </button>
-              <button class="btn btn-sm btn-primary me-1" title="Edit" (click)="editDepartment(dept)">
-                <i class="bi bi-pencil-fill"></i>
-              </button>
-              <button class="btn btn-sm btn-danger me-1" title="Delete" (click)="onDelete(dept.deptId)">
-                <i class="bi bi-trash-fill"></i>
-              </button>
-              <button *ngIf="dept.finalImage" class="btn btn-sm btn-warning" title="Remove Image" (click)="deleteImage(dept.deptId)">
-                <i class="bi bi-image"></i>
-              </button>
-            </td>
-          </tr>
-          <tr *ngIf="filteredDepartments.length === 0">
-            <td colspan="7" class="text-center text-muted py-4">No departments found.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <pagination-controls class="text-center mt-3" (pageChange)="p = $event"></pagination-controls>
-  </div>
-
-  <!-- ── MOBILE CARDS ── -->
-  <div class="d-md-none">
-    <div class="card shadow-sm mb-3"
-         *ngFor="let dept of filteredDepartments | paginate:{itemsPerPage:10,currentPage:p}">
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-start mb-1">
-          <div class="d-flex gap-2">
-            <img *ngIf="dept.finalImage" [src]="dept.finalImage" width="40" height="40" class="rounded-circle object-fit-cover">
-            <div *ngIf="!dept.finalImage" class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width:40px;height:40px;">
-              <i class="bi bi-building text-secondary"></i>
-            </div>
-            <div>
-              <h6 class="fw-bold mb-0">{{ dept.deptName }}</h6>
-              <small class="text-muted">ID: {{ dept.deptId }}</small>
-            </div>
-          </div>
-          <span class="badge" [ngClass]="dept.activeFlag === 'Y' ? 'bg-success' : 'bg-secondary'">
-            {{ dept.activeFlag === 'Y' ? 'Active' : 'Inactive' }}
-          </span>
-        </div>
-        <div class="small mt-2"><b>Printer:</b> {{ dept.printerName }}</div>
-        <div class="small"><b>Updated:</b> {{ dept.updatedDate | date:'dd/MM/yyyy' }}</div>
-        <div class="d-flex gap-2 mt-3">
-          <button class="btn btn-sm btn-info flex-fill" (click)="viewDetail(dept)">
-            <i class="bi bi-eye-fill"></i> View
-          </button>
-          <button class="btn btn-sm btn-primary flex-fill" (click)="editDepartment(dept)">
-            <i class="bi bi-pencil-fill"></i> Edit
-          </button>
-          <button class="btn btn-sm btn-danger flex-fill" (click)="onDelete(dept.deptId)">
-            <i class="bi bi-trash-fill"></i> Delete
-          </button>
-        </div>
-        <button *ngIf="dept.finalImage" class="btn btn-sm btn-outline-warning w-100 mt-2" (click)="deleteImage(dept.deptId)">
-          <i class="bi bi-image"></i> Remove Image
-        </button>
+  <!-- Search row -->
+  <div class="shopify-search-row">
+    <div>
+      <label class="shopify-field-label" for="searchTerm">Search Department</label>
+      <div class="shopify-input-group">
+        <span class="shopify-input-group__prefix"><i class="bi bi-search"></i></span>
+        <input type="search" class="shopify-input" id="searchTerm"
+          placeholder="Search by name, printer ID..." [(ngModel)]="searchTerm" (input)="onSearchInput()">
       </div>
     </div>
-    <div *ngIf="filteredDepartments.length === 0" class="text-center text-muted py-4">
-      No departments found.
-    </div>
-    <pagination-controls class="text-center" (pageChange)="p = $event"></pagination-controls>
   </div>
+
+  <!-- Actions row -->
+  <div class="shopify-actions-row">
+    <button type="button" class="btn-shopify btn-shopify--primary" (click)="addDepartment()">
+      <i class="bi bi-building-add"></i> Add Department
+    </button>
+  </div>
+
+  <!-- Loader -->
+  <div class="shopify-loading" *ngIf="isLoading">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p>Loading departments...</p>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+
+    <!-- Empty state -->
+    <div class="shopify-empty" *ngIf="filteredDepartments.length === 0">
+      <h5>Department not found</h5>
+      <p>No departments match your search.</p>
+    </div>
+
+    <ng-container *ngIf="filteredDepartments.length > 0">
+
+      <!-- Desktop table -->
+      <div class="shopify-table-wrap">
+        <table class="shopify-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Image</th>
+              <th>Department Name</th>
+              <th>Printer Name</th>
+              <th>Status</th>
+              <th>Updated Date</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let dept of pagedDepartments">
+              <td class="fw-semibold">{{ dept.deptId }}</td>
+              <td>
+                <img *ngIf="dept.finalImage" [src]="dept.finalImage" width="40" height="40" class="rounded-circle object-fit-cover">
+                <span *ngIf="!dept.finalImage" class="text-muted">—</span>
+              </td>
+              <td>{{ dept.deptName }}</td>
+              <td>{{ dept.printerName }}</td>
+              <td>
+                <span class="shopify-badge" [ngClass]="dept.activeFlag === 'Y' ? 'shopify-badge--success' : 'shopify-badge--muted'">
+                  {{ dept.activeFlag === 'Y' ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td>{{ dept.updatedDate | date:'dd/MM/yyyy' }}</td>
+              <td>
+                <div class="shopify-table__actions">
+                  <button class="btn-shopify btn-shopify--outline btn-shopify--icon" title="View Detail" (click)="viewDetail(dept)">
+                    <i class="bi bi-eye-fill"></i>
+                  </button>
+                  <button class="btn-shopify btn-shopify--outline btn-shopify--icon" title="Edit" (click)="editDepartment(dept)">
+                    <i class="bi bi-pencil-fill"></i>
+                  </button>
+                  <button class="btn-shopify btn-shopify--danger btn-shopify--icon" title="Delete" (click)="onDelete(dept.deptId)">
+                    <i class="bi bi-trash-fill"></i>
+                  </button>
+                  <button *ngIf="dept.finalImage" class="btn-shopify btn-shopify--outline btn-shopify--icon" title="Remove Image" (click)="deleteImage(dept.deptId)">
+                    <i class="bi bi-image"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile cards -->
+      <div class="shopify-mobile-list">
+        <div class="shopify-mobile-card" *ngFor="let dept of pagedDepartments">
+          <div class="shopify-mobile-card__row">
+            <div class="d-flex align-items-center gap-2">
+              <img *ngIf="dept.finalImage" [src]="dept.finalImage" width="40" height="40" class="rounded-circle object-fit-cover">
+              <div>
+                <div class="fw-bold">{{ dept.deptName }}</div>
+                <span class="shopify-field-label--sm">ID: {{ dept.deptId }}</span>
+              </div>
+            </div>
+            <span class="shopify-badge" [ngClass]="dept.activeFlag === 'Y' ? 'shopify-badge--success' : 'shopify-badge--muted'">
+              {{ dept.activeFlag === 'Y' ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
+          <div class="shopify-mobile-card__field">
+            <span class="shopify-field-label--sm">Printer</span>
+            <span>{{ dept.printerName }}</span>
+          </div>
+          <div class="shopify-mobile-card__field">
+            <span class="shopify-field-label--sm">Updated</span>
+            <span>{{ dept.updatedDate | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="shopify-mobile-card__actions">
+            <button class="btn-shopify btn-shopify--outline btn-shopify--sm" (click)="viewDetail(dept)">
+              <i class="bi bi-eye-fill"></i> View
+            </button>
+            <button class="btn-shopify btn-shopify--outline btn-shopify--sm" (click)="editDepartment(dept)">
+              <i class="bi bi-pencil-fill"></i> Edit
+            </button>
+            <button class="btn-shopify btn-shopify--danger btn-shopify--sm" (click)="onDelete(dept.deptId)">
+              <i class="bi bi-trash-fill"></i> Delete
+            </button>
+          </div>
+          <button *ngIf="dept.finalImage" class="btn-shopify btn-shopify--outline btn-shopify--sm w-100 mt-2" (click)="deleteImage(dept.deptId)">
+            <i class="bi bi-image"></i> Remove Image
+          </button>
+        </div>
+      </div>
+
+      <!-- Pagination (Shopify-style Previous / Next) -->
+      <div class="shopify-pager" *ngIf="totalPages > 1">
+        <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="page <= 1" (click)="goToPage(page - 1)">
+          <i class="bi bi-chevron-left"></i> Previous
+        </button>
+        <span class="shopify-pager__info">Page {{ page }} of {{ totalPages }}</span>
+        <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="page >= totalPages" (click)="goToPage(page + 1)">
+          Next <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+
+    </ng-container>
+  </ng-container>
 </div>
 
 <!-- ============================================================
@@ -139,13 +155,13 @@
   <div class="modal fade show d-block" tabindex="-1" style="z-index:1050; overflow-y:auto;">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
       <div class="modal-content">
-        <div class="modal-header bg-primary text-white">
-          <h5 class="modal-title">
+        <div class="shopify-card__header d-flex justify-content-between align-items-center">
+          <span>
             <i class="bi bi-building me-2"></i>
             Department Detail — {{ viewDepartment.deptName }}
-            <span class="badge bg-light text-primary ms-2">ID: {{ viewDepartment.deptId }}</span>
-          </h5>
-          <button type="button" class="btn-close btn-close-white" (click)="closeDetail()"></button>
+            <span class="shopify-badge ms-2">ID: {{ viewDepartment.deptId }}</span>
+          </span>
+          <button type="button" class="btn-close" (click)="closeDetail()"></button>
         </div>
         <div class="modal-body">
           <div class="row">
@@ -162,7 +178,7 @@
                 <tr>
                   <th>Status:</th>
                   <td>
-                    <span class="badge" [ngClass]="viewDepartment.activeFlag === 'Y' ? 'bg-success' : 'bg-secondary'">
+                    <span class="shopify-badge" [ngClass]="viewDepartment.activeFlag === 'Y' ? 'shopify-badge--success' : 'shopify-badge--muted'">
                       {{ viewDepartment.activeFlag === 'Y' ? 'Active' : 'Inactive' }}
                     </span>
                   </td>
@@ -175,10 +191,10 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button class="btn btn-primary" (click)="editDepartment(viewDepartment); closeDetail()">
-            <i class="bi bi-pencil-fill me-1"></i> Edit
+          <button class="btn-shopify btn-shopify--primary" (click)="editDepartment(viewDepartment); closeDetail()">
+            <i class="bi bi-pencil-fill"></i> Edit
           </button>
-          <button class="btn btn-secondary" (click)="closeDetail()">Close</button>
+          <button class="btn-shopify btn-shopify--outline" (click)="closeDetail()">Close</button>
         </div>
       </div>
     </div>
@@ -186,59 +202,58 @@
 </ng-container>
 
 <!-- ============================================================
-     ADD / EDIT FORM
+     DEPARTMENT — ADD / EDIT FORM
      ============================================================ -->
-<div *ngIf="showAddFlag">
-  <div class="container-fluid mt-3 px-0 px-md-3">
-    <div class="card shadow">
-      <div class="card-header py-3"
-           [ngClass]="editMode ? 'bg-warning text-dark' : 'bg-primary text-white'">
-        <h5 class="mb-0">
-          <i class="bi me-2" [ngClass]="editMode ? 'bi-pencil-square' : 'bi-building-add'"></i>
-          {{ editMode ? 'Edit Department' : 'Add New Department' }}
-          <span *ngIf="editMode" class="badge bg-dark ms-2">ID: {{ department.deptId }}</span>
-        </h5>
+<div class="shopify-main-container" *ngIf="showAddFlag">
+
+  <div class="shopify-actions-row">
+    <button class="btn-shopify btn-shopify--outline" (click)="goToList()">
+      <i class="bi bi-arrow-left"></i> Back to Department List
+    </button>
+  </div>
+
+  <div class="shopify-card">
+    <div class="shopify-card__header">
+      {{ editMode ? 'Edit Department' : 'Add New Department' }}
+      <span *ngIf="editMode" class="shopify-badge ms-2">ID: {{ department.deptId }}</span>
+    </div>
+    <div class="shopify-card__body">
+      <div class="shopify-grid-3">
+        <div>
+          <label class="shopify-field-label">Department Name <span class="text-danger">*</span></label>
+          <input type="text" class="shopify-input" placeholder="Enter department name" [(ngModel)]="department.deptName">
+        </div>
+        <div>
+          <label class="shopify-field-label">Printer Name <span class="text-danger">*</span></label>
+          <input type="text" class="shopify-input" placeholder="Printer name" [(ngModel)]="department.printerName">
+        </div>
+        <div>
+          <label class="shopify-field-label">Status</label>
+          <select class="shopify-input" [(ngModel)]="department.activeFlag">
+            <option value="Y">Active</option>
+            <option value="N">Inactive</option>
+          </select>
+        </div>
+        <div>
+          <label class="shopify-field-label">Upload Image</label>
+          <input type="file" class="shopify-input" accept="image/*" (change)="onFileSelected($event)">
+          <div *ngIf="department.finalImage && !selectedFile" class="mt-2 d-flex align-items-center gap-2">
+            <img [src]="department.finalImage" width="60" class="rounded border">
+            <button type="button" class="btn-shopify btn-shopify--outline btn-shopify--sm"
+              (click)="deleteImage(department.deptId); department.finalImage=''">Remove</button>
+          </div>
+        </div>
       </div>
-      <div class="card-body">
 
-        <!-- Required fields -->
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label class="form-label fw-semibold">Department Name <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" [(ngModel)]="department.deptName" placeholder="Enter department name">
-          </div>
-          <div class="col-md-6 mb-3">
-            <label class="form-label fw-semibold">Printer Name <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" [(ngModel)]="department.printerName" placeholder="Printer name">
-          </div>
-          <div class="col-md-6 mb-3">
-            <label class="form-label fw-semibold">Status</label>
-            <select class="form-select" [(ngModel)]="department.activeFlag">
-              <option value="Y">Active</option>
-              <option value="N">Inactive</option>
-            </select>
-          </div>
-          <div class="col-md-6 mb-3">
-            <label class="form-label fw-semibold">Upload Image</label>
-            <input type="file" class="form-control" (change)="onFileSelected($event)" accept="image/*">
-            <div *ngIf="department.finalImage && !selectedFile" class="mt-2">
-              <img [src]="department.finalImage" width="60" class="rounded border">
-              <button type="button" class="btn btn-sm btn-link text-danger" (click)="deleteImage(department.deptId); department.finalImage=''">Remove</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="d-flex gap-2 mt-4 pt-2 border-top">
-          <button type="button" class="btn btn-success px-4" (click)="save()" [disabled]="isSaving">
-            <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-1"></span>
-            <i *ngIf="!isSaving" class="bi bi-save-fill me-1"></i>
-            {{ isSaving ? 'Saving...' : 'Save' }}
-          </button>
-          <button type="button" class="btn btn-secondary" (click)="goToList()">
-            <i class="bi bi-arrow-left me-1"></i> Back to List
-          </button>
-        </div>
-
+      <div class="shopify-actions-row mt-4 pt-3 border-top">
+        <button type="button" class="btn-shopify btn-shopify--primary" (click)="save()" [disabled]="isSaving">
+          <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-1"></span>
+          <i *ngIf="!isSaving" class="bi bi-save-fill"></i>
+          {{ isSaving ? 'Saving...' : 'Save' }}
+        </button>
+        <button type="button" class="btn-shopify btn-shopify--outline" (click)="goToList()">
+          <i class="bi bi-arrow-left"></i> Back to List
+        </button>
       </div>
     </div>
   </div>

@@ -70,6 +70,32 @@ export class CategoryComponent implements OnInit {
 
   spinnerDataLoad: boolean = false;
 
+  /* ===== Pagination (Shopify-style Previous / Next) ===== */
+  page: number = 1;
+  pageSize: number = 5; // match whatever "rows" value the old p-table used
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.categoryList.length / this.pageSize));
+  }
+
+  get pagedCategoryList(): Category[] {
+    const start = (this.page - 1) * this.pageSize;
+    return this.categoryList.slice(start, start + this.pageSize);
+  }
+
+  // Maps the index of a row *within the current page* back to its
+  // absolute index inside categoryList — startEdit/onSave/onDelete/openPopup
+  // all operate on the full-list index.
+  rowIndex(i: number): number {
+    return (this.page - 1) * this.pageSize + i;
+  }
+
+  goToPage(p: number) {
+    if (p < 1 || p > this.totalPages) return;
+    this.page = p;
+    this.activeRow = null;
+  }
+
   constructor(
     private productService: ProductsService,
     private deptService: DepartmentsService,
@@ -116,6 +142,7 @@ export class CategoryComponent implements OnInit {
         // ✅ hamesha naye wale sabse upar
         this.categoryList = [...data].reverse();
         this.categoryMasterList = [...data].reverse();
+        this.page = 1; // reset to first page on fresh load
         this.spinnerDataLoad = false; // 👈 loader stop
       },
       error: (err) => {
@@ -243,6 +270,7 @@ export class CategoryComponent implements OnInit {
             // ADD case: new category at top
             this.categoryList.unshift(data);
             this.categoryMasterList.unshift(data);
+            this.page = 1; // jump to first page so the new category is visible
           } else {
             // EDIT case: update existing row
             this.categoryList[row] = { ...this.categoryList[row], ...data };
@@ -330,6 +358,11 @@ addCategory() {
               // ✅ Brands jaisa hi karo
               this.categoryList.splice(index, 1);
               this.categoryList = [...this.categoryList]; // force update
+
+              // If we deleted the last item on the last page, step back a page
+              if (this.page > this.totalPages) {
+                this.page = this.totalPages;
+              }
 
               Swal.fire('Deleted!', 'Category has been deleted.', 'success');
             },
@@ -470,6 +503,8 @@ addCategory() {
 
       return matchesCategory && matchesSubCategory;
     })
+
+    this.page = 1; // reset to first page whenever the search changes
   }
 
 /* ****************************************************************** */

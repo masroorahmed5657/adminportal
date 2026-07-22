@@ -11,23 +11,21 @@ import { faTwitter, faFacebook, faGoogle } from '@fortawesome/free-brands-svg-ic
 import { faCog, faDashboard, faToolbox } from '@fortawesome/free-solid-svg-icons';
 import { faInfo, faEllipsisV, faPrint, faNewspaper, faBell, faEdit, faPlusCircle, faHistory, faFileInvoiceDollar, faShoppingCart, faSort, faSearch } from '@fortawesome/free-solid-svg-icons';
 import Swal from "sweetalert2";
-import { NgxPaginationModule } from 'ngx-pagination';
 import { CommonModule } from '@angular/common';
 
 
 @Component({
   selector: 'app-customer',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, NgxPaginationModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './customer.component.html',
   styleUrl: './customer.component.scss'
 })
 
 export class CustomerComponent implements OnInit {
 
-  showAddFlag=false;
+  showAddFlag = false;
   editMode = false;
 
-  p: number = 1;
   searchTerm: string = '';
   faCoffee = faCoffee;
   sendSmsFlag: boolean = false;
@@ -68,6 +66,29 @@ export class CustomerComponent implements OnInit {
   dynamicData: string = 'Dynamic Placeholder';
   bestwayToContact: any;
   customerFlag = false;
+
+  /* ===== Pagination (Shopify-style Previous / Next) ===== */
+  page: number = 1;
+  pageSize: number = 5;
+
+  get totalPages(): number {
+    const len = this.filteredItems.length;
+    return Math.max(1, Math.ceil(len / this.pageSize));
+  }
+
+  get pagedCustomerList(): Customer[] {
+    const start = (this.page - 1) * this.pageSize;
+    return this.filteredItems.slice(start, start + this.pageSize);
+  }
+
+  goToPage(p: number) {
+    if (p < 1 || p > this.totalPages) return;
+    this.page = p;
+  }
+
+  onSearchChange() {
+    this.page = 1; // reset to first page whenever search changes
+  }
 
   //Define all forms
   customerForm: FormGroup = new FormGroup({
@@ -135,7 +156,7 @@ export class CustomerComponent implements OnInit {
 
   ngOnInit(): void {
 
-this.customerForm = this.fb.group({
+    this.customerForm = this.fb.group({
 
       custName: [''],
       firstName: ['', Validators.required],
@@ -181,10 +202,11 @@ this.customerForm = this.fb.group({
       discountAmount: [0]
     });
 
-    
+
 
     this.customerService.getAllCustomers().subscribe((data: Customer[]) => {
       this.customerList = data.reverse();
+      this.page = 1; // reset to first page on fresh load
     });
     //this.customerForm.get('loginId')?.setValue(null);
     //this.customerForm.get('loginPassword')?.setValue(null);
@@ -207,10 +229,6 @@ this.customerForm = this.fb.group({
       //    this.provinceList = data;
       //    });
 
-
-
-
-
       this.customerService.getCountryList().subscribe((data: Country[]) => {
         this.countryList = data;
       });
@@ -224,12 +242,9 @@ this.customerForm = this.fb.group({
 
       });
 
-
       // this.customerService.getProvinceList().subscribe((data: StateProvince[]) => {
       //   this.provinceList = data;
       // });
-
-
 
     }
 
@@ -242,9 +257,6 @@ this.customerForm = this.fb.group({
     this.customerForm.get('salesRep')?.setValue(true);
     this.customerForm.get('sendEmailFlag')?.setValue('true');
 
-
-
-    // this.provinceList = [{"name":"Alabama","code":"AL"},{"name":"Alaska","code":"AK"},{"name":"Arizona","code":"AZ"},{"name":"Arkansas","code":"AR"},{"name":"California","code":"CA"},{"name":"Colorado","code":"CO"},{"name":"Connecticut","code":"CT"},{"name":"Delaware","code":"DE"},{"name":"Florida","code":"FL"},{"name":"Georgia","code":"GA"},{"name":"Hawaii","code":"HI"},{"name":"Idaho","code":"ID"},{"name":"Illinois","code":"IL"},{"name":"Indiana","code":"IN"},{"name":"Iowa","code":"IA"},{"name":"Kansas","code":"KS"},{"name":"Kentucky","code":"KY"},{"name":"Louisiana","code":"LA"},{"name":"Maine","code":"ME"},{"name":"Maryland","code":"MD"},{"name":"Massachusetts","code":"MA"},{"name":"Michigan","code":"MI"},{"name":"Minnesota","code":"MN"},{"name":"Mississippi","code":"MS"},{"name":"Missouri","code":"MO"},{"name":"Montana","code":"MT"},{"name":"Nebraska","code":"NE"},{"name":"Nevada","code":"NV"},{"name":"New Hampshire","code":"NH"},{"name":"New Jersey","code":"NJ"},{"name":"New Mexico","code":"NM"},{"name":"New York","code":"NY"},{"name":"North Carolina","code":"NC"},{"name":"North Dakota","code":"ND"},{"name":"Ohio","code":"OH"},{"name":"Oklahoma","code":"OK"},{"name":"Oregon","code":"OR"},{"name":"Pennsylvania","code":"PA"},{"name":"Rhode Island","code":"RI"},{"name":"South Carolina","code":"SC"},{"name":"South Dakota","code":"SD"},{"name":"Tennessee","code":"TN"},{"name":"Texas","code":"TX"},{"name":"Utah","code":"UT"},{"name":"Vermont","code":"VT"},{"name":"Virginia","code":"VA"},{"name":"Washington","code":"WA"},{"name":"West Virginia","code":"WV"},{"name":"Wisconsin","code":"WI"},{"name":"Wyoming","code":"WY"}];
 
     let source = this.activateRoute.snapshot.paramMap.get('source');
     if (source === 'EDIT') {
@@ -280,100 +292,9 @@ this.customerForm = this.fb.group({
   }
 
   /* ************************************************************ */
-  // onCustomerSave(source: any) {
-  //   if (this.customerForm.invalid) {
-  //     //Return without save if form is not valid
-  //     return;
-  //   }
-
-  //   let customer = new Customer();
-  //   customer = this.convertCustFormToVar(customer);
-  //   //address = this.convertAddressFormToVar(address);
-  //   this.submitted = true;
-  //   let invalidFlag = false;//default
-  //   // invalidFlag=true; //if form is Invalid, make it true
-  //   // //Now check for hidden column validation. such as custName, this will be exception
-
-  //   // if (this.customerForm.get('firstName')?.status === 'INVALID' ||
-  //   //           this.customerForm.get('lastName')?.status === 'INVALID'   ||
-  //   //           this.customerForm.get('phone1')?.status === 'INVALID'   ||
-  //   //           this.customerForm.get('email')?.status === 'INVALID'   ||
-  //   //           this.customerForm.get('address1')?.status === 'INVALID'   ||
-  //   //           this.customerForm.get('country')?.status === 'INVALID'   ||
-  //   //           this.customerForm.get('stateProvince')?.status === 'INVALID'   ||
-  //   //           this.customerForm.get('city')?.status === 'INVALID'
-  //   //           ){
-
-  //   //     invalidFlag=true;
-  //   //   }
-  //   //   else{
-  //   //     invalidFlag=false;
-  //   //   }
-
-  //   //
-  //   // if (invalidFlag){
-  //   //   return;
-  //   // }
-
-
-  //   //if (!invalidFlag){
-  //   //Now set dome default values
-  //   if (source === 'EDIT') {
-  //     customer.custId = this.customer.custId;
-  //     customer.custType = 'C';
-  //     customer.priority = 1;
-
-  //     let customerRequest: CustomerRequest = new CustomerRequest();
-  //     // customerRequest = customer;
-  //     this.customerService.updateCustomer(customerRequest).subscribe(data => {
-  //       let userData = data;
-  //       if (data !== undefined) {
-  //         if (data >= 0) {
-  //           this.signInUser = customer.firstName;
-  //           sessionStorage.setItem('signInUser', this.signInUser);
-  //           //now replace data in session
-  //           sessionStorage.setItem('currentUser', JSON.stringify(customer));
-  //           Swal.fire('Submit', 'You have succesfully saved the profile!', 'success')
-  //           this.home();
-  //         }
-  //       }
-  //     });
-
-  //   }
-  //   else {
-  //     customer.custType = 'C';
-  //     customer.priority = 1;
-
-  //     let customerRequest: CustomerRequest = new CustomerRequest();
-  //     //  customerRequest = customer;
-  //     this.customerService.saveCustomer(customerRequest).subscribe(data => {
-  //       let userData = data;
-  //       if (data !== undefined) {
-  //         let customer = data.customer;
-  //         if (customer.custId !== null) {
-  //           this.signInUser = customer.firstName;
-  //           sessionStorage.setItem('signInUser', this.signInUser);
-  //           sessionStorage.setItem('currentUser', JSON.stringify(customer));
-  //           this.alertWithSuccess(customer.custId);
-  //           delay(30000);
-  //           this.cache.set('reload', 'F');
-  //           this.router.navigate(['/']);
-  //         }
-  //       }
-  //     });
-
-  //   }
-
-  // }
-
 
   onCustomerSave(source: any, customer: Customer) {
     this.submitted = true;
-
-    // if (this.customerForm.invalid) {
-    //   return; // form invalid hai to save mat karo
-    // }
-
 
     if (source === 'EDIT') {
       customer.custId = customer.custId;
@@ -381,13 +302,15 @@ this.customerForm = this.fb.group({
       this.customerService.updateCustomer(customer).subscribe(data => {
         if (data !== undefined && data >= 0) {
           this.signInUser = customer.firstName;
-          //sessionStorage.setItem('signInUser', this.signInUser);
-          //sessionStorage.setItem('currentUser', JSON.stringify(customer));
           Swal.fire('Submit', 'You have succesfully saved the profile!', 'success');
-          this.showAddFlag=false;
-          this.editFlag=false;
-          this.editMode=false;
-          // this.home();
+          this.showAddFlag = false;
+          this.editFlag = false;
+          this.editMode = false;
+          // refresh list so table reflects the update
+          this.customerService.getAllCustomers().subscribe((data: Customer[]) => {
+            this.customerList = data.reverse();
+            this.page = 1;
+          });
         }
       });
 
@@ -396,21 +319,21 @@ this.customerForm = this.fb.group({
         if (data && data.customer && data.customer.custId) {
           let customerRes = data.customer;
           this.signInUser = customerRes.firstName;
-          //sessionStorage.setItem('signInUser', this.signInUser);
-          //sessionStorage.setItem('currentUser', JSON.stringify(customerRes));
           this.alertWithSuccess(customerRes.custId);
-          this.showAddFlag=false;
-          this.editFlag=false;
-          this.editMode=false;
+          this.showAddFlag = false;
+          this.editFlag = false;
+          this.editMode = false;
 
           this.cache.set('reload', 'F');
-          // this.router.navigate(['/']);
+          // refresh list so table reflects the new customer
+          this.customerService.getAllCustomers().subscribe((data: Customer[]) => {
+            this.customerList = data.reverse();
+            this.page = 1;
+          });
         }
       });
     }
   }
-
-
 
   /* ************************************************************** */
 
@@ -436,9 +359,7 @@ this.customerForm = this.fb.group({
     this.customerForm.get('billingCountry')?.setValue(customer.billingCountry);
     this.customerForm.get('billingPostalCode')?.setValue(customer.billingPostalCode);
 
-
   }
-
 
   /****************************************** */
   updateFlags(contactMethod: any, customer: Customer) {
@@ -456,15 +377,8 @@ this.customerForm = this.fb.group({
     }
   }
 
-
-
-
-
   /******************************************* */
 
-
-
-  /* ******************************************* */
   convertCustFormToVar(customer: Customer) {
     customer.custId = this.customerForm.get('custId')?.value;
     customer.discountAmount = this.customerForm.get('discountAmount')?.value;
@@ -495,9 +409,7 @@ this.customerForm = this.fb.group({
     customer.sendSmsFlag = this.customerForm.get('sendSmsFlag')?.value;
     customer.sendEmailFlag = this.customerForm.get('sendEmailFlag')?.value;
 
-
     customer.bestWay = this.bestwayToContact;
-
 
     if (customer.sendSmsFlag === null) {
       customer.sendSmsFlag = false;
@@ -517,8 +429,6 @@ this.customerForm = this.fb.group({
     customer.billingCountry = this.customerForm.get('billingCountry')?.value;
     customer.billingPostalCode = this.customerForm.get('billingPostalCode')?.value;
 
-
-
     return customer;
   }
   /* ******************************************* */
@@ -532,11 +442,7 @@ this.customerForm = this.fb.group({
     this.customerForm.reset();
   }
 
-
   /* ******************* FOOTER Links/Methods ********************* */
-  // home() {
-  //   this.router.navigate(['home']);
-  // }
 
   infoClick() {
     this.router.navigate(['info']);
@@ -563,14 +469,9 @@ this.customerForm = this.fb.group({
     }
   }
 
-
-
   onCountryChange() {
 
     const selectedCountry = this.customerForm.get('country')?.value;
-
-    // this.customerForm.get('state')?.setValue(''); // Reset state when country changes
-    // this.customerForm.get('city')?.setValue(''); // Reset city when country changes
 
     if (selectedCountry) {
       this.customerService.getProvinceCityList(selectedCountry).subscribe(data => {
@@ -580,42 +481,27 @@ this.customerForm = this.fb.group({
     }
   }
 
-  // api code
-
   onStateChange() {
     const selectedState = this.customerForm.get('stateProvince')?.value;
-    // this.customerForm.get('city')?.setValue(''); // Reset city when state changes
-
 
     if (selectedState) {
       this.customerService.getCityList(selectedState).subscribe(data => {
         this.citiesList = data;
-
-
       });
     }
   }
 
-
   toggleDiv() {
-
     this.showDiv = !this.showDiv;
-
   }
 
   toggleDiv1() {
-
     this.showDiv1 = !this.showDiv1;
-
   }
-
 
   onCountryChangeBilling() {
 
     const billingCountry = this.customerForm.get('billingCountry')?.value;
-
-    // this.customerForm.get('state')?.setValue(''); // Reset state when country changes
-    // this.customerForm.get('city')?.setValue(''); // Reset city when country changes
 
     if (billingCountry) {
       this.customerService.getProvinceCityList(billingCountry).subscribe(data => {
@@ -626,8 +512,6 @@ this.customerForm = this.fb.group({
   }
 
   onDelete() {
-
-    //Ask confirmation msg
 
     Swal.fire({
       title: 'Are you sure to delete ',
@@ -640,14 +524,11 @@ this.customerForm = this.fb.group({
 
       if (response.value) {
 
-
         let custId: any = this.customerList;
         // this.customerService.deleteCustomer(custId).subscribe(()=>{
         //   delay(30000);
         //   window.location.reload();
         // });
-
-
 
       } else if (response.dismiss === Swal.DismissReason.cancel) {
         Swal.fire(
@@ -659,17 +540,6 @@ this.customerForm = this.fb.group({
     });
   }
 
-
-  // showCustomer() {
-  //   if (this.signInUser !== 'SignIn') {
-  //     this.add = true;
-  //   }
-  //   else {
-  //     this.navigateFlag = false;
-  //   }
-  // }
-
-
   get filteredItems() {
     return this.customerList.filter(customer =>
       customer.firstName?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
@@ -677,49 +547,41 @@ this.customerForm = this.fb.group({
     );
   }
 
+  save() {
+    if (this.editMode) {
+      this.onCustomerSave('EDIT', this.customer);
+    }
+    else {
+      let customer = new Customer();
+      customer = this.convertCustFormToVar(customer);
+      customer.custType = 'C';
+      customer.priority = 1;
 
-save(){
-  if (this.editMode){
-    // let customer = new Customer();
-    // customer = this.convertCustFormToVar(customer);
-    // customer.custType = 'C';
-    // customer.priority = 1;
-    this.onCustomerSave('EDIT', this.customer);
-  }
-  else{
-    let customer = new Customer();
-    customer = this.convertCustFormToVar(customer);
-    customer.custType = 'C';
-    customer.priority = 1;
-
-    this.onCustomerSave('ADD', customer);
+      this.onCustomerSave('ADD', customer);
+    }
   }
 
+  editCustomer(customer: Customer): void {
+    this.editFlag = true;
+    this.editMode = true;
+    this.showAddFlag = true;
+    this.customer = customer;
+    if (this.customer.country === null || this.customer.country === undefined) {
+      this.customer.country = 'Pakistan';
+    }
+  }
 
-}
-
- editCustomer(customer: Customer): void {
-  this.editFlag=true;
-  this.editMode=true;
-  this.showAddFlag=true;
-  this.customer = customer;
-  if (this.customer.country===null || this.customer.country===undefined){
+  addCustomer(): void {
+    this.editMode = false;
+    this.customer = new Customer();
     this.customer.country = 'Pakistan';
-  }
-  //this.customerForm.patchValue(customer);
-   // this.router.navigate(['/customers/edit', id]);
+    this.showAddFlag = true;
   }
 
- addCustomer(): void {
-  this.showAddFlag=true;
-   // this.router.navigate(['/customers/add']);
-  }
-
-  goToList(){
-    this.editFlag=false;
-    this.showAddFlag=false;
+  goToList() {
+    this.editFlag = false;
+    this.showAddFlag = false;
     this.editMode = false;
   }
 
 }
-
