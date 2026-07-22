@@ -1,311 +1,226 @@
-<div class="d-flex flex-column flex-md-row align-items-md-end gap-3 mb-4 py-5">
+<!-- ============================================================
+     CUSTOMER — LIST VIEW
+     ============================================================ -->
+<div class="shopify-main-container" *ngIf="!showAddFlag">
 
-  <!-- Search -->
-  <div class="flex-grow-1">
-    <label class="fw-semibold fs-5 mb-2">Search Name</label>
-    <div class="input-group">
-      <span class="input-group-text bg-light">
-        <i class="bi bi-search"></i>
-      </span>
-      <input type="search"
-             [(ngModel)]="searchTerm"
-             placeholder="Search customer..."
-             class="form-control">
+  <h2 class="shopify-page-title">Customers</h2>
+
+  <!-- Search row -->
+  <div class="shopify-search-row">
+    <div>
+      <label class="shopify-field-label" for="searchName">Search Name</label>
+      <div class="shopify-input-group">
+        <span class="shopify-input-group__prefix"><i class="bi bi-search"></i></span>
+        <input type="text" class="shopify-input" placeholder="Search customer..." id="searchName"
+          [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()">
+      </div>
     </div>
   </div>
 
-  <!-- Add -->
-  <button class="btn text-white"
-          style="background-color:#198754"
-          data-bs-toggle="modal"
-          data-bs-target="#exampleModalCenter"
-          (click)="addCustomer()">
-    Add Customer
-  </button>
+  <!-- Actions row -->
+  <div class="shopify-actions-row">
+    <button type="button" class="btn-shopify btn-shopify--primary" (click)="addCustomer()">
+      <i class="bi bi-plus-lg"></i> Add Customer
+    </button>
+  </div>
 
-</div>
-<div *ngIf="!showAddFlag">
-<div class="d-none d-md-block table-responsive">
+  <!-- Empty state -->
+  <div class="shopify-empty" *ngIf="pagedCustomerList.length === 0">
+    <h5>Customer not found</h5>
+    <p>No customers match your search.</p>
+  </div>
 
-  <table class="table table-striped table-hover align-middle">
-    <thead class="bg-light">
-      <tr>
-        <th>ID</th>
-        <th>First</th>
-        <th>Last</th>
-        <th>Email</th>
-        <th>Phone</th>
-        <th>Address</th>
-        <th>Country</th>
-        <th>State</th>
-        <th>City</th>
-        <th>Zip</th>
-        <th class="text-center">Manage</th>
-      </tr>
-    </thead>
+  <ng-container *ngIf="pagedCustomerList.length > 0">
 
-    <tbody>
-      <tr *ngFor="let customer of customerList | paginate:{itemsPerPage:5,currentPage:p}">
-        <td>{{ customer.custId }}</td>
-        <td>{{ customer.firstName }}</td>
-        <td>{{ customer.lastName }}</td>
-        <td>{{ customer.email }}</td>
-        <td>{{ customer.phone1 }}</td>
-        <td>{{ customer.address }}</td>
-        <td>{{ customer.country }}</td>
-        <td>{{ customer.stateProvince }}</td>
-        <td>{{ customer.city }}</td>
-        <td>{{ customer.postalCode }}</td>
-
-        <td class="text-center">
-          <button class="btn btn-sm btn-primary me-1"
+    <!-- Desktop table -->
+    <div class="shopify-table-wrap">
+      <table class="shopify-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>First</th>
+            <th>Last</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Address</th>
+            <th>Country</th>
+            <th>State</th>
+            <th>City</th>
+            <th>Zip</th>
+            <th class="text-center">Manage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let customer of pagedCustomerList">
+            <td>{{ customer.custId }}</td>
+            <td>{{ customer.firstName }}</td>
+            <td>{{ customer.lastName }}</td>
+            <td>{{ customer.email }}</td>
+            <td>{{ customer.phone1 }}</td>
+            <td>{{ customer.address }}</td>
+            <td>{{ customer.country }}</td>
+            <td>{{ customer.stateProvince }}</td>
+            <td>{{ customer.city }}</td>
+            <td>{{ customer.postalCode }}</td>
+            <td>
+              <div class="shopify-table__actions">
+                <button class="btn-shopify btn-shopify--outline btn-shopify--icon" title="Edit"
                   (click)="editCustomer(customer)">
-            <i class="bi bi-pencil"></i>
-          </button>
-          <button class="btn btn-sm btn-danger"
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn-shopify btn-shopify--danger btn-shopify--icon" title="Delete"
                   (click)="onDelete()">
-            <i class="bi bi-trash"></i>
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Mobile cards -->
+    <div class="shopify-mobile-list">
+      <div class="shopify-mobile-card" *ngFor="let customer of pagedCustomerList">
+        <div class="shopify-mobile-card__row">
+          <span class="shopify-field-label--sm">ID</span>
+          <span>{{ customer.custId }}</span>
+        </div>
+
+        <h6 class="fw-bold mb-2">{{ customer.firstName }} {{ customer.lastName }}</h6>
+
+        <div class="shopify-mobile-card__row">
+          <span class="shopify-field-label--sm">Email</span>
+          <span>{{ customer.email }}</span>
+        </div>
+        <div class="shopify-mobile-card__row">
+          <span class="shopify-field-label--sm">Phone</span>
+          <span>{{ customer.phone1 }}</span>
+        </div>
+        <div class="shopify-mobile-card__row">
+          <span class="shopify-field-label--sm">Address</span>
+          <span>{{ customer.address }}</span>
+        </div>
+        <div class="shopify-mobile-card__row">
+          <span class="shopify-field-label--sm">Location</span>
+          <span>{{ customer.city }}, {{ customer.stateProvince }}</span>
+        </div>
+        <div class="shopify-mobile-card__row">
+          <span class="shopify-field-label--sm">Zip</span>
+          <span>{{ customer.postalCode }}</span>
+        </div>
+
+        <div class="shopify-mobile-card__actions">
+          <button class="btn-shopify btn-shopify--outline btn-shopify--sm" (click)="editCustomer(customer)">
+            <i class="bi bi-pencil"></i> Edit
           </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+          <button class="btn-shopify btn-shopify--danger btn-shopify--sm" (click)="onDelete()">
+            <i class="bi bi-trash"></i> Delete
+          </button>
+        </div>
+      </div>
+    </div>
 
-  <pagination-controls
-    class="text-center"
-    (pageChange)="p=$event">
-  </pagination-controls>
+    <!-- Pagination (Shopify-style Previous / Next) -->
+    <div class="shopify-pager" *ngIf="totalPages > 1">
+      <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="page <= 1"
+        (click)="goToPage(page - 1)">
+        <i class="bi bi-chevron-left"></i> Previous
+      </button>
+      <span class="shopify-pager__info">Page {{ page }} of {{ totalPages }}</span>
+      <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="page >= totalPages"
+        (click)="goToPage(page + 1)">
+        Next <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
 
+  </ng-container>
 </div>
-<div class="d-md-none">
 
-  <div class="card shadow-sm mb-3"
-       *ngFor="let customer of customerList | paginate:{itemsPerPage:5,currentPage:p}">
+<!-- ============================================================
+     CUSTOMER — ADD / EDIT FORM
+     ============================================================ -->
+<div class="shopify-main-container" *ngIf="showAddFlag">
 
-    <div class="card-body">
+  <div class="shopify-actions-row">
+    <button class="btn-shopify btn-shopify--outline" (click)="goToList()">
+      <i class="bi bi-arrow-left"></i> Back to Customer List
+    </button>
+  </div>
 
-      <h6 class="fw-bold text-primary mb-1">
-        {{ customer.firstName }} {{ customer.lastName }}
-      </h6>
+  <div class="shopify-card">
+    <div class="shopify-card__header">{{ editMode ? 'Edit Customer' : 'Add Customer' }}</div>
+    <div class="shopify-card__body">
 
-      <div class="small text-muted mb-2">
-        ID: {{ customer.custId }}
+      <div class="shopify-grid-3">
+        <div>
+          <label class="shopify-field-label">First Name</label>
+          <input type="text" class="shopify-input" [(ngModel)]="customer.firstName" name="firstName">
+        </div>
+        <div>
+          <label class="shopify-field-label">Last Name</label>
+          <input type="text" class="shopify-input" [(ngModel)]="customer.lastName" name="lastName">
+        </div>
+        <div>
+          <label class="shopify-field-label">Email</label>
+          <input type="email" class="shopify-input" [(ngModel)]="customer.email" name="email">
+        </div>
+
+        <div>
+          <label class="shopify-field-label">Phone</label>
+          <input type="text" class="shopify-input" [(ngModel)]="customer.phone1" name="phone1">
+        </div>
+        <div>
+          <label class="shopify-field-label">Customer Type</label>
+          <select class="shopify-input" [(ngModel)]="customer.custType" name="custType">
+            <option value="REGULAR">Regular</option>
+            <option value="VIP">VIP</option>
+            <option value="WHOLESALE">Wholesale</option>
+          </select>
+        </div>
+        <div>
+          <label class="shopify-field-label">Profession</label>
+          <input type="text" class="shopify-input" [(ngModel)]="customer.profession" name="profession">
+        </div>
+
+        <div class="shopify-grid-3__full">
+          <label class="shopify-field-label">Address</label>
+          <textarea rows="2" class="shopify-input" [(ngModel)]="customer.address" name="address"></textarea>
+        </div>
+
+        <div>
+          <label class="shopify-field-label">City</label>
+          <input type="text" class="shopify-input" [(ngModel)]="customer.city" name="city">
+        </div>
+        <div>
+          <label class="shopify-field-label">Country</label>
+          <input type="text" class="shopify-input" [(ngModel)]="customer.country" name="country">
+        </div>
+        <div>
+          <label class="shopify-field-label">Postal Code</label>
+          <input type="text" class="shopify-input" [(ngModel)]="customer.postalCode" name="postalCode">
+        </div>
+
+        <div>
+          <label class="shopify-field-label">Discount</label>
+          <input type="text" class="shopify-input" [(ngModel)]="customer.discountAmount" name="discountAmount">
+        </div>
+        <div>
+          <label class="shopify-field-label">Discount %</label>
+          <input type="text" class="shopify-input" [(ngModel)]="customer.discountPercentage" name="discountPercentage">
+        </div>
       </div>
 
-      <div class="small"><b>Email:</b> {{ customer.email }}</div>
-      <div class="small"><b>Phone:</b> {{ customer.phone1 }}</div>
-      <div class="small"><b>Address:</b> {{ customer.address }}</div>
-      <div class="small">
-        <b>Location:</b>
-        {{ customer.city }}, {{ customer.stateProvince }}
-      </div>
-      <div class="small"><b>Zip:</b> {{ customer.postalCode }}</div>
-
-      <!-- Actions -->
-      <div class="d-flex gap-2 mt-3">
-        <button class="btn btn-sm btn-primary flex-fill"
-                (click)="editCustomer(customer)">
-          <i class="bi bi-pencil"></i> Edit
+      <div class="shopify-actions-row mt-3">
+        <button type="button" class="btn-shopify btn-shopify--primary" (click)="save()">
+          <i class="bi bi-save"></i> Save
         </button>
-
-        <button class="btn btn-sm btn-danger flex-fill"
-                (click)="onDelete()">
-          <i class="bi bi-trash"></i> Delete
+        <button type="button" class="btn-shopify btn-shopify--outline" (click)="goToList()">
+          <i class="bi bi-arrow-left"></i> List Customer
         </button>
       </div>
 
     </div>
   </div>
 
-  <pagination-controls
-    class="text-center"
-    (pageChange)="p=$event">
-  </pagination-controls>
-
-</div>
-
-</div>
-
-
-<div *ngIf="showAddFlag">
-<div class="container mt-3">
-
-  <div class="card shadow">
-
-    <div class="card-header bg-primary text-white">
-
-      <h4 class="mb-0">
-
-        <i class="ri-user-3-fill me-2"></i>
-
-        {{editMode ? 'Edit Customer' : 'Add Customer'}}
-
-      </h4>
-
-    </div>
-
-    <div class="card-body">
-
-      <!-- <form [formGroup]="customerForm"> -->
-
-        <div class="row">
-
-          <div class="col-md-6 mb-3">
-            <label>First Name</label>
-
-            <input
-              type="text"
-              class="form-control"
-              [(ngModel)]="customer.firstName"
-              name="firstName">
-          </div>
-
-          <div class="col-md-6 mb-3">
-            <label>Last Name</label>
-
-            <input
-              type="text"
-              class="form-control"
-              [(ngModel)]="customer.lastName"
-              name="lastName">
-          </div>
-
-          <div class="col-md-6 mb-3">
-            <label>Email</label>
-
-            <input
-              type="email"
-              class="form-control"
-              [(ngModel)]="customer.email"
-              name="email">
-          </div>
-
-          <div class="col-md-6 mb-3">
-            <label>Phone</label>
-
-            <input
-              type="text"
-              class="form-control"
-              [(ngModel)]="customer.phone1"
-              name="phone1">
-          </div>
-
-          <div class="col-md-6 mb-3">
-            <label>Customer Type</label>
-
-            <select
-              class="form-select"
-              [(ngModel)]="customer.custType"
-              name="custType">
-
-              <option value="REGULAR">Regular</option>
-              <option value="VIP">VIP</option>
-              <option value="WHOLESALE">Wholesale</option>
-
-            </select>
-          </div>
-
-          <div class="col-md-6 mb-3">
-            <label>Profession</label>
-
-            <input
-              type="text"
-              class="form-control"
-              [(ngModel)]="customer.profession"
-              name="profession">
-          </div>
-
-          <div class="col-md-12 mb-3">
-            <label>Address</label>
-
-            <textarea
-              rows="2"
-              class="form-control"
-              [(ngModel)]="customer.address"
-              name="address">
-            </textarea>
-          </div>
-
-          <div class="col-md-4 mb-3">
-            <label>City</label>
-
-            <input
-              type="text"
-              class="form-control"
-              [(ngModel)]="customer.city"
-              name="city">
-          </div>
-
-          <div class="col-md-4 mb-3">
-            <label>Country</label>
-
-            <input
-              type="text"
-              class="form-control"
-              [(ngModel)]="customer.country"
-              name="country">
-          </div>
-
-          <div class="col-md-4 mb-3">
-            <label>Postal Code</label>
-
-            <input
-              type="text"
-              class="form-control"
-              [(ngModel)]="customer.postalCode"
-              name="postalCode">
-          </div>
-          <div class="col-md-4 mb-3">
-            <label>Discount</label>
-
-            <input
-              type="text"
-              class="form-control"
-              [(ngModel)]="customer.discountAmount"
-              name="discountAmount">
-          </div>
-
-          <div class="col-md-4 mb-3">
-            <label>Discount%</label>
-
-            <input
-              type="text"
-              class="form-control"
-              [(ngModel)]="customer.discountPercentage"
-              name="discountPercentage">
-          </div>
-
-        </div>
-
-        <div class="mt-3">
-
-          <button
-            type="button"
-            class="btn btn-success me-2"
-            (click)="save()">
-
-            <i class="ri-save-line me-1"></i>
-            Save
-
-          </button>
-
-          <button
-            type="button"
-            class="btn btn-secondary"
-            (click)="goToList()">
-
-            <i class="ri-arrow-left-line me-1"></i>
-            List Customer
-
-          </button>
-
-        </div>
-
-      <!-- </form> -->
-
-    </div>
-
-  </div>
-
-</div>
 </div>

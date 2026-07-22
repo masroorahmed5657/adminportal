@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NgxPaginationModule } from 'ngx-pagination';
 import Swal from 'sweetalert2';
 
 import { Employees } from '../../shared/models/model-classes.model';
@@ -9,7 +8,7 @@ import { EmployeesService } from '../../shared/services/employees.service';
 
 @Component({
   selector: 'app-employees',
-  imports: [CommonModule, FormsModule, NgxPaginationModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './employees.component.html',
   styleUrls: ['./employees.component.scss']
 })
@@ -22,7 +21,8 @@ export class EmployeesComponent implements OnInit {
   showDetailModal = false;
 
   // Pagination & search
-  p = 1;
+  page = 1;
+  pageSize = 10;
   searchTerm = '';
   private searchDebounce: any;
 
@@ -57,6 +57,7 @@ export class EmployeesComponent implements OnInit {
     this.empService.getEmployeesList().subscribe({
       next: (data) => {
         this.employeesList = data;
+        this.page = 1; // reset to first page on fresh load
         this.isLoading = false;
       },
       error: (err) => {
@@ -71,7 +72,7 @@ export class EmployeesComponent implements OnInit {
   onSearchInput(): void {
     clearTimeout(this.searchDebounce);
     this.searchDebounce = setTimeout(() => {
-      this.p = 1;
+      this.page = 1;
     }, 300);
   }
 
@@ -84,6 +85,21 @@ export class EmployeesComponent implements OnInit {
       emp.email?.toLowerCase().includes(term) ||
       emp.empId?.toString().includes(term)
     );
+  }
+
+  /* ===== Pagination (Shopify-style Previous / Next) ===== */
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredEmployees.length / this.pageSize));
+  }
+
+  get pagedEmployees(): Employees[] {
+    const start = (this.page - 1) * this.pageSize;
+    return this.filteredEmployees.slice(start, start + this.pageSize);
+  }
+
+  goToPage(p: number) {
+    if (p < 1 || p > this.totalPages) return;
+    this.page = p;
   }
 
   // Add / Edit / View

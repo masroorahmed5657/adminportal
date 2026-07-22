@@ -25,7 +25,31 @@ export class SupplierComponent implements OnInit {
   searchCode: string = '';
   searchName: string = '';
 
+  /* ===== Pagination (Shopify-style Previous / Next) ===== */
+  page: number = 1;
+  pageSize: number = 5; // match whatever "rows" value the old p-table used
 
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.suppliertList.length / this.pageSize));
+  }
+
+  get pagedSupplierList(): Supplier[] {
+    const start = (this.page - 1) * this.pageSize;
+    return this.suppliertList.slice(start, start + this.pageSize);
+  }
+
+  // Maps the index of a row *within the current page* back to its
+  // absolute index inside suppliertList — startEdit/onSave/onDelete all
+  // operate on the full-list index.
+  rowIndex(i: number): number {
+    return (this.page - 1) * this.pageSize + i;
+  }
+
+  goToPage(p: number) {
+    if (p < 1 || p > this.totalPages) return;
+    this.page = p;
+    this.activeRow = null;
+  }
 
   constructor(
     private supplierService: SupplierService) { }
@@ -45,6 +69,7 @@ export class SupplierComponent implements OnInit {
       next: (data: Supplier[]) => {
         this.suppliertList = data;
         this.suppliertMasterList = data;
+        this.page = 1; // reset to first page on fresh load
         this.spinnerDataLoad = false; // 👈 Loader stop
       },
       error: (err) => {
@@ -137,6 +162,7 @@ export class SupplierComponent implements OnInit {
           if (row < 0) {
             this.suppliertList.unshift(data); // add new supplier to top
             this.addFlag = false;
+            this.page = 1; // jump to first page so the new supplier is visible
           } else {
             this.suppliertList[row] = { ...data }; // update edited supplier
           }
@@ -168,6 +194,11 @@ export class SupplierComponent implements OnInit {
         //this.supplierService.delete(this.suppliertList[row].supplierId).subscribe(() => {
           // Remove item from the array without reloading page
           this.suppliertList.splice(row, 1);
+
+          // If we deleted the last item on the last page, step back a page
+          if (this.page > this.totalPages) {
+            this.page = this.totalPages;
+          }
 
           Swal.fire(
             'Deleted!',
@@ -249,6 +280,8 @@ export class SupplierComponent implements OnInit {
 
       return matchesCode && matchesName;
     });
+
+    this.page = 1; // reset to first page whenever the search changes
   }
 
 

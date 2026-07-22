@@ -5,12 +5,11 @@ import { AdminUserService } from '../../shared/services/admin-user.service';
 import Swal from "sweetalert2";
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TableModule } from "primeng/table";
 
 @Component({
   selector: 'app-adminuser',
   standalone: true,
-  imports: [CommonModule, FormsModule, TableModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './adminuser.component.html',
   styleUrl: './adminuser.component.scss'
 })
@@ -27,6 +26,32 @@ export class AdminUserComponent implements OnInit {
   roles: string[] = ['SUPER', 'ADMIN', 'POS', 'AGENT'];
   selectedRole: string = 'ADMIN';
 
+  /* ===== Pagination (Shopify-style Previous / Next) ===== */
+  page: number = 1;
+  pageSize: number = 5;
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.adminUserList.length / this.pageSize));
+  }
+
+  get pagedAdminUserList(): AdminUser[] {
+    const start = (this.page - 1) * this.pageSize;
+    return this.adminUserList.slice(start, start + this.pageSize);
+  }
+
+  // Maps the index of a row *within the current page* back to its
+  // absolute index inside adminUserList — needed because startEdit/onSave/onDelete
+  // all operate on the full-list index.
+  rowIndex(i: number): number {
+    return (this.page - 1) * this.pageSize + i;
+  }
+
+  goToPage(p: number) {
+    if (p < 1 || p > this.totalPages) return;
+    this.page = p;
+    this.activeRow = null;
+  }
+
 
   constructor(
     private adminUserService: AdminUserService,
@@ -40,17 +65,17 @@ export class AdminUserComponent implements OnInit {
     this.loadAdminUser();
   }
 
-/*
- userId?: number;
-   loginId?: any;
-   loginPassword?: any;
-   firstName?: string;
-   lastName?: string;
-   email?: string;
-   userRole?: string;
-   updatedDate: any;
-   updatedBy: any;
-*/
+  /*
+   userId?: number;
+     loginId?: any;
+     loginPassword?: any;
+     firstName?: string;
+     lastName?: string;
+     email?: string;
+     userRole?: string;
+     updatedDate: any;
+     updatedBy: any;
+  */
 
 
 
@@ -60,15 +85,11 @@ export class AdminUserComponent implements OnInit {
     this.spinnerDataLoad = true;
     this.adminUserService.getAdminUserList().subscribe({
       next: (data: AdminUser[]) => {
-        // const normalized = (data || []).map(emp => ({
-        //   ...emp,
-        //   gender: this.mapGenderToNumber(emp.gender)
-        // }));
-
         data.sort((a, b) => b.userId - a.userId);
 
         this.adminUserList = data;
         this.adminUserMasterList = data;
+        this.page = 1; // reset to first page on fresh load
         this.spinnerDataLoad = false;
       },
       error: (err: any) => {
@@ -91,95 +112,95 @@ export class AdminUserComponent implements OnInit {
     this.activeRow = row; // ye row highlight hoga
   }
 
-onSave(row: any) {
-  let emp: any = {};
-  let saveFlag = true;
+  onSave(row: any) {
+    let emp: any = {};
+    let saveFlag = true;
 
-  let currentUserRaw = sessionStorage.getItem('currentUser');
-  if (currentUserRaw) {
-    try { this.currentUser = JSON.parse(currentUserRaw); } catch { }
-  }
-
-  if (row < 0) {
-    emp.loginId = (document.getElementById('loginId-new') as HTMLInputElement)?.value || null;
-    emp.loginPassword = (document.getElementById('loginPassword-new') as HTMLInputElement)?.value || null;
-    emp.firstName = (document.getElementById('firstName-new') as HTMLInputElement)?.value || null;
-    emp.lastName = (document.getElementById('lastName-new') as HTMLInputElement)?.value || null;
-    emp.email = (document.getElementById('email-new') as HTMLInputElement)?.value || null;
-    emp.userRole = (document.getElementById('userRole-new') as HTMLInputElement)?.value || null;
-    
-    
-    emp.updatedBy = this.currentUser?.loginId ?? null;
-
-    // ✅ Validations
-    if (!emp.firstName) { saveFlag = false; Swal.fire('WARNING', 'Please enter First Name', 'warning'); }
-    if (!emp.email) { 
-      saveFlag = false; Swal.fire('WARNING', 'Please enter Email', 'warning'); 
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emp.email)) { 
-      saveFlag = false; Swal.fire('WARNING', 'Invalid Email format', 'warning'); 
+    let currentUserRaw = sessionStorage.getItem('currentUser');
+    if (currentUserRaw) {
+      try { this.currentUser = JSON.parse(currentUserRaw); } catch { }
     }
 
-    if (!emp.loginId) {
-      saveFlag = false; Swal.fire('WARNING', 'Please enter LoginId', 'warning');
-    } 
-    
-    // else if (!/^\d{14}$/.test(emp.phone)) {
-    //   saveFlag = false; Swal.fire('WARNING', 'Phone number must be exactly 11 digits', 'warning');
-    // }
+    if (row < 0) {
+      emp.loginId = (document.getElementById('loginId-new') as HTMLInputElement)?.value || null;
+      emp.loginPassword = (document.getElementById('loginPassword-new') as HTMLInputElement)?.value || null;
+      emp.firstName = (document.getElementById('firstName-new') as HTMLInputElement)?.value || null;
+      emp.lastName = (document.getElementById('lastName-new') as HTMLInputElement)?.value || null;
+      emp.email = (document.getElementById('email-new') as HTMLInputElement)?.value || null;
+      emp.userRole = (document.getElementById('userRole-new') as HTMLSelectElement)?.value || null;
 
-  } else {
-    if (!this.enabledEdit[row]) return;
 
-    const e = this.adminUserList[row];
-    emp.userId = e.userId;
-    emp.loginId = e.loginId;
-    emp.loginPassword = e.loginPassword || null;
-    emp.firstName = e.firstName || null;
-    emp.lastName = e.lastName || null;
-    emp.email = e.email || null;
-    emp.updatedBy = this.currentUser?.loginId ?? null;
-    emp.userRole = e.userRole;
+      emp.updatedBy = this.currentUser?.loginId ?? null;
 
-    // ✅ Validations
-    if (!emp.firstName) { saveFlag = false; Swal.fire('WARNING', 'Please enter First Name', 'warning'); }
-    if (!emp.email) { 
-      saveFlag = false; Swal.fire('WARNING', 'Please enter Email', 'warning'); 
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emp.email)) { 
-      saveFlag = false; Swal.fire('WARNING', 'Invalid Email format', 'warning'); 
-    }
-
-    if (!emp.loginId) {
-      saveFlag = false; Swal.fire('WARNING', 'Please enter LoginId', 'warning');
-     } 
-   // else if (!/^\d{11}$/.test(emp.phone)) {
-    //   saveFlag = false; Swal.fire('WARNING', 'Phone number must be exactly 11 digits', 'warning');
-    // }
-
-    if (saveFlag) this.enabledEdit[row] = false;
-  }
-
-  if (!saveFlag) return;
-
-  // API Call Same
-  this.adminUserService.save(emp).subscribe({
-    next: (data: any) => {
-      if (data && data.userId != null) {
-        Swal.fire('Submit', `You have saved User ${data.userId} successfully!`, 'success').then(() => {
-          this.enabledEdit[row] = false;
-          this.activeRow = null;
-        });
-        this.loadAdminUser();
-        if (row < 0) this.addFlag = false;
-      } else {
-        Swal.fire('Error', 'Error in saving User', 'error');
+      // ✅ Validations
+      if (!emp.firstName) { saveFlag = false; Swal.fire('WARNING', 'Please enter First Name', 'warning'); }
+      if (!emp.email) {
+        saveFlag = false; Swal.fire('WARNING', 'Please enter Email', 'warning');
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emp.email)) {
+        saveFlag = false; Swal.fire('WARNING', 'Invalid Email format', 'warning');
       }
-    },
-    error: (err: any) => {
-      console.error('Save failed:', err);
-      Swal.fire('Error', 'Server error occurred. Please try again.', 'error');
+
+      if (!emp.loginId) {
+        saveFlag = false; Swal.fire('WARNING', 'Please enter LoginId', 'warning');
+      }
+
+      // else if (!/^\d{14}$/.test(emp.phone)) {
+      //   saveFlag = false; Swal.fire('WARNING', 'Phone number must be exactly 11 digits', 'warning');
+      // }
+
+    } else {
+      if (!this.enabledEdit[row]) return;
+
+      const e = this.adminUserList[row];
+      emp.userId = e.userId;
+      emp.loginId = e.loginId;
+      emp.loginPassword = e.loginPassword || null;
+      emp.firstName = e.firstName || null;
+      emp.lastName = e.lastName || null;
+      emp.email = e.email || null;
+      emp.updatedBy = this.currentUser?.loginId ?? null;
+      emp.userRole = e.userRole;
+
+      // ✅ Validations
+      if (!emp.firstName) { saveFlag = false; Swal.fire('WARNING', 'Please enter First Name', 'warning'); }
+      if (!emp.email) {
+        saveFlag = false; Swal.fire('WARNING', 'Please enter Email', 'warning');
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emp.email)) {
+        saveFlag = false; Swal.fire('WARNING', 'Invalid Email format', 'warning');
+      }
+
+      if (!emp.loginId) {
+        saveFlag = false; Swal.fire('WARNING', 'Please enter LoginId', 'warning');
+      }
+      // else if (!/^\d{11}$/.test(emp.phone)) {
+      //   saveFlag = false; Swal.fire('WARNING', 'Phone number must be exactly 11 digits', 'warning');
+      // }
+
+      if (saveFlag) this.enabledEdit[row] = false;
     }
-  });
-}
+
+    if (!saveFlag) return;
+
+    // API Call Same
+    this.adminUserService.save(emp).subscribe({
+      next: (data: any) => {
+        if (data && data.userId != null) {
+          Swal.fire('Submit', `You have saved User ${data.userId} successfully!`, 'success').then(() => {
+            this.enabledEdit[row] = false;
+            this.activeRow = null;
+          });
+          this.loadAdminUser();
+          if (row < 0) this.addFlag = false;
+        } else {
+          Swal.fire('Error', 'Error in saving User', 'error');
+        }
+      },
+      error: (err: any) => {
+        console.error('Save failed:', err);
+        Swal.fire('Error', 'Server error occurred. Please try again.', 'error');
+      }
+    });
+  }
 
 
   onDelete(row: any) {
@@ -193,6 +214,12 @@ onSave(row: any) {
       if (res.value) {
         this.adminUserService.delete(this.adminUserList[row].userId).subscribe(() => {
           this.adminUserList.splice(row, 1);
+
+          // If we deleted the last item on the last page, step back a page
+          if (this.page > this.totalPages) {
+            this.page = this.totalPages;
+          }
+
           Swal.fire('Deleted!', 'User deleted successfully.', 'success');
         });
       }
@@ -205,5 +232,6 @@ onSave(row: any) {
       const empName = (emp.firstName + ' ' + emp.lastName).toLowerCase();
       return name ? empName.includes(name) : true;
     });
+    this.page = 1; // reset to first page whenever search changes
   }
 }

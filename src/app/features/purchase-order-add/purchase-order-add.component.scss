@@ -1,11 +1,14 @@
-.modal-dialog{
-    overflow-y: initial !important
-}
-.modal-body{
-   // height: 80vh;
-   max-height: calc(100vh - 200px);
-    overflow-y: auto;
-}
-.label{
-    font-weight: bold;
-}
+// .modal-dialog{
+//     overflow-y: initial !important
+// }
+// .modal-body{
+//    // height: 80vh;
+//    max-height: calc(100vh - 200px);
+//     overflow-y: auto;
+// }
+// .label{
+//     font-weight: bold;
+// }
+
+
+@import "../../shared/shopify-theme.scss"

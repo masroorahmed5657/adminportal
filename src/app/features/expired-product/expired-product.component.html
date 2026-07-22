@@ -1,37 +1,46 @@
-<div class="card border-0 shadow-sm mt-4">
-  <div class="card-body">
+<div class="shopify-main-container">
 
-    <div *ngIf="spinnerDataLoad" class="text-center py-5">
-      <div class="spinner-border text-danger" style="width: 3rem; height: 3rem;" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-      <p class="mt-2 text-muted">Loading products...</p>
+  <h2 class="shopify-page-title">Expired Products</h2>
+
+  <!-- Loader -->
+  <div class="shopify-loading" *ngIf="spinnerDataLoad">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p>Loading expired products...</p>
+  </div>
+
+  <ng-container *ngIf="!spinnerDataLoad">
+
+    <!-- Empty state -->
+    <div class="shopify-empty" *ngIf="productViewList.length === 0">
+      <h5>No expired products</h5>
+      <p>Nothing has expired in the last {{ expiryDays }} days.</p>
     </div>
 
-    <div class="product-grid" *ngIf="!spinnerDataLoad">
-      <div class="product-card" *ngFor="let product of productViewList" (click)="viewProduct(product)">
+    <div class="row g-3" *ngIf="productViewList.length > 0">
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2" *ngFor="let product of productViewList">
 
-        <div class="product-image-wrap">
-          <img class="product-image"
-               [src]="'data:' + product.imageMimeType + ';base64,' + product.productImage"
-               [alt]="product.productName">
-        </div>
+        <div class="shopify-card h-100">
+          <img class="w-100" style="aspect-ratio:1/1; object-fit:cover; border-bottom:1px solid var(--shopify-border, #e3e3e3);"
+            [src]="'data:' + product.imageMimeType + ';base64,' + product.productImage"
+            [alt]="product.productName">
 
-        <div class="product-body">
-          <h5 class="product-title" [title]="product.productName">{{ product.productName }}</h5>
+          <div class="shopify-card__body text-center">
+            <h6 class="fw-semibold mb-2">{{ product.productName }}</h6>
 
-          <div class="product-meta">
-            <span class="product-price">$ {{ product.unitPrice }}</span>
-            <span class="product-expiry">Expires: {{ product.expiryDate | date:'yyyy-MM-dd' }}</span>
+            <span class="shopify-badge shopify-badge--muted d-block mb-2">
+              $ {{ product.unitPrice }}
+            </span>
+
+            <span class="shopify-badge shopify-badge--danger d-block">
+              Expires on {{ product.expiryDate | date:'yyyy-MM-dd' }}
+            </span>
           </div>
         </div>
 
       </div>
     </div>
 
-    <div *ngIf="!spinnerDataLoad && productViewList.length === 0" class="text-center text-muted py-5">
-      No expired products found.
-    </div>
-
-  </div>
+  </ng-container>
 </div>

@@ -28,6 +28,31 @@ export class ExpensesComponent {
   totalExpense = 0;
   reportDate: any;
 
+  /* ===== Pagination (Shopify-style Previous / Next) ===== */
+  page: number = 1;
+  pageSize: number = 5;
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.expensesList.length / this.pageSize));
+  }
+
+  get pagedExpensesList(): ExpensesView[] {
+    const start = (this.page - 1) * this.pageSize;
+    return this.expensesList.slice(start, start + this.pageSize);
+  }
+
+  // Maps the index of a row *within the current page* back to its
+  // absolute index inside expensesList — needed because editExpense/onDelete
+  // operate on the full-list index.
+  rowIndex(i: number): number {
+    return (this.page - 1) * this.pageSize + i;
+  }
+
+  goToPage(p: number) {
+    if (p < 1 || p > this.totalPages) return;
+    this.page = p;
+  }
+
   constructor(
     private cache: CacheService,
     private router: Router,
@@ -82,6 +107,7 @@ export class ExpensesComponent {
       this.expensesList = data;
 
       this.totalExpense = this.getTotalAmount();
+      this.page = 1; // reset to first page on fresh load
 
 
     });
@@ -100,6 +126,7 @@ export class ExpensesComponent {
       this.expensesList = data;
 
       this.totalExpense = this.getTotalAmount();
+      this.page = 1; // reset to first page whenever a new report loads
 
 
     });

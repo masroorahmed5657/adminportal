@@ -1,227 +1,182 @@
-<!-- Card Start -->
-<div class="card border border-2">
-  <div class="card-body">
-    <!-- Search & Buttons Row -->
-    <div *ngIf="!addFlag">
-      <!-- Search Inputs Row -->
-      <div class="row mb-3">
-        <div class="col-md-6">
-          <label for="searchCode" class="fw-semibold mb-2">Search Code</label>
-          <div class="input-group">
-            <span class="input-group-text">
-              <i class="bi bi-search"></i>
-            </span>
-            <input type="text" class="form-control" placeholder="Search By Code" [(ngModel)]="searchCode"
-              (ngModelChange)="brandSearch()" id="searchCode">
-          </div>
-        </div>
-        <div class="col-md-6 mt-3 mt-md-0">
-          <label for="searchName" class="fw-semibold mb-2">Search Name</label>
-          <div class="input-group">
-            <span class="input-group-text">
-              <i class="bi bi-search"></i>
-            </span>
-            <input type="text" class="form-control" placeholder="Search By Name" [(ngModel)]="searchName"
-              (ngModelChange)="brandSearch()" id="searchName" />
-          </div>
-        </div>
+<!-- ============================================================
+     BRAND — LIST VIEW
+     ============================================================ -->
+<div class="shopify-main-container" *ngIf="!addFlag">
+
+  <h2 class="shopify-page-title">Brands</h2>
+
+  <!-- Search row -->
+  <div class="shopify-search-row">
+    <div>
+      <label class="shopify-field-label" for="searchCode">Search Code</label>
+      <div class="shopify-input-group">
+        <span class="shopify-input-group__prefix"><i class="bi bi-search"></i></span>
+        <input type="text" class="shopify-input" placeholder="Search by code" id="searchCode"
+          [(ngModel)]="searchCode" (ngModelChange)="brandSearch()">
       </div>
+    </div>
+    <div>
+      <label class="shopify-field-label" for="searchName">Search Name</label>
+      <div class="shopify-input-group">
+        <span class="shopify-input-group__prefix"><i class="bi bi-search"></i></span>
+        <input type="text" class="shopify-input" placeholder="Search by name" id="searchName"
+          [(ngModel)]="searchName" (ngModelChange)="brandSearch()">
+      </div>
+    </div>
+  </div>
 
-      <!-- Actual content -->
-      <div *ngIf="!addFlag">
-        <!-- Table -->
-        <div *ngIf="brandList.length > 0; else notFound">
-          <p-table [value]="brandList" [paginator]="false" [rows]="5" [sortMode]="'multiple'"
-            [rowsPerPageOptions]="[5,10,20]" responsiveLayout="scroll">
-            <!-- Table content moved to PrimeNG Table below -->
-          </p-table>
-        </div>
+  <!-- Actions row -->
+  <div class="shopify-actions-row">
+    <button type="button" class="btn-shopify btn-shopify--primary" (click)="addbrand()">
+      <i class="bi bi-plus-lg"></i> Add Brand
+    </button>
+    <label for="documents" class="shopify-file-label">
+      <i class="bi bi-upload"></i> Upload Brands
+    </label>
+    <input type="file" id="documents" class="d-none" accept=".xlsx,.xls,.csv"
+      (change)="uploadBrands($event)" multiple>
+  </div>
 
-        <ng-template #notFound>
-          <div class="not-found py-5">
-            <h5>Brand Not Found</h5>
-          </div>
-        </ng-template>
+  <!-- Loader -->
+  <div class="shopify-loading" *ngIf="spinnerDataLoad">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p>Loading brands...</p>
+  </div>
 
-        <!-- Buttons Row -->
-        <div class="row mb-4">
-          <div class="col d-flex justify-content-center align-items-center gap-2">
-            <button class="btn btn-success mb-1" (click)="addbrand()">
-              Add Brand
-            </button>
+  <ng-container *ngIf="!spinnerDataLoad">
 
-            <label for="documents" class="btn btn-primary ">
-              Upload BrandS
-            </label>
-            <input type="file" id="documents" class="d-none" accept=".xlsx, .xls, .csv" (change)="uploadBrands($event)"
-              multiple />
-          </div>
-        </div>
+    <!-- Empty state -->
+    <div class="shopify-empty" *ngIf="brandList.length === 0">
+      <h5>Brand not found</h5>
+      <p>No brands match your search.</p>
+    </div>
 
-        <!-- PrimeNG Table Start -->
-        <p-table [value]="brandList" class="d-none d-md-block"
-        [paginator]="true" 
-        [rows]="5" 
-        [sortMode]="'multiple'" 
-        sortField="brandId"
-          [rowsPerPageOptions]="[5,10,20]" responsiveLayout="scroll">
-          <ng-template pTemplate="header">
+    <ng-container *ngIf="brandList.length > 0">
+
+      <!-- Desktop table -->
+      <div class="shopify-table-wrap">
+        <table class="shopify-table">
+          <thead>
             <tr>
-              <th pSortableColumn="brandId">
-                Brand ID <p-sortIcon field="brandId"></p-sortIcon>
-              </th>
-              <th pSortableColumn="brandCode">
-                Brand Code <p-sortIcon field="brandCode"></p-sortIcon>
-              </th>
-              <th pSortableColumn="brandName">
-                Brand Name <p-sortIcon field="brandName"></p-sortIcon>
-              </th>
+              <th>Brand ID</th>
+              <th>Brand Code</th>
+              <th>Brand Name</th>
               <th class="text-center">Actions</th>
             </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-brnd let-row="rowIndex">
-            <tr [ngClass]="{'table-active': activeRow === row}">
+          </thead>
+          <tbody>
+            <tr *ngFor="let brnd of pagedBrandList; let i = index" [ngClass]="{'is-active': activeRow === rowIndex(i)}">
               <td>{{ brnd.brandId }}</td>
               <td>
-                <input type="text" class="form-control" id="brandCode-{{ row }}" [(ngModel)]="brnd.brandCode"
-                  [disabled]="!enabledEdit[row]" />
+                <input type="text" class="shopify-input" id="brandCode-{{ rowIndex(i) }}"
+                  [(ngModel)]="brnd.brandCode" [disabled]="!enabledEdit[rowIndex(i)]">
               </td>
               <td>
-                <input type="text" class="form-control" id="brandName-{{ row }}" [(ngModel)]="brnd.brandName"
-                  [disabled]="!enabledEdit[row]" />
+                <input type="text" class="shopify-input" id="brandName-{{ rowIndex(i) }}"
+                  [(ngModel)]="brnd.brandName" [disabled]="!enabledEdit[rowIndex(i)]">
               </td>
-              <td class="text-center">
-                <div class="btn-group">
-                  <button *ngIf="!enabledEdit[row]" class="btn btn-primary me-1" (click)="startEdit(row)">
+              <td>
+                <div class="shopify-table__actions">
+                  <button *ngIf="!enabledEdit[rowIndex(i)]" class="btn-shopify btn-shopify--outline btn-shopify--icon"
+                    title="Edit" (click)="startEdit(rowIndex(i))">
                     <i class="bi bi-pencil"></i>
                   </button>
-                  <button *ngIf="enabledEdit[row]" class="btn btn-success me-1" (click)="onSave(brnd.brandId, row)">
-                    <i class="bi bi-check"></i>
+                  <button *ngIf="enabledEdit[rowIndex(i)]" class="btn-shopify btn-shopify--success btn-shopify--icon"
+                    title="Save" (click)="onSave(brnd.brandId, rowIndex(i))">
+                    <i class="bi bi-check-lg"></i>
                   </button>
-                  <button class="btn btn-outline-danger" (click)="onDelete(brnd.brandId, row)">
+                  <button class="btn-shopify btn-shopify--danger btn-shopify--icon" title="Delete"
+                    (click)="onDelete(brnd.brandId, rowIndex(i))">
                     <i class="bi bi-trash"></i>
                   </button>
                 </div>
               </td>
             </tr>
-          </ng-template>
-        </p-table>
-        <!-- PrimeNG Table End -->
-        <!-- Mobile Cards View -->
-        <div class="container-fluid d-md-none">
+          </tbody>
+        </table>
+      </div>
 
-          <div class="row g-3">
-            <div class="col-12 col-md-6 col-lg-4" *ngFor="let brnd of brandList; let row = index">
-
-              <div class="card shadow-sm h-100">
-                <div class="card-body">
-
-                  <!-- Brand ID -->
-                  <div class="mb-2 d-flex justify-content-between">
-                    <span class="fw-bold">Brand ID</span>
-                    <span>{{ brnd.brandId }}</span>
-                  </div>
-
-                  <!-- Brand Code -->
-                  <div class="mb-2">
-                    <label class="fw-bold">Brand Code</label>
-                    <input type="text" class="form-control form-control-sm" [(ngModel)]="brnd.brandCode"
-                      [disabled]="!enabledEdit[row]" />
-                  </div>
-
-                  <!-- Brand Name -->
-                  <div class="mb-3">
-                    <label class="fw-bold">Brand Name</label>
-                    <input type="text" class="form-control form-control-sm" [(ngModel)]="brnd.brandName"
-                      [disabled]="!enabledEdit[row]" />
-                  </div>
-
-                  <!-- Actions -->
-                  <div class="d-flex justify-content-end gap-2">
-                    <button *ngIf="!enabledEdit[row]" class="btn btn-sm btn-primary" (click)="startEdit(row)">
-                      <i class="bi bi-pencil"></i>
-                    </button>
-
-                    <button *ngIf="enabledEdit[row]" class="btn btn-sm btn-success" (click)="onSave(brnd.brandId, row)">
-                      <i class="bi bi-check"></i>
-                    </button>
-
-                    <button class="btn btn-sm btn-outline-danger" (click)="onDelete(brnd.brandId, row)">
-                      <i class="bi bi-trash"></i>
-                    </button>
-                  </div>
-
-                </div>
-              </div>
-
-            </div>
+      <!-- Mobile cards -->
+      <div class="shopify-mobile-list">
+        <div class="shopify-mobile-card" *ngFor="let brnd of pagedBrandList; let i = index"
+          [ngClass]="{'is-active': activeRow === rowIndex(i)}">
+          <div class="shopify-mobile-card__row">
+            <span class="shopify-field-label--sm">Brand ID</span>
+            <span>{{ brnd.brandId }}</span>
           </div>
-
-        </div>
-
-
-        <!-- Mobile Cards View Ends Here -->
-
-      </div>
-    </div>
-
-    <!-- Loader -->
-    <div *ngIf="spinnerDataLoad" class="d-flex justify-content-center align-items-center py-5">
-      <div class="spinner-border" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-    </div>
-
-    <!-- Add Form Row -->
-    <div *ngIf="addFlag">
-      <div class="row mb-4">
-        <h3>Add Brand</h3>
-        <div class="col d-flex justify-content-center flex-wrap gap-2" *ngIf="showBrandListFlag">
-          <button class="btn btn-warning" (click)="backToList()">
-            <i class="bi bi-arrow-left"></i> Back to Brand List
-          </button>
+          <div class="shopify-mobile-card__field">
+            <label class="shopify-field-label--sm">Brand Code</label>
+            <input type="text" class="shopify-input" [(ngModel)]="brnd.brandCode" [disabled]="!enabledEdit[rowIndex(i)]">
+          </div>
+          <div class="shopify-mobile-card__field">
+            <label class="shopify-field-label--sm">Brand Name</label>
+            <input type="text" class="shopify-input" [(ngModel)]="brnd.brandName" [disabled]="!enabledEdit[rowIndex(i)]">
+          </div>
+          <div class="shopify-mobile-card__actions">
+            <button *ngIf="!enabledEdit[rowIndex(i)]" class="btn-shopify btn-shopify--outline btn-shopify--sm"
+              (click)="startEdit(rowIndex(i))">
+              <i class="bi bi-pencil"></i> Edit
+            </button>
+            <button *ngIf="enabledEdit[rowIndex(i)]" class="btn-shopify btn-shopify--success btn-shopify--sm"
+              (click)="onSave(brnd.brandId, rowIndex(i))">
+              <i class="bi bi-check-lg"></i> Save
+            </button>
+            <button class="btn-shopify btn-shopify--danger btn-shopify--sm" (click)="onDelete(brnd.brandId, rowIndex(i))">
+              <i class="bi bi-trash"></i> Delete
+            </button>
+          </div>
         </div>
       </div>
 
-<div class="card shadow-sm border-0">
-  <div class="card-body">
-
-    <h6 class="mb-3 fw-bold text-primary">
-      ➕ Add New Brand
-    </h6>
-
-    <div class="row g-2 align-items-center">
-
-      <!-- Brand Code -->
-      <div class="col-12 col-md-4">
-        <input type="text"
-               class="form-control"
-               id="brandCode-new"
-               placeholder="Brand Code" />
-      </div>
-
-      <!-- Brand Name -->
-      <div class="col-12 col-md-5">
-        <input type="text"
-               class="form-control"
-               id="brandName-new"
-               placeholder="Brand Name" />
-      </div>
-
-      <!-- Save Button -->
-      <div class="col-12 col-md-3 d-grid">
-        <button class="btn btn-success"
-                (click)="onSave(-1, -1)">
-          <i class="bi bi-save me-1"></i> Save Brand
+      <!-- Pagination (Shopify-style Previous / Next) -->
+      <div class="shopify-pager" *ngIf="totalPages > 1">
+        <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="page <= 1"
+          (click)="goToPage(page - 1)">
+          <i class="bi bi-chevron-left"></i> Previous
+        </button>
+        <span class="shopify-pager__info">Page {{ page }} of {{ totalPages }}</span>
+        <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="page >= totalPages"
+          (click)="goToPage(page + 1)">
+          Next <i class="bi bi-chevron-right"></i>
         </button>
       </div>
 
-    </div>
-
-  </div>
+    </ng-container>
+  </ng-container>
 </div>
 
+<!-- ============================================================
+     BRAND — ADD FORM
+     ============================================================ -->
+<div class="shopify-main-container" *ngIf="addFlag">
+
+  <div class="shopify-actions-row" *ngIf="showBrandListFlag">
+    <button class="btn-shopify btn-shopify--outline" (click)="backToList()">
+      <i class="bi bi-arrow-left"></i> Back to Brand List
+    </button>
+  </div>
+
+  <div class="shopify-card">
+    <div class="shopify-card__header">Add new brand</div>
+    <div class="shopify-card__body">
+      <div class="shopify-grid-3">
+        <div>
+          <label class="shopify-field-label">Brand Code</label>
+          <input type="text" class="shopify-input" id="brandCode-new" placeholder="Brand code">
+        </div>
+        <div>
+          <label class="shopify-field-label">Brand Name</label>
+          <input type="text" class="shopify-input" id="brandName-new" placeholder="Brand name">
+        </div>
+        <div class="d-flex align-items-end">
+          <button class="btn-shopify btn-shopify--primary w-100" (click)="onSave(-1, -1)">
+            <i class="bi bi-save"></i> Save Brand
+          </button>
+        </div>
+      </div>
     </div>
   </div>
+
 </div>
-<!-- Card End -->
