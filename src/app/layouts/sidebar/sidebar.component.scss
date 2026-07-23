@@ -47,8 +47,30 @@
   color: var(--text-color);
 }
 
+/* ================= MENU ================= */
+
 .admin-sidebar__menu {
-  max-height: calc(100vh - 280px);
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  padding: 0 1rem 32px;
+}
+
+.admin-sidebar__menu::-webkit-scrollbar {
+  width: 7px;
+}
+
+.admin-sidebar__menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-sidebar__menu::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 116, 139, 0.5);
+  border-radius: 10px;
+}
+
+.admin-sidebar__menu::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(100, 116, 139, 0.8);
 }
 
 .admin-sidebar__section {
@@ -75,7 +97,7 @@
   border-radius: 8px;
   font-size: 1rem;
   text-decoration: none;
-  transition: all 0.3s;
+  transition: all 0.25s ease;
 }
 
 .admin-sidebar__link:hover {
@@ -88,23 +110,6 @@
   color: var(--first-color);
 }
 
-.admin-sidebar__menu::-webkit-scrollbar {
-  width: 7px;
-}
-
-.admin-sidebar__menu::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.admin-sidebar__menu::-webkit-scrollbar-thumb {
-  background-color: rgba(100, 116, 139, 0.5);
-  border-radius: 10px;
-}
-
-.admin-sidebar__menu::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(100, 116, 139, 0.8);
-}
-
 .admin-sidebar__user h5 {
   color: var(--title-color) !important;
 }
@@ -112,6 +117,8 @@
 .admin-sidebar__user small {
   color: var(--text-color) !important;
 }
+
+/* ================= COLLAPSED ================= */
 
 .admin-sidebar.collapsed .admin-sidebar__link {
   justify-content: center;
@@ -132,16 +139,42 @@
   align-items: center;
 }
 
-.admin-sidebar__footer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.admin-sidebar.collapsed .admin-sidebar__submenu {
+  display: none;
 }
 
-.admin-sidebar__footer .admin-sidebar__link {
+.admin-sidebar.collapsed .admin-sidebar__parent {
   justify-content: center;
-  margin: 0 auto 4px auto;
 }
+
+.admin-sidebar.collapsed .admin-sidebar__parent i.ms-auto {
+  display: none;
+}
+
+.admin-sidebar.collapsed .admin-sidebar__parent>i:first-child {
+  display: block;
+  margin-right: 0 !important;
+}
+
+.admin-sidebar.collapsed .admin-sidebar__version {
+  display: none;
+}
+
+.admin-sidebar.collapsed .admin-sidebar__footer-btn span {
+  display: none;
+}
+
+.admin-sidebar.collapsed .admin-sidebar__footer-btn {
+  justify-content: center;
+  padding: 12px 0;
+}
+
+.admin-sidebar.collapsed .admin-sidebar__footer-btn i {
+  margin: 0;
+  font-size: 20px;
+}
+
+/* ================= MENU DROPDOWNS ================= */
 
 .admin-sidebar__parent {
   cursor: pointer;
@@ -167,32 +200,78 @@
   padding: 8px 12px;
 }
 
-/* ================= COLLAPSED SIDEBAR ================= */
+/* ================= FOOTER ================= */
 
-.admin-sidebar.collapsed .admin-sidebar__submenu {
-  display: none;
+/* ================= FOOTER ================= */
+
+.admin-sidebar__footer {
+  display: flex;
+  flex-direction: column;
+  padding: 18px 12px;
+  gap: 6px;
+  border-top: 1px solid rgba(128, 128, 128, 0.25);
 }
 
-.admin-sidebar.collapsed .admin-sidebar__parent i.ms-auto {
-  display: none;
+.admin-sidebar__footer-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+
+  padding: 10px 12px;
+
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.25s ease;
+
+  font-size: 1rem;
 }
 
-/* Keep parent icons centered */
-.admin-sidebar.collapsed .admin-sidebar__parent {
-  justify-content: center;
+.admin-sidebar__footer-btn i {
+  width: 20px;
+  min-width: 20px;
+  text-align: center;
+  font-size: 18px;
 }
 
-/* Keep icons visible */
-.admin-sidebar.collapsed .admin-sidebar__parent>i:first-child {
-  display: block;
-  margin-right: 0 !important;
+.admin-sidebar__footer-btn span {
+  flex: 1;
+  text-align: left;
 }
 
-/* =========================================================
-   RESPONSIVE SIDEBAR
-   ========================================================= */
+.admin-sidebar__footer-btn:hover {
+  background: rgba(128, 128, 128, 0.15);
+  color: var(--title-color);
+}
 
-/* Tablets and smaller screens */
+.logout-btn {
+  color: #ef4444;
+}
+
+.logout-btn:hover {
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.admin-sidebar__version {
+  margin-top: 8px;
+  padding: 12px;
+  border-top: 1px solid rgba(128, 128, 128, 0.15);
+
+  text-align: left;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--text-color);
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+/* ================= RESPONSIVE ================= */
+
 @media (max-width: 992px) {
 
   .admin-sidebar {
@@ -201,8 +280,6 @@
 
 }
 
-
-/* Mobile devices - including iPhone 12 Pro */
 @media (max-width: 768px) {
 
   .admin-sidebar {
@@ -211,18 +288,12 @@
     box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
   }
 
-  /*
-    When show-sidebar is added,
-    sidebar becomes visible
-  */
   .admin-sidebar.show-sidebar {
     transform: translateX(0);
   }
 
 }
 
-
-/* Small mobile screens */
 @media (max-width: 480px) {
 
   .admin-sidebar {
