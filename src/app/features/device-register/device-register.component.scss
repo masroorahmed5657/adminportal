@@ -1,36 +1,18 @@
 /* device-register.component.scss */
+@import "../../shared/shopify-theme";
 
-.card {
-  border-radius: 18px;
+:host ::ng-deep .shopify-topbar {
+  top: 70px !important;
+  z-index: 998 !important;
+  border-bottom: 1px solid #e1e3e5;
+  padding-bottom: 1rem !important;
 }
 
-.form-control,
-.form-select {
-  border-radius: 10px;
+:host ::ng-deep .shopify-topbar__inner {
+  align-items: center;
+  padding-left: 2.30rem;
 }
 
-.btn {
-  border-radius: 10px;
-}
-
-.table td,
-.table th {
-  vertical-align: middle;
-}
-
-.badge {
-  font-size: 12px;
-  padding: 6px 10px;
-}
-
-@media (max-width: 768px) {
-
-  .table {
-    font-size: 13px;
-  }
-
-  .btn {
-    font-size: 13px;
-  }
-
+:host ::ng-deep .shopify-main-container {
+  margin-top: 60px !important;
 }
