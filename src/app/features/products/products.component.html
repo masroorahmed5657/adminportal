@@ -220,8 +220,92 @@
                     <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="row row-cols-1 row-cols-md-3 g-3">
-                        <div class="col" *ngFor="let product of productViewList; let i=index">
+
+                    <!-- Printer Type Selector -->
+                    <div class="d-flex align-items-center mb-3 gap-2">
+                        <label class="fw-bold mb-0">Printer Type:</label>
+                        <select class="shopify-select" style="width:auto;" [(ngModel)]="printerMode">
+                            <option value="normal">Normal Printer (A4 Sheet)</option>
+                            <option value="barcode">Barcode Machine (Thermal Label Printer)</option>
+                        </select>
+                    </div>
+
+                    <!-- Columns per row selector (Only for Normal Printer) -->
+                   <!-- Columns per row selector (Only for Normal Printer) -->
+<div class="d-flex flex-wrap align-items-center mb-3 gap-3" *ngIf="printerMode === 'normal'">
+    <div class="d-flex align-items-center gap-2">
+        <label class="fw-bold mb-0">Barcodes per row:</label>
+        <select class="shopify-select" style="width:auto;" [(ngModel)]="printColumns">
+            <option [value]="2">2</option>
+            <option [value]="3">3</option>
+            <option [value]="4">4</option>
+            <option [value]="5">5</option>
+        </select>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <label class="fw-bold mb-0">Label Width (mm):</label>
+        <input type="number" class="shopify-input" style="width:70px;" [(ngModel)]="normalLabelWidthMM">
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <label class="fw-bold mb-0">Label Height (mm):</label>
+        <input type="number" class="shopify-input" style="width:70px;" [(ngModel)]="normalLabelHeightMM">
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <label class="fw-bold mb-0">Column Gap (mm):</label>
+        <input type="number" class="shopify-input" style="width:70px;" [(ngModel)]="normalColGapMM">
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <label class="fw-bold mb-0">Row Gap (mm):</label>
+        <input type="number" class="shopify-input" style="width:70px;" [(ngModel)]="normalRowGapMM">
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <label class="fw-bold mb-0">Top Margin (mm):</label>
+        <input type="number" class="shopify-input" style="width:70px;" [(ngModel)]="normalTopMarginMM">
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <label class="fw-bold mb-0">Left Margin (mm):</label>
+        <input type="number" class="shopify-input" style="width:70px;" [(ngModel)]="normalLeftMarginMM">
+    </div>
+</div>
+<div class="mb-2" *ngIf="printerMode === 'normal'">
+    <small class="text-muted">
+        Tip: Pehli baar print karne se pehle apni sticker sheet ko scale se naap lein
+        (ek label ki width/height + do labels ke darmiyan gap + sheet ke top-left se
+        pehle label tak ka margin) aur upar wale boxes mein wahi values daal dein.
+        Print dialog mein "Actual Size / 100%" aur margins "None" select karein.
+    </small>
+</div>
+
+                    <!-- Label size (Only for Barcode Machine) -->
+                    <div class="d-flex flex-wrap align-items-center mb-3 gap-3" *ngIf="printerMode === 'barcode'">
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="fw-bold mb-0">Label Width (mm):</label>
+                            <input type="number" class="shopify-input" style="width:80px;" [(ngModel)]="labelWidthMM">
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="fw-bold mb-0">Label Height (mm):</label>
+                            <input type="number" class="shopify-input" style="width:80px;" [(ngModel)]="labelHeightMM">
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="fw-bold mb-0">Labels per row:</label>
+                            <input type="number" class="shopify-input" style="width:70px;" [(ngModel)]="labelsPerRow" min="1">
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="fw-bold mb-0">Gap between labels (mm):</label>
+                            <input type="number" class="shopify-input" style="width:70px;" [(ngModel)]="labelGapMM" min="0">
+                        </div>
+                    </div>
+                    <div class="mb-2" *ngIf="printerMode === 'barcode'">
+                        <small class="text-muted">
+                            Tip: "Labels per row" wahi number hona chahiye jitne label physically ek row mein
+                            aap ki machine se saath print hote hain (roll ke hisaab se, jaisa screenshot mein 3 the).
+                        </small>
+                    </div>
+
+                    <!-- Preview grid: Normal Printer Mode -->
+                    <div class="d-grid" *ngIf="printerMode === 'normal'"
+                        [style.grid-template-columns]="'repeat(' + printColumns + ', 1fr)'" style="gap: 12px;">
+                        <div *ngFor="let product of productViewList; let i=index">
                             <div class="shopify-card text-center p-3">
                                 <h6 class="text-truncate mb-2">{{product.productName}}</h6>
                                 <img src='data:image/png;base64,{{product.firstImage}}' class="img-fluid" alt="Barcode">
@@ -231,14 +315,39 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Preview: Barcode Machine Mode (wraps into rows matching physical stock via container width) -->
+                    <div *ngIf="printerMode === 'barcode'" class="p-2" style="background:#eee;">
+                        <div class="d-flex flex-wrap"
+                            style="gap: {{labelGapMM}}mm;"
+                            [style.width.mm]="(labelWidthMM * labelsPerRow) + (labelGapMM * (labelsPerRow - 1))">
+                            <div *ngFor="let product of productViewList; let i=index"
+                                class="text-center bg-white mb-2"
+                                style="border:1px solid #ccc; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; flex-shrink:0;"
+                                [style.width.mm]="labelWidthMM"
+                                [style.height.mm]="labelHeightMM">
+                                <p class="mb-0" style="font-size:10px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:95%;">
+                                    {{product.productName}} ({{product.sku}})
+                                </p>
+                                <img src='data:image/png;base64,{{product.firstImage}}' style="max-width:90%; height:auto;" alt="Barcode">
+                                <p class="mb-0 fw-bold" style="font-size:12px;">{{product.upc}}</p>
+                                <p class="mb-0 fw-bold" style="font-size:11px;">Rs. {{product.salePrice | number:'1.2-2'}}</p>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-shopify btn-shopify--outline" (click)="htmlToPrintBarcode()">Print</button>
+                    <button type="button" class="btn-shopify btn-shopify--outline"
+                        (click)="printerMode === 'barcode' ? printForBarcodeMachine() : htmlToPrintBarcode()">
+                        Print
+                    </button>
                     <button type="button" class="btn-shopify btn-shopify--primary" (click)="modalOpen = false">Close</button>
                 </div>
             </div>
         </div>
     </div>
+
 
     <!-- Name Search Modal -->
     <div class="modal fade" [ngClass]="{'show d-block': nameSearchModal}" tabindex="-1" role="dialog">

@@ -1,107 +1,168 @@
-<div class="card border-0 shadow-sm mt-5">
-  <div class="card-body p-0">
+<!-- ============================================================
+     NEWSTRACKER — LIST VIEW
+     ============================================================ -->
+<div class="shopify-main-container" *ngIf="!addFlag">
 
-    <!-- Excel‑style toolbar -->
-    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 p-3 bg-light border-bottom">
-      <div class="d-flex gap-2 flex-grow-1" style="max-width: 350px;">
-        <div class="input-group">
-          <span class="input-group-text bg-white"><fa-icon [icon]="faSearch"></fa-icon></span>
-          <input type="text" class="form-control" placeholder="Search news or site..."
-                 [(ngModel)]="searchText" (input)="p = 1">
-        </div>
-      </div>
-      <div class="d-flex gap-2">
-        <button type="button" class="btn btn-sm btn-primary" (click)="addNewstracker()">
-          <fa-icon [icon]="faPlusCircle"></fa-icon> Add News
-        </button>
-        <button *ngIf="addFlag" type="button" class="btn btn-sm btn-outline-secondary" (click)="newstrackerList()">
-          <fa-icon [icon]="faList"></fa-icon> List News
-        </button>
+  <h2 class="shopify-page-title">News Tracker</h2>
+
+  <!-- Search row -->
+  <div class="shopify-search-row">
+    <div>
+      <label class="shopify-field-label" for="searchNews">Search News / Site</label>
+      <div class="shopify-input-group">
+        <span class="shopify-input-group__prefix"><i class="bi bi-search"></i></span>
+        <input type="text" class="shopify-input" placeholder="Search news or site..." id="searchNews"
+          [(ngModel)]="searchText" (ngModelChange)="p = 1">
       </div>
     </div>
+  </div>
 
-    <!-- Table wrapper with horizontal scroll -->
-    <div class="table-responsive" style="overflow-x: auto;">
-      <table class="table table-bordered table-sm align-middle mb-0"
-             style="min-width: 600px; border-color: #dee2e6;">
-        <thead class="bg-light" style="border-bottom: 2px solid #adb5bd;">
-          <tr class="text-center">
-            <th style="width: 80px;">News ID</th>
+  <!-- Actions row -->
+  <div class="shopify-actions-row">
+    <button type="button" class="btn-shopify btn-shopify--primary" (click)="addNewstracker()">
+      <i class="bi bi-plus-lg"></i> Add News
+    </button>
+  </div>
+
+  <!-- Empty state -->
+  <div class="shopify-empty" *ngIf="filteredNewsList.length === 0">
+    <h5>No news found</h5>
+    <p>No news entries match your search.</p>
+  </div>
+
+  <ng-container *ngIf="filteredNewsList.length > 0">
+
+    <!-- Desktop table -->
+    <div class="shopify-table-wrap">
+      <table class="shopify-table">
+        <thead>
+          <tr>
+            <th>News ID</th>
             <th>News Content</th>
-            <th style="width: 170px;">Site</th>
-            <th style="width: 140px;">Actions</th>
+            <th>Site</th>
+            <th class="text-center">Actions</th>
           </tr>
         </thead>
-        <tbody *ngIf="!addFlag">
-          <!-- Display filtered + paginated list -->
+        <tbody>
           <tr *ngFor="let news of filteredNewsList | paginate: { itemsPerPage: 10, currentPage: p }; let row = index"
-              [ngClass]="{'table-active bg-light': activeRow === row}">
-            <!-- News ID (editable) -->
-            <td class="text-center">
-              <input type="text" class="form-control form-control-sm text-center"
-                     id="newsId-{{row}}" [(ngModel)]="news.newsId"
-                     [disabled]="!enabledEdit[row]">
-            </td>
-            <!-- News text -->
+            [ngClass]="{'is-active': activeRow === row}">
             <td>
-              <input type="text" class="form-control form-control-sm"
-                     id="news-{{row}}" [(ngModel)]="news.news"
-                     [disabled]="!enabledEdit[row]">
+              <input type="text" class="shopify-input" id="newsId-{{row}}"
+                [(ngModel)]="news.newsId" [disabled]="!enabledEdit[row]">
             </td>
-            <!-- Site dropdown -->
             <td>
-              <select class="form-select form-select-sm" id="site-{{row}}" [(ngModel)]="news.site"
-                      [disabled]="!enabledEdit[row]">
+              <input type="text" class="shopify-input" id="news-{{row}}"
+                [(ngModel)]="news.news" [disabled]="!enabledEdit[row]">
+            </td>
+            <td>
+              <select class="shopify-select" id="site-{{row}}" [(ngModel)]="news.site"
+                [disabled]="!enabledEdit[row]">
                 <option>Mobile App</option>
                 <option>Back Office</option>
                 <option>Public Website</option>
               </select>
             </td>
-            <!-- Action buttons -->
-            <td class="text-center text-nowrap">
-              <button class="btn btn-sm btn-outline-primary me-1" (click)="startEdit(row)" title="Edit">
-                <fa-icon [icon]="faEdit"></fa-icon>
-              </button>
-              <button class="btn btn-sm btn-outline-danger me-1" (click)="onDelete(row)" title="Delete">
-                <fa-icon [icon]="faRemove"></fa-icon>
-              </button>
-              <button class="btn btn-sm btn-outline-success" (click)="onSave(row)" title="Save">
-                <fa-icon [icon]="faSave"></fa-icon>
-              </button>
-            </td>
-          </tr>
-          <tr *ngIf="filteredNewsList.length === 0">
-            <td colspan="4" class="text-center text-muted py-4">No news entries found.</td>
-          </tr>
-        </tbody>
-        <tbody *ngIf="addFlag">
-          <tr class="table-info">
-            <td class="text-center">—</td>
             <td>
-              <input type="text" class="form-control form-control-sm" id="news-new"
-                     placeholder="Enter news..." [(ngModel)]="newNewsText">
-            </td>
-            <td>
-              <select class="form-select form-select-sm" id="site-new" [(ngModel)]="newSite">
-                <option>Mobile App</option>
-                <option>Back Office</option>
-                <option>Public Website</option>
-              </select>
-            </td>
-            <td class="text-center">
-              <button class="btn btn-sm btn-success" (click)="onSave(-1)">
-                <fa-icon [icon]="faSave"></fa-icon> Save
-              </button>
+              <div class="shopify-table__actions">
+                <button *ngIf="!enabledEdit[row]" class="btn-shopify btn-shopify--outline btn-shopify--icon"
+                  title="Edit" (click)="startEdit(row)">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button *ngIf="enabledEdit[row]" class="btn-shopify btn-shopify--success btn-shopify--icon"
+                  title="Save" (click)="onSave(row)">
+                  <i class="bi bi-check-lg"></i>
+                </button>
+                <button class="btn-shopify btn-shopify--danger btn-shopify--icon" title="Delete"
+                  (click)="onDelete(row)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- Pagination controls -->
-    <div class="d-flex justify-content-center mt-3" *ngIf="!addFlag && filteredNewsList.length > 0">
+    <!-- Mobile cards -->
+    <div class="shopify-mobile-list">
+      <div class="shopify-mobile-card" *ngFor="let news of filteredNewsList | paginate: { itemsPerPage: 10, currentPage: p }; let row = index"
+        [ngClass]="{'is-active': activeRow === row}">
+        <div class="shopify-mobile-card__row">
+          <span class="shopify-field-label--sm">News ID</span>
+          <input type="text" class="shopify-input" style="max-width: 110px;" [(ngModel)]="news.newsId"
+            [disabled]="!enabledEdit[row]">
+        </div>
+        <div class="shopify-mobile-card__field">
+          <label class="shopify-field-label--sm">News Content</label>
+          <input type="text" class="shopify-input" [(ngModel)]="news.news" [disabled]="!enabledEdit[row]">
+        </div>
+        <div class="shopify-mobile-card__field">
+          <label class="shopify-field-label--sm">Site</label>
+          <select class="shopify-select" [(ngModel)]="news.site" [disabled]="!enabledEdit[row]">
+            <option>Mobile App</option>
+            <option>Back Office</option>
+            <option>Public Website</option>
+          </select>
+        </div>
+        <div class="shopify-mobile-card__actions">
+          <button *ngIf="!enabledEdit[row]" class="btn-shopify btn-shopify--outline btn-shopify--sm"
+            (click)="startEdit(row)">
+            <i class="bi bi-pencil"></i> Edit
+          </button>
+          <button *ngIf="enabledEdit[row]" class="btn-shopify btn-shopify--success btn-shopify--sm"
+            (click)="onSave(row)">
+            <i class="bi bi-check-lg"></i> Save
+          </button>
+          <button class="btn-shopify btn-shopify--danger btn-shopify--sm" (click)="onDelete(row)">
+            <i class="bi bi-trash"></i> Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="shopify-pagination">
       <pagination-controls (pageChange)="p = $event"></pagination-controls>
     </div>
 
+  </ng-container>
+</div>
+
+<!-- ============================================================
+     NEWSTRACKER — ADD FORM
+     ============================================================ -->
+<div class="shopify-main-container" *ngIf="addFlag">
+
+  <div class="shopify-actions-row">
+    <button class="btn-shopify btn-shopify--outline" (click)="newstrackerList()">
+      <i class="bi bi-arrow-left"></i> Back to News List
+    </button>
   </div>
+
+  <div class="shopify-card">
+    <div class="shopify-card__header">Add new news ticker</div>
+    <div class="shopify-card__body">
+      <div class="shopify-grid-3">
+        <div>
+          <label class="shopify-field-label">News Content</label>
+          <input type="text" class="shopify-input" id="news-new" placeholder="Enter news..."
+            [(ngModel)]="newNewsText">
+        </div>
+        <div>
+          <label class="shopify-field-label">Site</label>
+          <select class="shopify-select" id="site-new" [(ngModel)]="newSite">
+            <option>Mobile App</option>
+            <option>Back Office</option>
+            <option>Public Website</option>
+          </select>
+        </div>
+        <div class="d-flex align-items-end">
+          <button class="btn-shopify btn-shopify--primary w-100" (click)="onSave(-1)">
+            <i class="bi bi-save"></i> Save News
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>

@@ -64,7 +64,7 @@ import { LandingComponent } from './landing/landing.component';
 export const routes: Routes = [
     {
         path: '',
-        component: LandingComponent
+        component: LoginComponent
     },
     {
         path: 'login',

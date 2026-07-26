@@ -56,11 +56,12 @@ export class DepartmentComponent implements OnInit {
     this.loadDepartments();
   }
 
+  // ✅ activeFlag ab boolean hai (true = Active, false = Inactive)
   private getEmptyDepartment(): Departments {
     return {
       deptId: null,
       deptName: '',
-      activeFlag: 'Y',
+      activeFlag: true,
       printerName: '',
       finalImage: '',
       imageType: '',
@@ -73,7 +74,12 @@ export class DepartmentComponent implements OnInit {
     this.isLoading = true;
     this.deptService.getDepartmentList().subscribe({
       next: (data) => {
-        this.departmentsList = data;
+        // ✅ Agar backend se pehle se boolean aa raha hai to ye line optional hai,
+        // lekin agar kabhi 'Y'/'N' ya 0/1 mix aaye to normalize kar deti hai
+        this.departmentsList = data.map(d => ({
+          ...d,
+          activeFlag: this.normalizeToBoolean(d.activeFlag)
+        }));
         this.page = 1; // reset to first page on fresh load
         this.isLoading = false;
       },
@@ -83,6 +89,13 @@ export class DepartmentComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  // ✅ Helper: kisi bhi format (Y/N, 1/0, true/false) ko boolean bana deta hai
+  private normalizeToBoolean(value: any): boolean {
+    if (typeof value === 'boolean') return value;
+    if (value === 'Y' || value === '1' || value === 1) return true;
+    return false;
   }
 
   // Search with debounce
@@ -116,11 +129,14 @@ export class DepartmentComponent implements OnInit {
     this.showAddFlag = true;
     this.editMode = true;
     this.department = JSON.parse(JSON.stringify(dept));
+    // ✅ ensure boolean rahay (JSON stringify/parse se type change nahi hota, phir bhi safe check)
+    this.department.activeFlag = this.normalizeToBoolean(this.department.activeFlag);
     this.selectedFile = null;
   }
 
   viewDetail(dept: Departments): void {
     this.viewDepartment = JSON.parse(JSON.stringify(dept));
+    this.viewDepartment.activeFlag = this.normalizeToBoolean(this.viewDepartment.activeFlag);
     this.showDetailModal = true;
   }
 
@@ -152,7 +168,12 @@ export class DepartmentComponent implements OnInit {
     }
 
     this.isSaving = true;
-    const deptToSave = { ...this.department };
+
+    // ✅ activeFlag ko explicitly boolean bana kar bhej rahay hain
+    const deptToSave = {
+      ...this.department,
+      activeFlag: this.normalizeToBoolean(this.department.activeFlag)
+    };
 
     this.deptService.saveDep(deptToSave).subscribe({
       next: (saved) => {

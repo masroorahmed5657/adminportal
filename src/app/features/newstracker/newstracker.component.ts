@@ -1,26 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgxPaginationModule } from 'ngx-pagination';
 import Swal from 'sweetalert2';
 
 import { NewsTracker } from '../../shared/models/model-classes.model';
 import { NewstrackerService } from '../../shared/services/newstracker.service';
 
-import {
-  faSave,
-  faEdit,
-  faRemove,
-  faPlusCircle,
-  faSearch,
-  faList
-} from '@fortawesome/free-solid-svg-icons';
-
 @Component({
   selector: 'app-newstracker',
   standalone: true,
-  imports: [CommonModule, FormsModule, FontAwesomeModule, NgxPaginationModule],
+  imports: [CommonModule, FormsModule, NgxPaginationModule],
   templateUrl: './newstracker.component.html',
   styleUrls: ['./newstracker.component.scss']
 })
@@ -40,14 +30,6 @@ export class NewstrackerComponent implements OnInit {
   // Add form fields
   newNewsText = '';
   newSite = 'Mobile App';
-
-  // FontAwesome icons
-  faSave = faSave;
-  faEdit = faEdit;
-  faRemove = faRemove;
-  faPlusCircle = faPlusCircle;
-  faSearch = faSearch;
-  faList = faList;
 
   constructor(private newsService: NewstrackerService) {}
 
