@@ -1,0 +1,236 @@
+<!-- ============================================================
+     SUPPLIER — LIST VIEW
+     ============================================================ -->
+<div class="shopify-main-container" *ngIf="!addFlag">
+
+  <h2 class="shopify-page-title">Supplier Management</h2>
+
+  <!-- Search row -->
+  <div class="shopify-search-row">
+    <div>
+      <label class="shopify-field-label" for="searchCode">Search Code</label>
+      <div class="shopify-input-group">
+        <span class="shopify-input-group__prefix"><i class="bi bi-search"></i></span>
+        <input type="text" class="shopify-input" id="searchCode" placeholder="Search supplier code"
+          [(ngModel)]="searchCode" (input)="supplierSearch()">
+      </div>
+    </div>
+    <div>
+      <label class="shopify-field-label" for="searchName">Search Name</label>
+      <div class="shopify-input-group">
+        <span class="shopify-input-group__prefix"><i class="bi bi-search"></i></span>
+        <input type="text" class="shopify-input" id="searchName" placeholder="Search supplier name"
+          [(ngModel)]="searchName" (input)="supplierSearch()">
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions row -->
+  <div class="shopify-actions-row">
+    <button type="button" class="btn-shopify btn-shopify--primary" (click)="addSupplier()">
+      <i class="bi bi-plus-lg"></i> Add Supplier
+    </button>
+    <label class="shopify-file-label">
+      <i class="bi bi-upload"></i> Upload Suppliers
+      <input type="file" hidden (change)="uploadSuppliers($event)">
+    </label>
+    <button type="button" class="btn-shopify btn-shopify--outline" (click)="importSuppliers()">
+      <i class="bi bi-cloud-download"></i> Import Suppliers
+    </button>
+  </div>
+
+  <!-- Loader -->
+  <div class="shopify-loading" *ngIf="spinnerDataLoad">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p>Loading suppliers...</p>
+  </div>
+
+  <ng-container *ngIf="!spinnerDataLoad">
+
+    <!-- Empty state -->
+    <div class="shopify-empty" *ngIf="suppliertList.length === 0">
+      <h5>Supplier not found</h5>
+      <p>No suppliers match your search.</p>
+    </div>
+
+    <ng-container *ngIf="suppliertList.length > 0">
+
+      <!-- Desktop table -->
+      <div class="shopify-table-wrap">
+        <table class="shopify-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Code</th>
+              <th>Name</th>
+              <th>Contact</th>
+              <th>Address</th>
+              <th>Email</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let sup of pagedSupplierList; let i = index"
+              [ngClass]="{'is-active': activeRow === rowIndex(i)}">
+              <td>{{ sup.supplierId }}</td>
+              <td>
+                <input type="text" class="shopify-input" id="supplierCode-{{rowIndex(i)}}" [value]="sup.supplierCode"
+                  [disabled]="!enabledEdit[rowIndex(i)]">
+              </td>
+              <td>
+                <input type="text" class="shopify-input" id="supplierName-{{rowIndex(i)}}" [value]="sup.supplierName"
+                  [disabled]="!enabledEdit[rowIndex(i)]">
+              </td>
+              <td>
+                <input type="text" class="shopify-input" id="supplierContact-{{rowIndex(i)}}"
+                  [value]="sup.supplierContact" [disabled]="!enabledEdit[rowIndex(i)]">
+              </td>
+              <td>
+                <input type="text" class="shopify-input" id="supplierAddress-{{rowIndex(i)}}"
+                  [value]="sup.supplierAddress" [disabled]="!enabledEdit[rowIndex(i)]">
+              </td>
+              <td>
+                <input type="text" class="shopify-input" id="supplierEmail-{{rowIndex(i)}}" [value]="sup.supplierEmail"
+                  [disabled]="!enabledEdit[rowIndex(i)]">
+              </td>
+              <td>
+                <div class="shopify-table__actions">
+                  <button *ngIf="!enabledEdit[rowIndex(i)]" class="btn-shopify btn-shopify--outline btn-shopify--icon"
+                    title="Edit" (click)="startEdit(rowIndex(i))">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button *ngIf="enabledEdit[rowIndex(i)]" class="btn-shopify btn-shopify--success btn-shopify--icon"
+                    title="Save" (click)="onSave(sup.supplierId, rowIndex(i))">
+                    <i class="bi bi-check-lg"></i>
+                  </button>
+                  <button class="btn-shopify btn-shopify--danger btn-shopify--icon" title="Delete"
+                    (click)="onDelete(sup.supplierId, rowIndex(i))">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile cards -->
+      <div class="shopify-mobile-list">
+        <div class="shopify-mobile-card" *ngFor="let sup of pagedSupplierList; let i = index"
+          [ngClass]="{'is-active': activeRow === rowIndex(i)}">
+
+          <h6 class="fw-bold mb-2">{{ sup.supplierName }}</h6>
+
+          <div class="shopify-mobile-card__field">
+            <label class="shopify-field-label--sm">Code</label>
+            <input type="text" class="shopify-input" id="supplierCode-{{rowIndex(i)}}" [value]="sup.supplierCode"
+              [disabled]="!enabledEdit[rowIndex(i)]">
+          </div>
+          <div class="shopify-mobile-card__field">
+            <label class="shopify-field-label--sm">Name</label>
+            <input type="text" class="shopify-input" id="supplierName-{{rowIndex(i)}}" [value]="sup.supplierName"
+              [disabled]="!enabledEdit[rowIndex(i)]">
+          </div>
+          <div class="shopify-mobile-card__field">
+            <label class="shopify-field-label--sm">Contact</label>
+            <input type="text" class="shopify-input" id="supplierContact-{{rowIndex(i)}}" [value]="sup.supplierContact"
+              [disabled]="!enabledEdit[rowIndex(i)]">
+          </div>
+          <div class="shopify-mobile-card__field">
+            <label class="shopify-field-label--sm">Address</label>
+            <input type="text" class="shopify-input" id="supplierAddress-{{rowIndex(i)}}" [value]="sup.supplierAddress"
+              [disabled]="!enabledEdit[rowIndex(i)]">
+          </div>
+          <div class="shopify-mobile-card__field">
+            <label class="shopify-field-label--sm">Email</label>
+            <input type="text" class="shopify-input" id="supplierEmail-{{rowIndex(i)}}" [value]="sup.supplierEmail"
+              [disabled]="!enabledEdit[rowIndex(i)]">
+          </div>
+
+          <div class="shopify-mobile-card__actions">
+            <button *ngIf="!enabledEdit[rowIndex(i)]" class="btn-shopify btn-shopify--outline btn-shopify--sm"
+              (click)="startEdit(rowIndex(i))">
+              <i class="bi bi-pencil"></i> Edit
+            </button>
+            <button *ngIf="enabledEdit[rowIndex(i)]" class="btn-shopify btn-shopify--success btn-shopify--sm"
+              (click)="onSave(sup.supplierId, rowIndex(i))">
+              <i class="bi bi-check-lg"></i> Save
+            </button>
+            <button class="btn-shopify btn-shopify--danger btn-shopify--sm"
+              (click)="onDelete(sup.supplierId, rowIndex(i))">
+              <i class="bi bi-trash"></i> Delete
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination (Shopify-style Previous / Next) -->
+      <div class="shopify-pager" *ngIf="totalPages > 1">
+        <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="page <= 1"
+          (click)="goToPage(page - 1)">
+          <i class="bi bi-chevron-left"></i> Previous
+        </button>
+        <span class="shopify-pager__info">Page {{ page }} of {{ totalPages }}</span>
+        <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="page >= totalPages"
+          (click)="goToPage(page + 1)">
+          Next <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+
+    </ng-container>
+  </ng-container>
+</div>
+
+<!-- ============================================================
+     SUPPLIER — ADD FORM
+     ============================================================ -->
+<div class="shopify-main-container" *ngIf="addFlag">
+
+  <div class="shopify-actions-row">
+    <button class="btn-shopify btn-shopify--outline" (click)="backToList()">
+      <i class="bi bi-arrow-left"></i> Back to Suppliers
+    </button>
+  </div>
+
+  <div class="shopify-card">
+    <div class="shopify-card__header">Add New Supplier</div>
+    <div class="shopify-card__body">
+
+      <div class="shopify-grid-3">
+        <div>
+          <label class="shopify-field-label">Supplier Code</label>
+          <input type="text" class="shopify-input" id="supplierCode-new" placeholder="Supplier Code">
+        </div>
+        <div>
+          <label class="shopify-field-label">Supplier Name</label>
+          <input type="text" class="shopify-input" id="supplierName-new" placeholder="Supplier Name">
+        </div>
+        <div>
+          <label class="shopify-field-label">Contact</label>
+          <input type="text" class="shopify-input" id="supplierContact-new" placeholder="Contact Number">
+        </div>
+        <div>
+          <label class="shopify-field-label">Address</label>
+          <input type="text" class="shopify-input" id="supplierAddress-new" placeholder="Address">
+        </div>
+        <div>
+          <label class="shopify-field-label">Email</label>
+          <input type="email" class="shopify-input" id="supplierEmail-new" placeholder="Email">
+        </div>
+      </div>
+
+      <div class="shopify-actions-row mt-3">
+        <button class="btn-shopify btn-shopify--primary" (click)="onSave(0, -1)">
+          <i class="bi bi-save"></i> Save
+        </button>
+        <button class="btn-shopify btn-shopify--outline" (click)="backToList()">
+          Cancel
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

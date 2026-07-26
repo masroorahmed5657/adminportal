@@ -1,19 +1,23 @@
+@import "../../shared/shopify-theme.scss";
+
 .admin-header {
   position: fixed;
   top: 0;
   left: 0;
-  height: 70px;
+  height: 64px;
   z-index: 999;
-  color: var(--title-color);
-  background-color: var(--body-color);
-  border-bottom: 1px solid rgba(128, 128, 128, 0.403);
   display: flex;
   align-items: center;
   padding: 0 20px;
-  transition: all 0.3s ease, background-color 0.4s, color 0.4s;
+
+  color: var(--title-color);
+  background-color: var(--body-color);
+  border-bottom: 1px solid #e1e3e5;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 
   margin-left: 280px;
   width: calc(100% - 280px);
+  transition: margin-left 0.3s ease, width 0.3s ease, background-color 0.4s, color 0.4s;
 }
 
 .admin-header.sidebar-collapsed {
@@ -26,24 +30,92 @@
   height: 100%;
 }
 
-.admin-header__title span {
-  font-size: 1.25rem;
-  color: var(--title-color);
-}
-
-.admin-header__brand {
-  text-align: center;
-  color: var(--title-color);
-}
-
+/* ===== Toggle button ===== */
 .admin-header__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
   background: transparent;
   border-radius: 8px;
-  border: 1px solid rgba(128, 128, 128, 0.403);
-  transition: transform 0.2s;
+  border: 1px solid #c9cccf;
   color: var(--title-color);
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.admin-header__toggle i {
+  font-size: 1.25rem;
+  line-height: 1;
 }
 
 .admin-header__toggle:hover {
-  transform: scale(1.04);
+  background: #f6f6f7;
+  transform: translateY(-1px);
+}
+
+.admin-header__toggle:active {
+  transform: translateY(0);
+}
+
+/* ===== Title ===== */
+.admin-header__title span {
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--title-color);
+}
+
+/* ===== Brand / user area ===== */
+.admin-header__brand {
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+.admin-header__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #1a1a1a;
+  color: #ffffff;
+  font-size: 1rem;
+}
+
+.admin-header__brand-text {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--title-color);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .admin-header {
+    margin-left: 0;
+    width: 100%;
+    padding: 0 14px;
+  }
+
+  .admin-header.sidebar-collapsed {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .admin-header__title span {
+    font-size: 0.95rem;
+  }
+
+  .admin-header__brand-text {
+    display: none; // keep just the avatar icon on small screens to save space
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-header__title {
+    display: none; // hide page title on very small screens, toggle + brand still show
+  }
 }
