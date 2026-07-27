@@ -60,6 +60,8 @@ import { DepartmentManagerComponent } from './features/departmentmanagers/depart
 import { DepartmentEmployeeComponent } from './features/departmentemployee/departmentemployee.component';
 import { SalaryComponent } from './features/salary/salary.component';
 import { LandingComponent } from './landing/landing.component';
+import { BarcodeComponent } from './features/products/barcode/barcode.component';
+import { WarehouseComponent } from './features/warehouse/warehouse.component';
 
 export const routes: Routes = [
     {
@@ -302,6 +304,14 @@ export const routes: Routes = [
             {
                 path: 'departmentmanager',
                 component: DepartmentManagerComponent
+            },
+            {
+                path: 'barcode',
+                component: BarcodeComponent
+            },
+            {
+                path: 'warehouse',
+                component: WarehouseComponent
             },
             {
                 path: 'departmentemployee',

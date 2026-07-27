@@ -1,0 +1,15 @@
+@import "../../shared/shopify-theme.scss";
+
+// Reuses your existing global classes (shopify-page, shopify-card, shopify-table,
+// btn-shopify, shopify-modal, shopify-badge, shopify-filterbar, etc.) already
+// defined elsewhere in the project — no duplicate styling needed here.
+
+.shopify-table__details-row {
+  background: #fafafa;
+}
+
+.form-check {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
