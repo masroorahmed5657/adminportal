@@ -4,7 +4,7 @@ export const environment = {
   enableLog: true,
   versionNumber: '15.05.2026 00071',
   pageSize: 25,
- 
+
   appEnv: 'LCL',
   stripe: '',
 
@@ -36,20 +36,20 @@ export const environment = {
   purchaseQtyAdjFlag: false,
   showSimpleProduct: true,
 
-// logoName: 'assets/images/logos/syed-paint-house-logo.png',
+  // logoName: 'assets/images/logos/syed-paint-house-logo.png',
   // logoName: 'assets/images/logos/logo-scientech.png',
   logoName: 'assets/images/logos/techmaci-logo2.png',
   background: 'assets/images/background/admin_portal_background.jpg',
 
   // apiUrl: 'https://cp.techmaci.com:8443/FASHION01_API/',
   // apiUrl: 'http://localhost:8081/FASHION01_API/',
-   apiUrl: 'https://cp.techmaci.com:8443/FASHION_API/',
+  apiUrl: 'https://cp.techmaci.com:8443/FASHION01_API/',
 
   // apiUrl: 'http://localhost:8080/WDS_API/',
 
-// apiUrl: 'http://localhost:8080/FOODY_API/',
+  // apiUrl: 'http://localhost:8080/FOODY_API/',
 
-// apiUrl: 'http://localhost:8080/PAINT_API/',
+  // apiUrl: 'http://localhost:8080/PAINT_API/',
   // apiUrl: 'http://localhost:8080/CLIENT01_API/',
 
   // apiUrl: 'https://cp.techmaci.com:8443/PAINT01_API/',

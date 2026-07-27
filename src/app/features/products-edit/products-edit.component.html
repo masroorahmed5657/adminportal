@@ -1,4 +1,4 @@
-<div class="container-fluid" style="margin-top: 3rem;">
+<div class="container-fluid">
   <div class="row">
     <!-- <div class="col-2"><app-header></app-header></div> -->
 
@@ -133,22 +133,6 @@
 
                                 </div>
                               </div>
-                              <!-- Product Wholesale: -->
-                              <!-- <div class="col-md-2">
-                                <label class="form-label"  >Wholesale:</label>
-                                <div class="mb-2">
-                                  <div class="input-group mb-3">
-                                    <span class="input-group-text" id="basic-addon2">
-                                      <i class="ti-cut"></i>
-                                      <fa-icon [icon]="faDollar"></fa-icon>
-                                    </span>
-                                    <input type="number" class="form-control" formControlName="wholesalePrice" step="1"
-                                      min="0" max="500000" size="4" (keypress)="chkNumber('wholesalePrice')"
-                                      placeholder="wholesalePrice" aria-label="wholesalePrice"
-                                      aria-describedby="basic-addon2">
-                                  </div>
-                                </div>
-                              </div> -->
                               <!-- Product salePrice: -->
                               <div class="col-md-2">
                                 <label class="form-label">Sale/Cut
@@ -403,50 +387,11 @@
                                   </label>
                                 </div>
                               </div>
-                              <!-- </div> -->
-                              <!-- <div class="col-md-2 ">
-                                <div class="form-check">
-                                  <input class="form-check-input" type="checkbox" formControlName="sellinPcs"
-                                    (change)="onCheckboxChange($event)">
-                                  <label class="form-check-label" for="sellinPcs">
-                                    <b  >CUTPRICE</b>
-                                  </label>
-                                </div>
-                              </div>
- -->
-
-                              <!-- <div class="col-md-2 ">
-                                <div class="form-check">
-                                  <input class="form-check-input" type="checkbox" formControlName="sellinPcs"
-                                    (change)="onCheckboxChange1($event)">
-                                  <label class="form-check-label" for="sellinPcs">
-                                    <b  >HOTTREND</b>
-                                  </label>
-                                </div>
-                              </div> -->
 
                             </div>
 
 
                           </div>
-
-
-                          <!-- <div class="form-actions mt-4 pt-3 button-group">
-                        <button type="submit" class="btn btn-success" (click)="onSubmit()">
-                          <i class="fa fa-check"></i> Save</button>
-                        &nbsp;&nbsp;
-                        <button type="button" class="btn btn-danger" (click)="deleteProduct(editProduct.productId)">
-                          <i class="fa fa-delete"></i> Delete</button>
-                        &nbsp;&nbsp;
-
-
-                        <button type="button" class="btn btn-primary"
-                          (click)="onCancel()">Back to List</button>
-                      </div> -->
-
-
-
-
 
                           <br>
                         </div>
@@ -506,11 +451,9 @@
                   <div class="mb-3">
                     <div class="form-input">
                       <input class="form-control" type="text" value="" formControlName="optionsAttributes1">
-                      <!-- [(ngModel)]="inputValue"> -->
                     </div>
                     <div class="form-input">
                       <input class="form-control" type="text" value="" formControlName="optionsAttributes2">
-                      <!-- [(ngModel)]="inputValue1"> -->
                     </div>
                     <div class="form-input">
                       <input class="form-control" type="text" value="" formControlName="optionsAttributes3">
@@ -655,21 +598,6 @@
                     </div>
                     <div>
 
-
-
-
-
-                      <!-- <div *ngFor="let product of productImageViewList index as i">
-                <div class="el-card-avatar mb-3 el-overlay-1 overflow-hidden w-100 position-relative text-center" *ngIf="product.productImage" id="myRemoveButton-{{i}}">
-                  <img style="width: 200px;" src='data:{{product.imageMimeType}};base64,{{product.productImage}}' />
-                  <br>
-                  <button class="btn btn-danger btn-sm d-flex justify-content-center"
-                    (click)="removeImage(editProduct.productId, i)"><fa-icon [icon]="faRemove"></fa-icon> Remove
-                    Image</button>
-                </div>
-              </div> -->
-
-
                     </div>
                   </div><!--row-->
                 </div>
@@ -756,11 +684,6 @@
 
                     </div>
                     <div>
-
-
-                      <!-- <div *ngFor="let preview of previewList">
-                <img [src]="preview" class="preview" style="width: 200px; margin-left: 25%;">
-              </div> -->
 
                     </div>
                   </div>

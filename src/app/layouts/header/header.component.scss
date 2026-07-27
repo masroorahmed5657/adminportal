@@ -5,7 +5,7 @@
   top: 0;
   left: 0;
   height: 64px;
-  z-index: 999;
+  z-index: 1001;
   display: flex;
   align-items: center;
   padding: 0 20px;
@@ -68,28 +68,16 @@
   color: var(--title-color);
 }
 
-/* ===== Brand / user area ===== */
+/* ===== Brand / logo area ===== */
 .admin-header__brand {
   gap: 0.6rem;
   flex-shrink: 0;
 }
 
-.admin-header__avatar {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: #1a1a1a;
-  color: #ffffff;
-  font-size: 1rem;
-}
-
-.admin-header__brand-text {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--title-color);
+.admin-header__logo {
+  height: 32px;
+  width: auto;
+  display: block;
 }
 
 /* ===== Responsive ===== */
@@ -109,13 +97,17 @@
     font-size: 0.95rem;
   }
 
-  .admin-header__brand-text {
-    display: none; // keep just the avatar icon on small screens to save space
+  .admin-header__logo {
+    height: 28px;
   }
 }
 
 @media (max-width: 480px) {
   .admin-header__title {
-    display: none; // hide page title on very small screens, toggle + brand still show
+    display: none; // hide page title on very small screens, toggle + logo still show
+  }
+
+  .admin-header__logo {
+    height: 24px;
   }
 }
