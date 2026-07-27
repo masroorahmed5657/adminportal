@@ -1,166 +1,171 @@
 <div class="shopify-main-container">
 
-  <h2 class="shopify-page-title">News Tracker Management</h2>
+    <h2 class="shopify-page-title">News Tracker Management</h2>
 
-  <!-- Search row -->
-  <div class="shopify-search-row">
-    <div>
-      <label class="shopify-field-label" for="searchNews">Search</label>
-      <div class="shopify-input-group">
-        <span class="shopify-input-group__prefix"><fa-icon [icon]="faSearch"></fa-icon></span>
-        <input type="text" class="shopify-input" id="searchNews" placeholder="Search news or site..."
-          [(ngModel)]="searchText" (input)="p = 1">
-      </div>
-    </div>
-  </div>
-
-  <!-- Actions row -->
-  <div class="shopify-actions-row">
-    <button type="button" class="btn-shopify btn-shopify--primary" (click)="addNewstracker()" *ngIf="!addFlag">
-      <fa-icon [icon]="faPlusCircle"></fa-icon> Add News
-    </button>
-    <button type="button" class="btn-shopify btn-shopify--outline" (click)="newstrackerList()" *ngIf="addFlag">
-      <fa-icon [icon]="faList"></fa-icon> List News
-    </button>
-  </div>
-
-  <ng-container *ngIf="!addFlag">
-
-    <!-- Empty state -->
-    <div class="shopify-empty" *ngIf="filteredNewsList.length === 0">
-      <h5>No news entries found</h5>
-      <p>Try adjusting your search.</p>
+    <!-- Search row -->
+    <div class="shopify-search-row">
+        <div>
+            <label class="shopify-field-label" for="searchNews">Search</label>
+            <div class="shopify-input-group">
+                <span class="shopify-input-group__prefix"><fa-icon [icon]="faSearch"></fa-icon></span>
+                <input type="text" class="shopify-input" id="searchNews" placeholder="Search news or site..."
+                    [(ngModel)]="searchText" (input)="p = 1">
+            </div>
+        </div>
     </div>
 
-    <ng-container *ngIf="filteredNewsList.length > 0">
+    <!-- Actions row -->
+    <div class="shopify-actions-row">
+        <button type="button" class="btn-shopify btn-shopify--primary" (click)="addNewstracker()" *ngIf="!addFlag">
+            <fa-icon [icon]="faPlusCircle"></fa-icon> Add News
+        </button>
+        <button type="button" class="btn-shopify btn-shopify--outline" (click)="newstrackerList()" *ngIf="addFlag">
+            <fa-icon [icon]="faList"></fa-icon> List News
+        </button>
+    </div>
 
-      <!-- Desktop table -->
-      <div class="shopify-table-wrap">
-        <table class="shopify-table">
-          <thead>
-            <tr>
-              <th>News ID</th>
-              <th>News Content</th>
-              <th>Site</th>
-              <th class="text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let news of filteredNewsList | paginate: { itemsPerPage: 10, currentPage: p }; let row = index"
-              [ngClass]="{'is-active': activeRow === row}">
-              <td>
-                <input type="text" class="shopify-input" id="newsId-{{row}}" [(ngModel)]="news.newsId"
-                  [disabled]="!enabledEdit[row]">
-              </td>
-              <td>
-                <input type="text" class="shopify-input" id="news-{{row}}" [(ngModel)]="news.news"
-                  [disabled]="!enabledEdit[row]">
-              </td>
-              <td>
-                <select class="shopify-input" id="site-{{row}}" [(ngModel)]="news.site" [disabled]="!enabledEdit[row]">
-                  <option>Mobile App</option>
-                  <option>Back Office</option>
-                  <option>Public Website</option>
-                </select>
-              </td>
-              <td>
-                <div class="shopify-table__actions">
-                  <button *ngIf="!enabledEdit[row]" class="btn-shopify btn-shopify--outline btn-shopify--icon"
-                    title="Edit" (click)="startEdit(row)">
-                    <fa-icon [icon]="faEdit"></fa-icon>
-                  </button>
-                  <button *ngIf="enabledEdit[row]" class="btn-shopify btn-shopify--success btn-shopify--icon"
-                    title="Save" (click)="onSave(row)">
-                    <fa-icon [icon]="faSave"></fa-icon>
-                  </button>
-                  <button class="btn-shopify btn-shopify--danger btn-shopify--icon" title="Delete"
-                    (click)="onDelete(row)">
-                    <fa-icon [icon]="faRemove"></fa-icon>
-                  </button>
+    <ng-container *ngIf="!addFlag">
+
+        <!-- Empty state -->
+        <div class="shopify-empty" *ngIf="filteredNewsList.length === 0">
+            <h5>No news entries found</h5>
+            <p>Try adjusting your search.</p>
+        </div>
+
+        <ng-container *ngIf="filteredNewsList.length > 0">
+
+            <!-- Desktop table -->
+            <div class="shopify-table-wrap">
+                <table class="shopify-table">
+                    <thead>
+                        <tr>
+                            <th>News ID</th>
+                            <th>News Content</th>
+                            <th>Site</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let news of filteredNewsList | paginate: { itemsPerPage: 10, currentPage: p }; let row = index"
+                            [ngClass]="{'is-active': activeRow === row}">
+                            <td>
+                                <input type="text" class="shopify-input" id="newsId-{{row}}" [(ngModel)]="news.newsId"
+                                    [disabled]="!enabledEdit[row]">
+                            </td>
+                            <td>
+                                <input type="text" class="shopify-input" id="news-{{row}}" [(ngModel)]="news.news"
+                                    [disabled]="!enabledEdit[row]">
+                            </td>
+                            <td>
+                                <select class="shopify-input" id="site-{{row}}" [(ngModel)]="news.site"
+                                    [disabled]="!enabledEdit[row]">
+                                    <option>Mobile App</option>
+                                    <option>Back Office</option>
+                                    <option>Public Website</option>
+                                </select>
+                            </td>
+                            <td>
+                                <div class="shopify-table__actions">
+                                    <button *ngIf="!enabledEdit[row]"
+                                        class="btn-shopify btn-shopify--outline btn-shopify--icon" title="Edit"
+                                        (click)="startEdit(row)">
+                                        <fa-icon [icon]="faEdit"></fa-icon>
+                                    </button>
+                                    <button *ngIf="enabledEdit[row]"
+                                        class="btn-shopify btn-shopify--success btn-shopify--icon" title="Save"
+                                        (click)="onSave(row)">
+                                        <fa-icon [icon]="faSave"></fa-icon>
+                                    </button>
+                                    <button class="btn-shopify btn-shopify--danger btn-shopify--icon" title="Delete"
+                                        (click)="onDelete(row)">
+                                        <fa-icon [icon]="faRemove"></fa-icon>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Mobile cards -->
+            <div class="shopify-mobile-list">
+                <div class="shopify-mobile-card"
+                    *ngFor="let news of filteredNewsList | paginate: { itemsPerPage: 10, currentPage: p }; let row = index"
+                    [ngClass]="{'is-active': activeRow === row}">
+
+                    <div class="shopify-mobile-card__field">
+                        <label class="shopify-field-label--sm">News ID</label>
+                        <input type="text" class="shopify-input" [(ngModel)]="news.newsId"
+                            [disabled]="!enabledEdit[row]">
+                    </div>
+                    <div class="shopify-mobile-card__field">
+                        <label class="shopify-field-label--sm">News Content</label>
+                        <input type="text" class="shopify-input" [(ngModel)]="news.news" [disabled]="!enabledEdit[row]">
+                    </div>
+                    <div class="shopify-mobile-card__field">
+                        <label class="shopify-field-label--sm">Site</label>
+                        <select class="shopify-input" [(ngModel)]="news.site" [disabled]="!enabledEdit[row]">
+                            <option>Mobile App</option>
+                            <option>Back Office</option>
+                            <option>Public Website</option>
+                        </select>
+                    </div>
+
+                    <div class="shopify-mobile-card__actions">
+                        <button *ngIf="!enabledEdit[row]" class="btn-shopify btn-shopify--outline btn-shopify--sm"
+                            (click)="startEdit(row)">
+                            <fa-icon [icon]="faEdit"></fa-icon> Edit
+                        </button>
+                        <button *ngIf="enabledEdit[row]" class="btn-shopify btn-shopify--success btn-shopify--sm"
+                            (click)="onSave(row)">
+                            <fa-icon [icon]="faSave"></fa-icon> Save
+                        </button>
+                        <button class="btn-shopify btn-shopify--danger btn-shopify--sm" (click)="onDelete(row)">
+                            <fa-icon [icon]="faRemove"></fa-icon> Delete
+                        </button>
+                    </div>
                 </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+            </div>
 
-      <!-- Mobile cards -->
-      <div class="shopify-mobile-list">
-        <div class="shopify-mobile-card"
-          *ngFor="let news of filteredNewsList | paginate: { itemsPerPage: 10, currentPage: p }; let row = index"
-          [ngClass]="{'is-active': activeRow === row}">
+            <!-- Pagination -->
+            <div class="shopify-pagination">
+                <pagination-controls (pageChange)="p = $event"></pagination-controls>
+            </div>
 
-          <div class="shopify-mobile-card__field">
-            <label class="shopify-field-label--sm">News ID</label>
-            <input type="text" class="shopify-input" [(ngModel)]="news.newsId" [disabled]="!enabledEdit[row]">
-          </div>
-          <div class="shopify-mobile-card__field">
-            <label class="shopify-field-label--sm">News Content</label>
-            <input type="text" class="shopify-input" [(ngModel)]="news.news" [disabled]="!enabledEdit[row]">
-          </div>
-          <div class="shopify-mobile-card__field">
-            <label class="shopify-field-label--sm">Site</label>
-            <select class="shopify-input" [(ngModel)]="news.site" [disabled]="!enabledEdit[row]">
-              <option>Mobile App</option>
-              <option>Back Office</option>
-              <option>Public Website</option>
-            </select>
-          </div>
-
-          <div class="shopify-mobile-card__actions">
-            <button *ngIf="!enabledEdit[row]" class="btn-shopify btn-shopify--outline btn-shopify--sm"
-              (click)="startEdit(row)">
-              <fa-icon [icon]="faEdit"></fa-icon> Edit
-            </button>
-            <button *ngIf="enabledEdit[row]" class="btn-shopify btn-shopify--success btn-shopify--sm"
-              (click)="onSave(row)">
-              <fa-icon [icon]="faSave"></fa-icon> Save
-            </button>
-            <button class="btn-shopify btn-shopify--danger btn-shopify--sm" (click)="onDelete(row)">
-              <fa-icon [icon]="faRemove"></fa-icon> Delete
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Pagination -->
-      <div class="shopify-pagination">
-        <pagination-controls (pageChange)="p = $event"></pagination-controls>
-      </div>
-
+        </ng-container>
     </ng-container>
-  </ng-container>
 
-  <!-- Add form -->
-  <div class="shopify-card" *ngIf="addFlag">
-    <div class="shopify-card__header">Add New News Entry</div>
-    <div class="shopify-card__body">
+    <!-- Add form -->
+    <div class="shopify-card" *ngIf="addFlag">
+        <div class="shopify-card__header">Add New News Entry</div>
+        <div class="shopify-card__body">
 
-      <div class="shopify-grid-2">
-        <div>
-          <label class="shopify-field-label">News Content</label>
-          <input type="text" class="shopify-input" id="news-new" placeholder="Enter news..." [(ngModel)]="newNewsText">
+            <div class="shopify-grid-2">
+                <div>
+                    <label class="shopify-field-label">News Content</label>
+                    <input type="text" class="shopify-input" id="news-new" placeholder="Enter news..."
+                        [(ngModel)]="newNewsText">
+                </div>
+                <div>
+                    <label class="shopify-field-label">Site</label>
+                    <select class="shopify-input" id="site-new" [(ngModel)]="newSite">
+                        <option>Mobile App</option>
+                        <option>Back Office</option>
+                        <option>Public Website</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="shopify-actions-row mt-3">
+                <button class="btn-shopify btn-shopify--primary" (click)="onSave(-1)">
+                    <fa-icon [icon]="faSave"></fa-icon> Save
+                </button>
+                <button class="btn-shopify btn-shopify--outline" (click)="newstrackerList()">
+                    Cancel
+                </button>
+            </div>
+
         </div>
-        <div>
-          <label class="shopify-field-label">Site</label>
-          <select class="shopify-input" id="site-new" [(ngModel)]="newSite">
-            <option>Mobile App</option>
-            <option>Back Office</option>
-            <option>Public Website</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="shopify-actions-row mt-3">
-        <button class="btn-shopify btn-shopify--primary" (click)="onSave(-1)">
-          <fa-icon [icon]="faSave"></fa-icon> Save
-        </button>
-        <button class="btn-shopify btn-shopify--outline" (click)="newstrackerList()">
-          Cancel
-        </button>
-      </div>
-
     </div>
-  </div>
 
-</div>x
+</div>

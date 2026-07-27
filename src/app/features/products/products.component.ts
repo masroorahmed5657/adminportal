@@ -42,6 +42,28 @@ export class ProductsComponent implements OnInit {
   productTotalNumber = 0;
   // pageSize = environment.pageSize
   pageSize = 10
+  printColumns: number = 3; // Default 3 barcodes per row, user changeable (2,3,4,5)
+
+
+
+  // ===== Normal Printer (A4 sticker sheet) precise alignment =====
+normalLabelWidthMM: number = 63;   // apni physical label ki width (mm) - screenshot jaisi sheet ke liye adjust karein
+normalLabelHeightMM: number = 38;  // apni physical label ki height (mm)
+normalColGapMM: number = 3;        // do labels ke darmiyan horizontal gap
+normalRowGapMM: number = 3;        // do rows ke darmiyan vertical gap
+normalTopMarginMM: number = 15;    // sheet ka pehla label kitna neeche se start hota hai (page ke top se)
+normalLeftMarginMM: number = 5;    // sheet ka pehla label kitna left se start hota hai
+
+  
+  printOrientation: string = 'portrait'; // NEW: 'landscape' ya 'portrait'
+
+  // ===== NEW: Barcode Machine (Thermal Printer) Support =====
+  printerMode: string = 'normal'; // 'normal' (A4 sheet) ya 'barcode' (thermal label machine)
+  labelWidthMM: number = 50;      // thermal printer ka actual SINGLE label width in mm
+  labelHeightMM: number = 30;     // thermal printer ka actual SINGLE label height in mm
+  labelsPerRow: number = 3;       // TSC TTP-244 Pro jaisi machine per ek row mein ek saath kitne labels nikalte hain (roll ke hisaab se)
+  labelGapMM: number = 2;         // labels ke darmiyan physical gap (mm) jo aap ki roll per hai
+  // ============================================================
 
   sortField: any;
 
@@ -1930,101 +1952,339 @@ export class ProductsComponent implements OnInit {
 
   }
 
-  htmlToPrintBarcode() {
+  /* ***************** NORMAL PRINTER (A4 Sheet) Print ***************** */
+/* ***************** NORMAL PRINTER (A4 Sticker Sheet) Print — GRID ALIGNED ***************** */
+htmlToPrintBarcode() {
 
-    let htmlTag = `
-    <html>
-      <head>
-        <title></title>
-        <style>
-           body { width: 5.1in; background:#e8e8e8; }
-          
-          .label{border: 0px solid black;
-          width: 2.40in; height: 1.41in;   margin-right: .10in;  margin-bottom: .10in; 
-          float: left; text-align: center; overflow: hidden; background:#fff; outline: 0px dotted #999;
-          font-size: 22px; font-family: 'calibri';
-          }
-          .page-break { clear: left; display:block; page-break-after:always; }
+  if (this.productViewList.length === 0) {
+    Swal.fire('WARNING', 'No Product in List Available', 'error');
+    return;
+  }
 
-          @media print {
-            .hidden-print,
-            .hidden-print * {
+  const cols = this.printColumns && this.printColumns > 0 ? this.printColumns : 3;
+  const labelW = this.normalLabelWidthMM && this.normalLabelWidthMM > 0 ? this.normalLabelWidthMM : 63;
+  const labelH = this.normalLabelHeightMM && this.normalLabelHeightMM > 0 ? this.normalLabelHeightMM : 38;
+  const colGap = this.normalColGapMM && this.normalColGapMM >= 0 ? this.normalColGapMM : 3;
+  const rowGap = this.normalRowGapMM && this.normalRowGapMM >= 0 ? this.normalRowGapMM : 3;
+  const topMargin = this.normalTopMarginMM && this.normalTopMarginMM >= 0 ? this.normalTopMarginMM : 15;
+  const leftMargin = this.normalLeftMarginMM && this.normalLeftMarginMM >= 0 ? this.normalLeftMarginMM : 5;
+
+  let currencySign = '$';
+  if (environment.currencyName === 'USD') {
+    currencySign = '$';
+  } else if (environment.currencyName === 'CAD') {
+    currencySign = '$';
+  } else if (environment.currencyName === 'PKR') {
+    currencySign = 'Rs.';
+  }
+
+  let htmlTag = `
+  <html>
+    <head>
+      <title></title>
+      <style>
+        @page {
+          size: A4;
+          margin: 0;               /* IMPORTANT: browser ka default margin OFF, hum khud margin de rahe hain */
+        }
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+        html, body {
+          margin: 0;
+          padding: 0;
+        }
+        .sheet {
+          padding-top: ${topMargin}mm;
+          padding-left: ${leftMargin}mm;
+        }
+        .grid {
+          display: grid;
+          grid-template-columns: repeat(${cols}, ${labelW}mm);
+          column-gap: ${colGap}mm;
+          row-gap: ${rowGap}mm;
+        }
+        .label {
+          width: ${labelW}mm;
+          height: ${labelH}mm;
+          border: 0px solid black;
+          text-align: center;
+          overflow: hidden;
+          background: #fff;
+          font-family: 'Calibri', sans-serif;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+        .label img {
+          max-width: 90%;
+          height: auto;
+          margin: 2px 0;
+        }
+        .label-name {
+          font-size: 14px;
+          font-family: 'Times New Roman';
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 95%;
+        }
+        .label-upc {
+          font-size: 20px;
+          font-weight: bolder;
+        }
+        .label-price {
+          font-size: 16px;
+          font-weight: bolder;
+        }
+
+        @media print {
+          .hidden-print,
+          .hidden-print * {
             display: none !important;
           }
-          @page {
-            margin-top: 0;
-            margin-bottom: 0;
-          }
-          }
-        </style>
+        }
+      </style>
+    </head>
+    <body onload="window.print();window.close()">
+      <div class="sheet">
+        <div class="grid">`;
 
-      </head>
-      <body onload="window.print();window.close()">`;
+  let footerTag = `
+        </div>
+      </div>
+    </body>
+  </html>`;
 
-    let footerTag = ` </body>
-    </html>`;
+  let divTag = ``;
+  for (let i = 0; i < this.productViewList.length; i++) {
+    let product = this.productViewList[i];
 
-    let currencySign = '$';
-    if (environment.currencyName === 'USD') {
-      currencySign = '$';
-    }
-    else if (environment.currencyName === 'CAD') {
-      currencySign = '$';
-    }
-    else if (environment.currencyName === 'PKR') {
-      currencySign = 'Rs.';
+    if (!product.upc) {
+      continue; // UPC ke bina barcode nahi bane ga, skip karo
     }
 
+    let len: number = product.productName ? product.productName.length : 0;
+    let nameFontSize = len < 30 ? '14px' : '11px';
 
-
-    let divTag = ``;
-    for (let i = 0; i < this.productViewList.length; i++) {
-      let product = this.productViewList[i];
-      let len: any = 30;
-      len = (product.productName)?.length;
-
-      let fontSize = 12;
-      let itemNameLabel = '';
-      if (len < 30) {
-        fontSize = 12;
-        itemNameLabel = `<p style="margin-top: -0.5;font-size: 16px !important; font-family: 'Times New Roman';">` + product.productName +
-          `(` + product.sku + `)</p>`;
-      }
-      else {
-        fontSize = 11;
-        itemNameLabel = `<p style="margin-top: -0.5;font-size: 13px !important; font-family: 'Times New Roman';">` + product.productName +
-          `(` + product.sku + `)</p>`;
-      }
-      divTag = divTag + `<div class="label">` + itemNameLabel +
-
-        // `<br>` +
-        //`<p style="font-size:small; padding:0 0 0 0;  font-family: 'calibri'">` + product.sku + `</p>` +
-        // `<br>` +                 
-        `<img style="margin-top: -8;"  src='data:image/png;base64,` + product.firstImage + `'>
-                 <br>`
-        + `<label style="style="font-size:30px !important;font-weight: bolder;">` + product.upc + `</label>` +
-        `<br> <label style="style="font-size:20px !important;font-weight: bolder;">
-                  ` + currencySign + ` ` + (product.salePrice).toFixed(2) + `</label>` +
-
-        `</div>
-         
-        `;
-
-    }
-
-    let finalTag = htmlTag + divTag + footerTag;
-    // alert(finalTag);
-
-    let popupWin = window.open('', '_blank');
-    popupWin?.document.open();
-    popupWin?.document.write(finalTag);
-
-    popupWin?.document.close();
-    //this.barCodePopup = false;
-    this.barcodeFlag = true;
-    this.modalOpen = true;
-
+    divTag += `
+      <div class="label">
+        <p class="label-name" style="font-size:${nameFontSize} !important;">${product.productName} (${product.sku})</p>
+        <img src='data:image/png;base64,${product.firstImage}'>
+        <p class="label-upc">${product.upc}</p>
+        <p class="label-price">${currencySign} ${(product.salePrice ?? 0).toFixed(2)}</p>
+      </div>`;
   }
+
+  let finalTag = htmlTag + divTag + footerTag;
+
+  let popupWin = window.open('', '_blank');
+  if (!popupWin) {
+    Swal.fire('Error', 'Popup blocked. Please allow popups for this site.', 'error');
+    return;
+  }
+
+  popupWin.document.open();
+  popupWin.document.write(finalTag);
+  popupWin.document.close();
+
+  this.barcodeFlag = true;
+  this.modalOpen = true;
+}
+
+
+  /* ***************** BARCODE MACHINE (Thermal Label Printer) Print ***************** */
+  // Yeh function thermal barcode printer (jaise TSC TTP-244 Pro) ke liye hai.
+  // IMPORTANT: Yeh machine ki physical label roll aksar EK row mein multiple labels
+  // (jaise 3) side-by-side hoti hai. Agar hum sirf 1 label ka "page" banayen (jaisa
+  // pehle kiya tha) to printer ka paper-advance galat ho jata hai aur labels
+  // misaligned / ulte print hote hain. Isliye yahan har "page" ek POORI ROW hai
+  // jis mein "labelsPerRow" jitne labels side-by-side hain — bilkul physical
+  // roll ke mutabiq.
+ /* ***************** BARCODE MACHINE (Thermal Label Printer) Print — FIXED ***************** */
+// FIX (26 Jul 2026): Pehle yeh function har product ko uski `quantity` field ke
+// hisaab se REPEAT kar raha tha (agar quantity 10 hai to same barcode 10 dafa
+// print hota tha). Lekin popup preview (HTML modal) sirf productViewList ko
+// EK BAAR loop karta hai, koi repeat nahi karta. Is wajah se popup mein jo
+// dikhta tha wo actual print se match nahi karta tha — printer per zyada ya
+// "sab same" labels nikal rahe thay.
+//
+// Ab is function ko bhi preview jaisa bana diya hai: har product ka EK hi
+// label banega, koi quantity-based repeat nahi. Ab jo popup preview mein
+// dikhega, EXACTLY wahi printer se nikle ga — order aur count dono match
+// karenge, chahe koi bhi printer use karo (normal ya thermal machine).
+
+
+printForBarcodeMachine() {
+
+  if (this.productViewList.length === 0) {
+    Swal.fire('WARNING', 'No Product in List Available', 'error');
+    return;
+  }
+
+  const widthMM = this.labelWidthMM && this.labelWidthMM > 0 ? this.labelWidthMM : 50;
+  const heightMM = this.labelHeightMM && this.labelHeightMM > 0 ? this.labelHeightMM : 30;
+  const gapMM = this.labelGapMM && this.labelGapMM >= 0 ? this.labelGapMM : 2;
+  const orientation = this.printOrientation === 'portrait' ? 'portrait' : 'landscape';
+
+  // Landscape: pehle jaisa hi - "perRow" labels side-by-side ek row mein.
+  // Portrait: sirf EK label per row/page (upar se neeche, seedhi taraf mein,
+  // koi rotate nahi) - kyunki portrait roll narrow side se feed hoti hai.
+  const perRow = orientation === 'portrait'
+    ? 1
+    : (this.labelsPerRow && this.labelsPerRow > 0 ? Math.floor(this.labelsPerRow) : 3);
+
+  // Poori row ka total width
+  const rowWidthMM = (widthMM * perRow) + (gapMM * (perRow - 1));
+
+  // Page size seedha (bina kisi rotate/transform ke) - is se text/barcode
+  // hamesha upright (seedha) print hoga, chahe portrait ho ya landscape.
+  const pageWidthMM = rowWidthMM;
+  const pageHeightMM = heightMM;
+
+  let currencySign = '$';
+  if (environment.currencyName === 'USD') {
+    currencySign = '$';
+  } else if (environment.currencyName === 'CAD') {
+    currencySign = '$';
+  } else if (environment.currencyName === 'PKR') {
+    currencySign = 'Rs.';
+  }
+
+  let htmlTag = `
+  <html>
+    <head>
+      <title></title>
+      <style>
+        @page {
+          size: ${pageWidthMM}mm ${pageHeightMM}mm;
+          margin: 0;
+        }
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+        html, body {
+          margin: 0;
+          padding: 0;
+        }
+        .label-row {
+          width: ${rowWidthMM}mm;
+          height: ${heightMM}mm;
+          display: flex;
+          flex-direction: row;
+          align-items: stretch;
+          justify-content: flex-start;
+          page-break-after: always;
+          overflow: hidden;
+        }
+        .label-cell {
+          width: ${widthMM}mm;
+          height: ${heightMM}mm;
+          margin-right: ${gapMM}mm;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          overflow: hidden;
+          font-family: 'Calibri', sans-serif;
+        }
+        .label-cell:last-child {
+          margin-right: 0;
+        }
+        .label-cell.empty {
+          visibility: hidden;
+        }
+        .label-cell img {
+          max-width: 90%;
+          height: auto;
+        }
+        .label-name {
+          font-size: 11px;
+          font-family: 'Times New Roman';
+          margin: 0;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 95%;
+        }
+        .label-upc {
+          font-size: 13px;
+          font-weight: bold;
+          margin: 0;
+        }
+        .label-price {
+          font-size: 12px;
+          font-weight: bold;
+          margin: 0;
+        }
+      </style>
+    </head>
+    <body onload="window.print();window.close()">`;
+
+  let footerTag = `</body></html>`;
+
+  let allLabelsHtml: string[] = [];
+
+  for (let i = 0; i < this.productViewList.length; i++) {
+    let product = this.productViewList[i];
+
+    if (!product.upc) {
+      continue; // UPC ke bina barcode nahi bane ga, skip
+    }
+
+    let cellHtml = `
+      <div class="label-cell">
+        <p class="label-name">${product.productName} (${product.sku})</p>
+        <img src='data:image/png;base64,${product.firstImage}'>
+        <p class="label-upc">${product.upc}</p>
+        <p class="label-price">${currencySign} ${(product.salePrice ?? 0).toFixed(2)}</p>
+      </div>
+    `;
+
+    allLabelsHtml.push(cellHtml);
+  }
+
+  if (allLabelsHtml.length === 0) {
+    Swal.fire('WARNING', 'No product with UPC found to print', 'error');
+    return;
+  }
+
+  let divTag = ``;
+  for (let i = 0; i < allLabelsHtml.length; i += perRow) {
+    let rowItems = allLabelsHtml.slice(i, i + perRow);
+
+    // Sirf landscape mein empty filler cells chahiye (row ka width fix rakhne ke liye).
+    // Portrait mein perRow=1 hai isliye is ki zaroorat nahi.
+    if (orientation === 'landscape') {
+      while (rowItems.length < perRow) {
+        rowItems.push(`<div class="label-cell empty"></div>`);
+      }
+    }
+
+    divTag += `<div class="label-row">${rowItems.join('')}</div>`;
+  }
+
+  let finalTag = htmlTag + divTag + footerTag;
+
+  let popupWin = window.open('', '_blank');
+  if (!popupWin) {
+    Swal.fire('Error', 'Popup blocked. Please allow popups for this site.', 'error');
+    return;
+  }
+
+  popupWin.document.open();
+  popupWin.document.write(finalTag);
+  popupWin.document.close();
+
+  this.barcodeFlag = true;
+  this.modalOpen = true;
+}
 
 
   /* ******************************************* END OF COMPONENT ****************************** */

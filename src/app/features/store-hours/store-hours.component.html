@@ -2,103 +2,112 @@
 
   <h2 class="shopify-page-title">Store Hours Management</h2>
 
-  <!-- Desktop table -->
-  <div class="shopify-table-wrap">
-    <table class="shopify-table">
-      <thead>
-        <tr>
-          <th>Days</th>
-          <th>Store Opens</th>
-          <th>Store Closes</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let hrs of storeHoursList; let row = index">
-          <td class="fw-semibold">{{ hrs.days }}</td>
-
-          <!-- Store Open -->
-          <td>
-            <div class="d-flex align-items-center gap-2">
-              <input type="text" class="shopify-input" style="width: 90px; text-align: center;"
-                [(ngModel)]="hrs.storeOpen" [name]="'storeOpen-' + row" placeholder="hh:mm" />
-              <div class="d-flex gap-1">
-                <button type="button" class="btn-shopify btn-shopify--sm"
-                  [ngClass]="hrs.openAmpm === 'AM' ? 'btn-shopify--primary' : 'btn-shopify--outline'"
-                  (click)="hrs.openAmpm='AM'">AM</button>
-                <button type="button" class="btn-shopify btn-shopify--sm"
-                  [ngClass]="hrs.openAmpm === 'PM' ? 'btn-shopify--primary' : 'btn-shopify--outline'"
-                  (click)="hrs.openAmpm='PM'">PM</button>
-              </div>
-            </div>
-          </td>
-
-          <!-- Store Close -->
-          <td>
-            <div class="d-flex align-items-center gap-2">
-              <input type="text" class="shopify-input" style="width: 90px; text-align: center;"
-                [(ngModel)]="hrs.storeClose" [name]="'storeClose-' + row" placeholder="hh:mm" />
-              <div class="d-flex gap-1">
-                <button type="button" class="btn-shopify btn-shopify--sm"
-                  [ngClass]="hrs.closeAmpm === 'AM' ? 'btn-shopify--primary' : 'btn-shopify--outline'"
-                  (click)="hrs.closeAmpm='AM'">AM</button>
-                <button type="button" class="btn-shopify btn-shopify--sm"
-                  [ngClass]="hrs.closeAmpm === 'PM' ? 'btn-shopify--primary' : 'btn-shopify--outline'"
-                  (click)="hrs.closeAmpm='PM'">PM</button>
-              </div>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- Empty state -->
+  <div class="shopify-empty" *ngIf="storeHoursList.length === 0">
+    <h5>No store hours found</h5>
+    <p>There are no store hours configured yet.</p>
   </div>
 
-  <!-- Mobile cards -->
-  <div class="shopify-mobile-list">
-    <div class="shopify-mobile-card" *ngFor="let hrs of storeHoursList; let row = index">
-      <h6 class="fw-bold mb-2">{{ hrs.days }}</h6>
+  <ng-container *ngIf="storeHoursList.length > 0">
 
-      <div class="shopify-mobile-card__field">
-        <label class="shopify-field-label--sm">Store Opens</label>
-        <div class="d-flex gap-2 align-items-center">
-          <input type="text" class="shopify-input" style="flex: 1; text-align: center;" [(ngModel)]="hrs.storeOpen"
-            [name]="'storeOpen-mob-' + row" placeholder="hh:mm" />
-          <div class="d-flex gap-1">
-            <button type="button" class="btn-shopify btn-shopify--sm"
-              [ngClass]="hrs.openAmpm === 'AM' ? 'btn-shopify--primary' : 'btn-shopify--outline'"
-              (click)="hrs.openAmpm='AM'">AM</button>
-            <button type="button" class="btn-shopify btn-shopify--sm"
-              [ngClass]="hrs.openAmpm === 'PM' ? 'btn-shopify--primary' : 'btn-shopify--outline'"
-              (click)="hrs.openAmpm='PM'">PM</button>
+    <!-- Desktop table -->
+    <div class="shopify-table-wrap">
+      <table class="shopify-table">
+        <thead>
+          <tr>
+            <th>Days</th>
+            <th>Store Opens</th>
+            <th>Store Closes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let hrs of storeHoursList; let row = index">
+            <td class="fw-semibold">{{ hrs.days }}</td>
+
+            <!-- Store Open -->
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <input type="text" class="shopify-input" style="width: 90px; text-align: center;"
+                  [(ngModel)]="hrs.storeOpen" [name]="'storeOpen-' + row" placeholder="hh:mm" />
+                <div class="d-flex gap-1">
+                  <button type="button" class="btn-shopify btn-shopify--sm"
+                    [ngClass]="hrs.openAmpm === 'AM' ? 'btn-shopify--primary' : 'btn-shopify--outline'"
+                    (click)="hrs.openAmpm='AM'">AM</button>
+                  <button type="button" class="btn-shopify btn-shopify--sm"
+                    [ngClass]="hrs.openAmpm === 'PM' ? 'btn-shopify--primary' : 'btn-shopify--outline'"
+                    (click)="hrs.openAmpm='PM'">PM</button>
+                </div>
+              </div>
+            </td>
+
+            <!-- Store Close -->
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <input type="text" class="shopify-input" style="width: 90px; text-align: center;"
+                  [(ngModel)]="hrs.storeClose" [name]="'storeClose-' + row" placeholder="hh:mm" />
+                <div class="d-flex gap-1">
+                  <button type="button" class="btn-shopify btn-shopify--sm"
+                    [ngClass]="hrs.closeAmpm === 'AM' ? 'btn-shopify--primary' : 'btn-shopify--outline'"
+                    (click)="hrs.closeAmpm='AM'">AM</button>
+                  <button type="button" class="btn-shopify btn-shopify--sm"
+                    [ngClass]="hrs.closeAmpm === 'PM' ? 'btn-shopify--primary' : 'btn-shopify--outline'"
+                    (click)="hrs.closeAmpm='PM'">PM</button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Mobile cards -->
+    <div class="shopify-mobile-list">
+      <div class="shopify-mobile-card" *ngFor="let hrs of storeHoursList; let row = index">
+        <h6 class="fw-bold mb-2">{{ hrs.days }}</h6>
+
+        <div class="shopify-mobile-card__field">
+          <label class="shopify-field-label--sm">Store Opens</label>
+          <div class="d-flex gap-2 align-items-center">
+            <input type="text" class="shopify-input" style="flex: 1; text-align: center;" [(ngModel)]="hrs.storeOpen"
+              [name]="'storeOpen-mob-' + row" placeholder="hh:mm" />
+            <div class="d-flex gap-1">
+              <button type="button" class="btn-shopify btn-shopify--sm"
+                [ngClass]="hrs.openAmpm === 'AM' ? 'btn-shopify--primary' : 'btn-shopify--outline'"
+                (click)="hrs.openAmpm='AM'">AM</button>
+              <button type="button" class="btn-shopify btn-shopify--sm"
+                [ngClass]="hrs.openAmpm === 'PM' ? 'btn-shopify--primary' : 'btn-shopify--outline'"
+                (click)="hrs.openAmpm='PM'">PM</button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="shopify-mobile-card__field">
-        <label class="shopify-field-label--sm">Store Closes</label>
-        <div class="d-flex gap-2 align-items-center">
-          <input type="text" class="shopify-input" style="flex: 1; text-align: center;" [(ngModel)]="hrs.storeClose"
-            [name]="'storeClose-mob-' + row" placeholder="hh:mm" />
-          <div class="d-flex gap-1">
-            <button type="button" class="btn-shopify btn-shopify--sm"
-              [ngClass]="hrs.closeAmpm === 'AM' ? 'btn-shopify--primary' : 'btn-shopify--outline'"
-              (click)="hrs.closeAmpm='AM'">AM</button>
-            <button type="button" class="btn-shopify btn-shopify--sm"
-              [ngClass]="hrs.closeAmpm === 'PM' ? 'btn-shopify--primary' : 'btn-shopify--outline'"
-              (click)="hrs.closeAmpm='PM'">PM</button>
+        <div class="shopify-mobile-card__field">
+          <label class="shopify-field-label--sm">Store Closes</label>
+          <div class="d-flex gap-2 align-items-center">
+            <input type="text" class="shopify-input" style="flex: 1; text-align: center;" [(ngModel)]="hrs.storeClose"
+              [name]="'storeClose-mob-' + row" placeholder="hh:mm" />
+            <div class="d-flex gap-1">
+              <button type="button" class="btn-shopify btn-shopify--sm"
+                [ngClass]="hrs.closeAmpm === 'AM' ? 'btn-shopify--primary' : 'btn-shopify--outline'"
+                (click)="hrs.closeAmpm='AM'">AM</button>
+              <button type="button" class="btn-shopify btn-shopify--sm"
+                [ngClass]="hrs.closeAmpm === 'PM' ? 'btn-shopify--primary' : 'btn-shopify--outline'"
+                (click)="hrs.closeAmpm='PM'">PM</button>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Action buttons -->
-  <div class="shopify-actions-row mt-4" style="justify-content: center;">
-    <button class="btn-shopify btn-shopify--primary" (click)="onSaveAll()">
-      <i class="bi bi-save"></i> Save
-    </button>
-    <button class="btn-shopify btn-shopify--outline" (click)="onCancel()">
-      <i class="bi bi-x-circle"></i> Cancel
-    </button>
-  </div>
+    <!-- Action buttons -->
+    <div class="shopify-actions-row mt-4" style="justify-content: center;">
+      <button class="btn-shopify btn-shopify--primary" (click)="onSaveAll()">
+        <i class="bi bi-save"></i> Save
+      </button>
+      <button class="btn-shopify btn-shopify--outline" (click)="onCancel()">
+        <i class="bi bi-x-circle"></i> Cancel
+      </button>
+    </div>
 
+  </ng-container>
 </div>
