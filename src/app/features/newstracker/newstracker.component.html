@@ -1,6 +1,6 @@
 <div class="shopify-main-container">
 
-    <h2 class="shopify-page-title">News Tracker Management</h2>
+    <h2 class="shopify-page-title"></h2>
 
     <!-- Search row -->
     <div class="shopify-search-row">
@@ -112,10 +112,16 @@
                     </div>
 
                     <div class="shopify-mobile-card__actions">
-                        <button *ngIf="!enabledEdit[row]" class="btn-shopify btn-shopify--outline btn-shopify--sm"
-                            (click)="startEdit(row)">
-                            <fa-icon [icon]="faEdit"></fa-icon> Edit
+                        <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="pt.isFirstPage()"
+                            (click)="pt.previous()">
+                            Previous
                         </button>
+                        <span class="shopify-pager__info">Page {{ pt.getCurrent() }} of {{ pt.getLastPage() }}</span>
+                        <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="pt.isLastPage()"
+                            (click)="pt.next()">
+                            Next
+                        </button>
+
                         <button *ngIf="enabledEdit[row]" class="btn-shopify btn-shopify--success btn-shopify--sm"
                             (click)="onSave(row)">
                             <fa-icon [icon]="faSave"></fa-icon> Save
@@ -128,9 +134,19 @@
             </div>
 
             <!-- Pagination -->
-            <div class="shopify-pagination">
-                <pagination-controls (pageChange)="p = $event"></pagination-controls>
-            </div>
+            <pagination-template #pt="paginationApi" (pageChange)="p = $event">
+                <div class="shopify-pager">
+                    <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="pt.isFirstPage()"
+                        (click)="pt.previous()">
+                        Previous
+                    </button>
+                    <span class="shopify-pager__info">Page {{ pt.getCurrent() }} of {{ pt.getLastPage() }}</span>
+                    <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="pt.isLastPage()"
+                        (click)="pt.next()">
+                        Next
+                    </button>
+                </div>
+            </pagination-template>
 
         </ng-container>
     </ng-container>

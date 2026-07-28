@@ -2,7 +2,7 @@
 
     <!-- Page Header -->
     <div class="shopify-page__header">
-        <h1 class="shopify-page__title">Warehouses</h1>
+        <!-- <h1 class="shopify-page__title">Warehouses</h1> -->
 
         <div class="shopify-page__actions">
             <button class="btn-shopify btn-shopify--outline" [disabled]="loading" (click)="loadWarehouses()">
@@ -64,13 +64,13 @@
                         <td colspan="8" class="text-center text-muted">No warehouses found</td>
                     </tr>
 
-                    <ng-container
-                        *ngFor="let w of filteredList | paginate: { itemsPerPage: pageSize, currentPage: p }">
+                    <ng-container *ngFor="let w of filteredList | paginate: { itemsPerPage: pageSize, currentPage: p }">
                         <tr>
                             <td>
                                 <button class="shopify-icon-btn" (click)="toggleDetails(w)"
                                     [title]="w.showDetails ? 'Hide details' : 'Show details'">
-                                    <i class="bi" [ngClass]="w.showDetails ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+                                    <i class="bi"
+                                        [ngClass]="w.showDetails ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
                                 </button>
                             </td>
                             <td>{{w.warehouseNbr}}</td>

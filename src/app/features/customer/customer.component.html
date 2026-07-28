@@ -2,8 +2,8 @@
      CUSTOMER — LIST VIEW
      ============================================================ -->
 <div class="shopify-main-container" *ngIf="!showAddFlag">
-
-  <h2 class="shopify-page-title">Customers</h2>
+  <!-- 
+  <h2 class="shopify-page-title">Customers</h2> -->
 
   <!-- Search row -->
   <div class="shopify-search-row">
@@ -68,8 +68,7 @@
                   (click)="editCustomer(customer)">
                   <i class="bi bi-pencil"></i>
                 </button>
-                <button class="btn-shopify btn-shopify--danger btn-shopify--icon" title="Delete"
-                  (click)="onDelete()">
+                <button class="btn-shopify btn-shopify--danger btn-shopify--icon" title="Delete" (click)="onDelete()">
                   <i class="bi bi-trash"></i>
                 </button>
               </div>

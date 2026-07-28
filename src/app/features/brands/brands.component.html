@@ -3,7 +3,7 @@
      ============================================================ -->
 <div class="shopify-main-container" *ngIf="!addFlag">
 
-  <h2 class="shopify-page-title">Brands</h2>
+  <!-- <h2 class="shopify-page-title">Brands</h2> -->
 
   <!-- Search row -->
   <div class="shopify-search-row">
@@ -11,16 +11,16 @@
       <label class="shopify-field-label" for="searchCode">Search Code</label>
       <div class="shopify-input-group">
         <span class="shopify-input-group__prefix"><i class="bi bi-search"></i></span>
-        <input type="text" class="shopify-input" placeholder="Search by code" id="searchCode"
-          [(ngModel)]="searchCode" (ngModelChange)="brandSearch()">
+        <input type="text" class="shopify-input" placeholder="Search by code" id="searchCode" [(ngModel)]="searchCode"
+          (ngModelChange)="brandSearch()">
       </div>
     </div>
     <div>
       <label class="shopify-field-label" for="searchName">Search Name</label>
       <div class="shopify-input-group">
         <span class="shopify-input-group__prefix"><i class="bi bi-search"></i></span>
-        <input type="text" class="shopify-input" placeholder="Search by name" id="searchName"
-          [(ngModel)]="searchName" (ngModelChange)="brandSearch()">
+        <input type="text" class="shopify-input" placeholder="Search by name" id="searchName" [(ngModel)]="searchName"
+          (ngModelChange)="brandSearch()">
       </div>
     </div>
   </div>
@@ -33,8 +33,7 @@
     <label for="documents" class="shopify-file-label">
       <i class="bi bi-upload"></i> Upload Brands
     </label>
-    <input type="file" id="documents" class="d-none" accept=".xlsx,.xls,.csv"
-      (change)="uploadBrands($event)" multiple>
+    <input type="file" id="documents" class="d-none" accept=".xlsx,.xls,.csv" (change)="uploadBrands($event)" multiple>
   </div>
 
   <!-- Loader -->
@@ -70,12 +69,12 @@
             <tr *ngFor="let brnd of pagedBrandList; let i = index" [ngClass]="{'is-active': activeRow === rowIndex(i)}">
               <td>{{ brnd.brandId }}</td>
               <td>
-                <input type="text" class="shopify-input" id="brandCode-{{ rowIndex(i) }}"
-                  [(ngModel)]="brnd.brandCode" [disabled]="!enabledEdit[rowIndex(i)]">
+                <input type="text" class="shopify-input" id="brandCode-{{ rowIndex(i) }}" [(ngModel)]="brnd.brandCode"
+                  [disabled]="!enabledEdit[rowIndex(i)]">
               </td>
               <td>
-                <input type="text" class="shopify-input" id="brandName-{{ rowIndex(i) }}"
-                  [(ngModel)]="brnd.brandName" [disabled]="!enabledEdit[rowIndex(i)]">
+                <input type="text" class="shopify-input" id="brandName-{{ rowIndex(i) }}" [(ngModel)]="brnd.brandName"
+                  [disabled]="!enabledEdit[rowIndex(i)]">
               </td>
               <td>
                 <div class="shopify-table__actions">
@@ -108,11 +107,13 @@
           </div>
           <div class="shopify-mobile-card__field">
             <label class="shopify-field-label--sm">Brand Code</label>
-            <input type="text" class="shopify-input" [(ngModel)]="brnd.brandCode" [disabled]="!enabledEdit[rowIndex(i)]">
+            <input type="text" class="shopify-input" [(ngModel)]="brnd.brandCode"
+              [disabled]="!enabledEdit[rowIndex(i)]">
           </div>
           <div class="shopify-mobile-card__field">
             <label class="shopify-field-label--sm">Brand Name</label>
-            <input type="text" class="shopify-input" [(ngModel)]="brnd.brandName" [disabled]="!enabledEdit[rowIndex(i)]">
+            <input type="text" class="shopify-input" [(ngModel)]="brnd.brandName"
+              [disabled]="!enabledEdit[rowIndex(i)]">
           </div>
           <div class="shopify-mobile-card__actions">
             <button *ngIf="!enabledEdit[rowIndex(i)]" class="btn-shopify btn-shopify--outline btn-shopify--sm"
@@ -123,7 +124,8 @@
               (click)="onSave(brnd.brandId, rowIndex(i))">
               <i class="bi bi-check-lg"></i> Save
             </button>
-            <button class="btn-shopify btn-shopify--danger btn-shopify--sm" (click)="onDelete(brnd.brandId, rowIndex(i))">
+            <button class="btn-shopify btn-shopify--danger btn-shopify--sm"
+              (click)="onDelete(brnd.brandId, rowIndex(i))">
               <i class="bi bi-trash"></i> Delete
             </button>
           </div>

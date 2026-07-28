@@ -3,7 +3,7 @@
      ============================================================ -->
 <div class="shopify-main-container">
 
-  <h2 class="shopify-page-title">Purchase Orders</h2>
+  <!-- <h2 class="shopify-page-title">Purchase Orders</h2> -->
 
   <div class="shopify-card mb-4">
     <div class="shopify-card__header">Search Purchase Orders</div>
@@ -84,7 +84,8 @@
           <td>{{ purchase.poRef }}</td>
           <td>{{ purchase.poDate }}</td>
           <td>
-            <span class="shopify-badge" [ngClass]="purchase.poStatus === 'OPEN' ? 'shopify-badge--success' : 'shopify-badge--muted'">
+            <span class="shopify-badge"
+              [ngClass]="purchase.poStatus === 'OPEN' ? 'shopify-badge--success' : 'shopify-badge--muted'">
               {{ purchase.poStatus }}
             </span>
           </td>
@@ -96,10 +97,12 @@
               <button class="btn-shopify btn-shopify--outline btn-shopify--icon" title="Edit" (click)="onEdit(row)">
                 <fa-icon [icon]="faPencil"></fa-icon>
               </button>
-              <button class="btn-shopify btn-shopify--danger btn-shopify--icon" title="Delete" (click)="onDeletePO(row, purchase.poId)">
+              <button class="btn-shopify btn-shopify--danger btn-shopify--icon" title="Delete"
+                (click)="onDeletePO(row, purchase.poId)">
                 <fa-icon [icon]="faRemove"></fa-icon>
               </button>
-              <button class="btn-shopify btn-shopify--outline btn-shopify--icon" title="Print" (click)="print(purchase)">
+              <button class="btn-shopify btn-shopify--outline btn-shopify--icon" title="Print"
+                (click)="print(purchase)">
                 <fa-icon [icon]="faPrint"></fa-icon>
               </button>
               <button class="btn-shopify btn-shopify--success btn-shopify--icon" title="Receive" (click)="receive(row)">
@@ -125,7 +128,8 @@
       </div>
       <div class="shopify-mobile-card__field">
         <span class="shopify-field-label--sm">Status</span>
-        <span class="shopify-badge" [ngClass]="purchase.poStatus === 'OPEN' ? 'shopify-badge--success' : 'shopify-badge--muted'">
+        <span class="shopify-badge"
+          [ngClass]="purchase.poStatus === 'OPEN' ? 'shopify-badge--success' : 'shopify-badge--muted'">
           {{ purchase.poStatus }}
         </span>
       </div>
@@ -145,7 +149,8 @@
       </div>
       <div class="shopify-mobile-card__actions">
         <button class="btn-shopify btn-shopify--outline btn-shopify--sm" (click)="onEdit(row)">Edit</button>
-        <button class="btn-shopify btn-shopify--danger btn-shopify--sm" (click)="onDeletePO(row, purchase.poId)">Delete</button>
+        <button class="btn-shopify btn-shopify--danger btn-shopify--sm"
+          (click)="onDeletePO(row, purchase.poId)">Delete</button>
         <button class="btn-shopify btn-shopify--outline btn-shopify--sm" (click)="print(purchase)">Print</button>
         <button class="btn-shopify btn-shopify--success btn-shopify--sm" (click)="receive(row)">Receive</button>
       </div>

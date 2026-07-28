@@ -324,12 +324,83 @@
     color: #6d7175;
 }
 
-/* ===== Pagination ===== */
+/* ===== Pagination (grid/card view wrapper) ===== */
 .shopify-pagination {
     grid-column: 1 / -1;
     display: flex;
     justify-content: center;
     margin-top: 1rem;
+}
+
+.shopify-pager {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    justify-content: center;
+    margin: 1rem 0;
+}
+
+.shopify-pager__info {
+    font-size: 0.85rem;
+    color: #202223;
+    white-space: nowrap;
+}
+
+/* ===== ngx-pagination override → Shopify black-pill style ===== */
+::ng-deep .ngx-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+::ng-deep .ngx-pagination li {
+    margin: 0;
+}
+
+::ng-deep .ngx-pagination a,
+::ng-deep .ngx-pagination button,
+::ng-deep .ngx-pagination .current {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 10px;
+    border-radius: 6px;
+    border: 1px solid #dbdaea;
+    background: #fff;
+    color: #1a1a1a;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+::ng-deep .ngx-pagination a:hover {
+    background: #f6f6f7;
+}
+
+::ng-deep .ngx-pagination .current {
+    background: #1a1a1a;
+    border-color: #1a1a1a;
+    color: #fff;
+}
+
+::ng-deep .ngx-pagination .disabled {
+    color: #adb5bd;
+    background: #f8f8fb;
+    border: 1px solid #dbdaea;
+    border-radius: 6px;
+    min-width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: not-allowed;
 }
 
 /* ===== Modal ===== */
@@ -356,4 +427,19 @@
     .btn-shopify {
         flex: 1 1 auto;
     }
+}
+
+::ng-deep .ngx-pagination .current,
+::ng-deep .ngx-pagination li.current {
+    background-color: #1a1a1a !important;
+    border-color: #1a1a1a !important;
+    color: #fff !important;
+}
+
+::ng-deep .ngx-pagination a,
+::ng-deep .ngx-pagination button {
+    background-color: #fff !important;
+    border: 1px solid #dbdaea !important;
+    color: #1a1a1a !important;
+    border-radius: 6px !important;
 }

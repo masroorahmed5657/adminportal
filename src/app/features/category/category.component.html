@@ -3,7 +3,7 @@
      ============================================================ -->
 <div class="shopify-main-container" *ngIf="showCategoryListFlag && !addFlag">
 
-  <h2 class="shopify-page-title">Categories</h2>
+  <!-- <h2 class="shopify-page-title">Categories</h2> -->
 
   <!-- Search row -->
   <div class="shopify-search-row">
@@ -33,8 +33,8 @@
     <label for="documents" class="shopify-file-label">
       <i class="bi bi-upload"></i> Upload Category
     </label>
-    <input type="file" id="documents" class="d-none" accept=".xlsx,.xls,.csv"
-      (change)="uploadCategory($event)" multiple>
+    <input type="file" id="documents" class="d-none" accept=".xlsx,.xls,.csv" (change)="uploadCategory($event)"
+      multiple>
   </div>
 
   <!-- Loader -->
@@ -69,15 +69,16 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let cat of pagedCategoryList; let i = index" [ngClass]="{'is-active': activeRow === rowIndex(i)}">
+            <tr *ngFor="let cat of pagedCategoryList; let i = index"
+              [ngClass]="{'is-active': activeRow === rowIndex(i)}">
               <td>{{ cat.categoryId }}</td>
               <td>
-                <input type="text" class="shopify-input" id="category-{{rowIndex(i)}}"
-                  [(ngModel)]="cat.category" [disabled]="!enabledEdit[rowIndex(i)]">
+                <input type="text" class="shopify-input" id="category-{{rowIndex(i)}}" [(ngModel)]="cat.category"
+                  [disabled]="!enabledEdit[rowIndex(i)]">
               </td>
               <td>
-                <input type="text" class="shopify-input" id="subCategory-{{rowIndex(i)}}"
-                  [(ngModel)]="cat.subCategory" [disabled]="!enabledEdit[rowIndex(i)]">
+                <input type="text" class="shopify-input" id="subCategory-{{rowIndex(i)}}" [(ngModel)]="cat.subCategory"
+                  [disabled]="!enabledEdit[rowIndex(i)]">
               </td>
               <td>
                 <img [src]="'data:' + cat.imageType + ';base64,' + cat.finalImage" alt="" class="shopify-avatar">
@@ -128,7 +129,8 @@
           </div>
           <div class="shopify-mobile-card__field">
             <label class="shopify-field-label--sm">Sub Category</label>
-            <input type="text" class="shopify-input" [(ngModel)]="cat.subCategory" [disabled]="!enabledEdit[rowIndex(i)]">
+            <input type="text" class="shopify-input" [(ngModel)]="cat.subCategory"
+              [disabled]="!enabledEdit[rowIndex(i)]">
           </div>
           <div class="shopify-mobile-card__field text-center">
             <label class="shopify-field-label--sm d-block">Image</label>
@@ -152,7 +154,8 @@
               (click)="onSave(cat.categoryId, rowIndex(i))">
               <i class="bi bi-check-lg"></i> Save
             </button>
-            <button class="btn-shopify btn-shopify--danger btn-shopify--sm" (click)="onDelete(cat.categoryId, rowIndex(i))">
+            <button class="btn-shopify btn-shopify--danger btn-shopify--sm"
+              (click)="onDelete(cat.categoryId, rowIndex(i))">
               <i class="bi bi-trash"></i> Delete
             </button>
             <button class="btn-shopify btn-shopify--outline btn-shopify--sm" (click)="openPopup(rowIndex(i))">
@@ -241,8 +244,7 @@
       <label for="files" class="shopify-file-label">
         <i class="bi bi-upload"></i> Choose category image
       </label>
-      <input type="file" id="files" name="files" style="display:none;" accept="image/*"
-        (change)="selectFile($event)">
+      <input type="file" id="files" name="files" style="display:none;" accept="image/*" (change)="selectFile($event)">
 
       <img [src]="preview" class="shopify-modal__preview" *ngIf="preview">
     </div>

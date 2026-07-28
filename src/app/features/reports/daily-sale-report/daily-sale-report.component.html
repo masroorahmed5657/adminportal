@@ -3,7 +3,7 @@
      ============================================================ -->
 <div class="shopify-main-container" id="saleReport">
 
-  <h2 class="shopify-page-title">Daily Sale Report</h2>
+  <!-- <h2 class="shopify-page-title">Daily Sale Report</h2> -->
 
   <!-- Date Filter Row -->
   <div class="shopify-card mb-4">
@@ -276,7 +276,8 @@
           <tfoot>
             <tr class="shopify-table__totals shopify-table__totals--danger">
               <td colspan="2" class="no-print">Total #(CASH): {{ totalCashReturnCount }}</td>
-              <td colspan="2" class="no-print" *ngIf="showTaxFlag">Total Tax(CASH): {{ toNumber(totalCashReturnTax) }}</td>
+              <td colspan="2" class="no-print" *ngIf="showTaxFlag">Total Tax(CASH): {{ toNumber(totalCashReturnTax) }}
+              </td>
               <td colspan="2">Total Sale(CASH): {{ toNumber(totalCashReturnAmount) }}</td>
             </tr>
           </tfoot>
