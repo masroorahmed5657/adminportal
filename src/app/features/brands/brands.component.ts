@@ -1,7 +1,7 @@
 import { Component, OnInit,EventEmitter, Output } from '@angular/core';
 import { Brands } from '../../shared/models/model-classes.model';
 import { BrandsService } from '../../shared/services/brands.service';
-import Swal from "sweetalert2";
+import { NotificationService } from '../../shared/services/notification.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
@@ -60,7 +60,10 @@ export class BrandsComponent implements OnInit {
   }
 
   constructor(
-    private brandsService: BrandsService, private router: Router) { }
+    private brandsService: BrandsService,
+    private router: Router,
+    private notify: NotificationService
+  ) { }
 
   /* ************************ */
   ngOnInit(): void {
@@ -81,6 +84,7 @@ export class BrandsComponent implements OnInit {
       error: (err) => {
         console.error(err);
         this.spinnerDataLoad = false; // 👈 Loader stop
+        this.notify.error('Could not load brands. Please try again.');
       }
     });
   }
@@ -105,11 +109,11 @@ export class BrandsComponent implements OnInit {
       // Validation
       if (!brand.brandName) {
         saveFlag = false;
-        Swal.fire('WARNING', 'Please Enter Brand Name', 'warning');
+        this.notify.warning('Please Enter Brand Name');
       }
       if (!brand.brandCode) {
         saveFlag = false;
-        Swal.fire('WARNING', 'Please Enter Brand Code', 'warning');
+        this.notify.warning('Please Enter Brand Code');
       }
 
       // // ✅ Duplicate check (only if no empty error)
@@ -122,7 +126,7 @@ export class BrandsComponent implements OnInit {
       //   )
       // ) {
       //   saveFlag = false;
-      //   Swal.fire('Error', 'Brand Already Exists', 'error');
+      //   this.notify.error('Brand Already Exists');
       //   return;
       // }
 
@@ -141,12 +145,12 @@ export class BrandsComponent implements OnInit {
 
       if (!brand.brandName) {
         saveFlag = false;
-        Swal.fire('WARNING', 'Please Enter Brand Name', 'warning');
+        this.notify.warning('Please Enter Brand Name');
       }
 
       if (!brand.brandCode) {
         saveFlag = false;
-        Swal.fire('WARNING', 'Please Enter Brand Code', 'warning');
+        this.notify.warning('Please Enter Brand Code');
       }
 
       // // ✅ Duplicate check sirf tab chale jab dono fields empty na ho
@@ -161,7 +165,7 @@ export class BrandsComponent implements OnInit {
       //   )
       // ) {
       //   saveFlag = false;
-      //   Swal.fire('Error', 'Brand Already Exists', 'error');
+      //   this.notify.error('Brand Already Exists');
 
       //   // 🔙 Restore old values in input
       //   brandNameInput.value = this.brandList[row].brandName;
@@ -182,12 +186,11 @@ export class BrandsComponent implements OnInit {
     this.brandsService.save(brand).subscribe(
       (data: Brands) => {
         if (data && data.brandId != null) {
-          Swal.fire('Submit', 'You have saved brand ' + data.brandId + ' Successfully!', 'success').then(() => {
-            this.enabledEdit[row] = false;
-            this.activeRow = null; // highlight remove
-            // after successful save:
-            this.brandSaved.emit();
-          });
+          this.notify.success('You have saved brand ' + data.brandId + ' successfully!');
+          this.enabledEdit[row] = false;
+          this.activeRow = null; // highlight remove
+          // after successful save:
+          this.brandSaved.emit();
 
           if (row < 0) {
             // Add brand to list without reload
@@ -200,12 +203,12 @@ export class BrandsComponent implements OnInit {
 
           this.addFlag = false; // hide add form if open
         } else {
-          Swal.fire('Error', 'Error in saving Brand', 'error');
+          this.notify.error('Error in saving Brand');
         }
       },
       (error) => {
         console.error('Error saving brand:', error);
-        Swal.fire('Error', 'API Error while saving brand', 'error');
+        this.notify.error('API Error while saving brand');
       }
     );
 
@@ -216,45 +219,38 @@ export class BrandsComponent implements OnInit {
   activeRow: number | null = null; // highlight ke liye
 
   /* ************************ */
-  onDelete(brandId:number, row: number) {
-    Swal.fire({
-      title: `Are you sure want to delete Brand?`,
-      text: 'You cannot recover this Brand!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, keep it'
-    }).then((response: any) => {
-      if (response.isConfirmed) {
-        // Call delete API
-        this.brandsService.delete(brandId).subscribe(
-          () => {
+  async onDelete(brandId:number, row: number) {
+    const confirmed = await this.notify.confirmDelete('this brand');
+    if (!confirmed) {
+      this.notify.info('Your brand is safe');
+      return;
+    }
 
-                this.enabledEdit = [];
-                this.activeRow = null
+    // Call delete API
+    this.brandsService.delete(brandId).subscribe(
+      () => {
 
-            // Remove brand from the list
-            this.brandList.splice(row, 1);
+        this.enabledEdit = [];
+        this.activeRow = null
 
-            // Trigger Angular change detection by assigning a new array
-            this.brandList = [...this.brandList];
+        // Remove brand from the list
+        this.brandList.splice(row, 1);
 
-            // If we deleted the last item on the last page, step back a page
-            if (this.page > this.totalPages) {
-              this.page = this.totalPages;
-            }
+        // Trigger Angular change detection by assigning a new array
+        this.brandList = [...this.brandList];
 
-            Swal.fire('Deleted!', 'Brand has been deleted.', 'success');
-          },
-          (error) => {
-            console.error('Error deleting brand:', error);
-            Swal.fire('Error', 'Failed to delete brand', 'error');
-          }
-        );
-      } else if (response.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire('Cancelled', 'Your Brand is safe', 'info');
+        // If we deleted the last item on the last page, step back a page
+        if (this.page > this.totalPages) {
+          this.page = this.totalPages;
+        }
+
+        this.notify.success('Brand has been deleted.');
+      },
+      (error) => {
+        console.error('Error deleting brand:', error);
+        this.notify.error('Failed to delete brand');
       }
-    });
+    );
   }
 
 
@@ -288,7 +284,7 @@ export class BrandsComponent implements OnInit {
 
     this.brandsService.importBrands(this.fileImport).subscribe(
       (uploadedBrands: Brands[]) => {
-        Swal.fire('SUCCESS', 'Brands uploaded Successfully', 'success');
+        this.notify.success('Brands uploaded successfully');
 
         window.location.reload();
 
@@ -299,7 +295,7 @@ export class BrandsComponent implements OnInit {
         // }
       },
       (error) => {
-        Swal.fire('ERROR', 'Failed to upload Brands', 'error');
+        this.notify.error('Failed to upload Brands');
         console.error(error);
       }
     );
