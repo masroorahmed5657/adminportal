@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { DepartmentsService } from '../../shared/services/departments.service';
-import { Departments } from '../../shared/models/model-classes.model';
+import { AdminUser, Departments } from '../../shared/models/model-classes.model';
 
 @Component({
   selector: 'app-department',
@@ -78,7 +78,7 @@ export class DepartmentComponent implements OnInit {
         // lekin agar kabhi 'Y'/'N' ya 0/1 mix aaye to normalize kar deti hai
         this.departmentsList = data.map(d => ({
           ...d,
-          activeFlag: this.normalizeToBoolean(d.activeFlag)
+          //activeFlag: this.normalizeToBoolean(d.activeFlag)
         }));
         this.page = 1; // reset to first page on fresh load
         this.isLoading = false;
@@ -167,6 +167,7 @@ export class DepartmentComponent implements OnInit {
       return;
     }
 
+    const loggedInUser: AdminUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
     this.isSaving = true;
 
     // ✅ activeFlag ko explicitly boolean bana kar bhej rahay hain
@@ -174,6 +175,8 @@ export class DepartmentComponent implements OnInit {
       ...this.department,
       activeFlag: this.normalizeToBoolean(this.department.activeFlag)
     };
+
+    deptToSave.updatedBy = loggedInUser?.loginId;
 
     this.deptService.saveDep(deptToSave).subscribe({
       next: (saved) => {

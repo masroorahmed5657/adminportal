@@ -56,6 +56,8 @@ export class HeaderComponent {
     '/layout/profit-loss': 'Profit & Loss',
     '/layout/purchase-order-add': 'PO Add',
     '/layout/purchase-order-edit/:purchaseOrderId': 'PO Edit',
+    '/layout/ezpz-tax': 'Ezpz Tax',
+    '/layout/salary': 'Salary'
 
 
 

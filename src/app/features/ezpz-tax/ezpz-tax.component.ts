@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { NgxPaginationModule } from 'ngx-pagination';
 import Swal from 'sweetalert2';
 
-import { EzpzTax } from '../../shared/models/model-classes.model';
+import { AdminUser, EzpzTax } from '../../shared/models/model-classes.model';
 import { EzpzTaxService } from '../../shared/services/ezpz-tax.service';
 
 @Component({
@@ -31,10 +31,12 @@ export class EzpzTaxComponent implements OnInit {
   list: EzpzTax[] = [];
   item: EzpzTax = this.getEmpty();
   viewItem: EzpzTax = this.getEmpty();
+  
 
   constructor(private service: EzpzTaxService) {}
 
   ngOnInit(): void {
+    
     this.load();
   }
 
@@ -44,7 +46,9 @@ export class EzpzTaxComponent implements OnInit {
       name: '',
       tax: null,
       taxType: '',
-      stateCode: ''
+      stateCode: '',
+      updatedBy: null,
+      updatedDate: null
     };
   }
 
@@ -122,6 +126,9 @@ export class EzpzTaxComponent implements OnInit {
     }
 
     this.isSaving = true;
+    const loggedInUser: AdminUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+    this.item.updatedBy = loggedInUser?.loginId; 
+
     this.service.save(this.item).subscribe({
       next: () => {
         Swal.fire('Success', 'Tax saved successfully', 'success');

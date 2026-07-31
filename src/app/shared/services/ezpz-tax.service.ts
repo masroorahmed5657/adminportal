@@ -11,14 +11,14 @@ export class EzpzTaxService {
   constructor(private http: HttpMethodService) { }
 
   getAll(): Observable<EzpzTax[]> {
-    return this.http.get<EzpzTax[]>('ezpzTax/findAll');
+    return this.http.get<EzpzTax[]>('ezpztax/findAllTaxes');
   }
 
   save(data: EzpzTax): Observable<EzpzTax> {
-    return this.http.post<EzpzTax>('ezpzTax/save', data);
+    return this.http.post<EzpzTax>('ezpztax/save', data);
   }
 
   delete(id: number): Observable<any> {
-    return this.http.post<any>(`ezpzTax/delete/${id}`, {});
+    return this.http.post<any>(`ezpztax/deleteById/${id}`, {});
   }
 }

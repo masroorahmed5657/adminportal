@@ -1157,6 +1157,8 @@ export class EzpzTax {
    tax: any;
    taxType: any
    stateCode: any;
+   updatedBy:any;
+   updatedDate:any;
 
 }
 
@@ -1312,6 +1314,8 @@ export class Warehouse {
    updatedDate: any;
    fromWarehouseId: any;
    showDetails: any;
+   createdBy:any;
+   createdDate:any;
 
 }
 

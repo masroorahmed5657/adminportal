@@ -68,8 +68,8 @@
               <td>{{ dept.printerName }}</td>
               <td>
                 <span class="shopify-badge"
-                  [ngClass]="dept.activeFlag === 'Y' ? 'shopify-badge--success' : 'shopify-badge--muted'">
-                  {{ dept.activeFlag === 'Y' ? 'Active' : 'Inactive' }}
+                  [ngClass]="dept.activeFlag === true ? 'shopify-badge--success' : 'shopify-badge--muted'">
+                  {{ dept.activeFlag === true ? 'Active' : 'Inactive' }}
                 </span>
               </td>
               <td>{{ dept.updatedDate | date:'dd/MM/yyyy' }}</td>
@@ -111,8 +111,8 @@
               </div>
             </div>
             <span class="shopify-badge"
-              [ngClass]="dept.activeFlag === 'Y' ? 'shopify-badge--success' : 'shopify-badge--muted'">
-              {{ dept.activeFlag === 'Y' ? 'Active' : 'Inactive' }}
+              [ngClass]="dept.activeFlag===true ? 'shopify-badge--success' : 'shopify-badge--muted'">
+              {{ dept.activeFlag===true ? 'Active' : 'Inactive' }}
             </span>
           </div>
           <div class="shopify-mobile-card__field">

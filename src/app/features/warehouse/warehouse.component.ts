@@ -6,7 +6,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
 
 import { environment } from '../../../environments/environment';
 import { Warehouse, AdminUser } from '../../shared/models/model-classes.model';
-import { WarehousService } from '../../shared/services/warehous.service';
+import { WarehouseService } from '../../shared/services/warehouse.service';
 
 /**
  * ===========================================================================
@@ -75,7 +75,7 @@ export class WarehouseComponent implements OnInit {
     updatedBy: new FormControl()
   });
 
-  constructor(private warehouseService: WarehousService) { }
+  constructor(private warehouseService: WarehouseService) { }
 
   ngOnInit(): void {
     const user = sessionStorage.getItem('currentUser');
@@ -178,6 +178,9 @@ export class WarehouseComponent implements OnInit {
     this.warehouseForm.get('postalCode')?.setValue(w.postalCode);
     this.warehouseForm.get('activeFlag')?.setValue(this.isActive(w));
     this.warehouseForm.get('fromWarehouseId')?.setValue(w.fromWarehouseId);
+    this.warehouseForm.get('updatedBy')?.setValue(w.updatedBy);
+    this.warehouseForm.get('createdBy')?.setValue(w.createdBy);
+    this.warehouseForm.get('createdDate')?.setValue(w.createdDate);
 
     this.modalOpen = true;
   }
@@ -212,9 +215,12 @@ export class WarehouseComponent implements OnInit {
     warehouse.stateProvince = this.warehouseForm.get('stateProvince')?.value;
     warehouse.country = this.warehouseForm.get('country')?.value;
     warehouse.postalCode = this.warehouseForm.get('postalCode')?.value;
-    warehouse.activeFlag = this.warehouseForm.get('activeFlag')?.value ? 'A' : 'N';
+    warehouse.activeFlag = this.warehouseForm.get('activeFlag')?.value ? true : false;
     warehouse.fromWarehouseId = this.warehouseForm.get('fromWarehouseId')?.value;
     warehouse.updatedBy = loggedInUser?.loginId;
+    warehouse.createdBy = loggedInUser?.loginId;
+    warehouse.createdBy = this.warehouseForm.get('createdBy')?.value;
+    warehouse.createdDate = this.warehouseForm.get('createdDate')?.value;
 
     this.loading = true;
 
