@@ -62,6 +62,23 @@ export class HomeComponent implements OnInit {
 
   currentUser: any;
 
+  /* ===== Loader (Brand/Category style) ===== */
+  spinnerDataLoad: boolean = false;
+  private pendingRequests: number = 0;
+
+  private startRequest(): void {
+    this.pendingRequests++;
+    this.spinnerDataLoad = true;
+  }
+
+  private finishRequest(): void {
+    this.pendingRequests--;
+    if (this.pendingRequests <= 0) {
+      this.pendingRequests = 0;
+      this.spinnerDataLoad = false;
+    }
+  }
+
   constructor(
     private reportsService: ReportsService,
     private customerService: CustomerService,
@@ -82,52 +99,98 @@ export class HomeComponent implements OnInit {
     this.appName = this.currentUser?.loginId;
 
     /* ================= STAT TILES (top) ================= */
-    this.reportsService.getTotalCountOrders().subscribe((data) => {
-      this.totalCountOrdersList = data;
+    this.startRequest();
+    this.reportsService.getTotalCountOrders().subscribe({
+      next: (data) => {
+        this.totalCountOrdersList = data;
+        this.finishRequest();
+      },
+      error: () => this.finishRequest()
     });
 
-    this.reportsService.getTotalCountProducts().subscribe((data) => {
-      this.totalCountProductsList = data;
+    this.startRequest();
+    this.reportsService.getTotalCountProducts().subscribe({
+      next: (data) => {
+        this.totalCountProductsList = data;
+        this.finishRequest();
+      },
+      error: () => this.finishRequest()
     });
 
-    this.customerService.getAllCustomers().subscribe((data: any) => {
-      this.totalCountSignupList = data || [];
+    this.startRequest();
+    this.customerService.getAllCustomers().subscribe({
+      next: (data: any) => {
+        this.totalCountSignupList = data || [];
+        this.finishRequest();
+      },
+      error: () => this.finishRequest()
     });
 
-    this.reviewService.getReviewsList().subscribe((data: any) => {
-      this.totalReviewsList = data || [];
+    this.startRequest();
+    this.reviewService.getReviewsList().subscribe({
+      next: (data: any) => {
+        this.totalReviewsList = data || [];
+        this.finishRequest();
+      },
+      error: () => this.finishRequest()
     });
 
-    this.productService.findTotalProductsCount().subscribe((data: any) => {
-      this.totalProductsCount = data;
+    this.startRequest();
+    this.productService.findTotalProductsCount().subscribe({
+      next: (data: any) => {
+        this.totalProductsCount = data;
+        this.finishRequest();
+      },
+      error: () => this.finishRequest()
     });
 
     /* ================= LATEST PRODUCTS (replaces dummy "Recent Orders" table) ================= */
-    this.productService.getFirstLatestProducts(6, 0).subscribe((data: any) => {
-      this.latestProducts = data || [];
+    this.startRequest();
+    this.productService.getFirstLatestProducts(6, 0).subscribe({
+      next: (data: any) => {
+        this.latestProducts = data || [];
+        this.finishRequest();
+      },
+      error: () => this.finishRequest()
     });
 
     /* ================= EXPIRING PRODUCTS (replaces dummy food-tiles / "Orders" list) ================= */
-    this.productService.getExpiryProducts(30).subscribe((data: any) => {
-      this.expiringProducts = data?.productViewList || data || [];
+    this.startRequest();
+    this.productService.getExpiryProducts(30).subscribe({
+      next: (data: any) => {
+        this.expiringProducts = data?.productViewList || data || [];
+        this.finishRequest();
+      },
+      error: () => this.finishRequest()
     });
 
     /* ================= DAILY SALE ================= */
-    this.reportsService.getDailySale().subscribe((data: OrderSaleReportResponse) => {
-      this.dailySaleList = data.orderSaleReport || [];
-      this.renderDailySaleBarChart();
+    this.startRequest();
+    this.reportsService.getDailySale().subscribe({
+      next: (data: OrderSaleReportResponse) => {
+        this.dailySaleList = data.orderSaleReport || [];
+        this.renderDailySaleBarChart();
+        this.finishRequest();
+      },
+      error: () => this.finishRequest()
     });
 
     /* ================= WEEKLY SALE ================= */
-    this.reportsService.weeklySaleTotal().subscribe((data: OrderSaleReportResponse) => {
-      this.weeklySaleList = data.orderSaleReport || [];
-      this.grandTotalWeekly = this.weeklySaleList.reduce((total, sale) => total + (sale.totalSale || 0), 0);
-      this.renderWeeklySalesChart();
+    this.startRequest();
+    this.reportsService.weeklySaleTotal().subscribe({
+      next: (data: OrderSaleReportResponse) => {
+        this.weeklySaleList = data.orderSaleReport || [];
+        this.grandTotalWeekly = this.weeklySaleList.reduce((total, sale) => total + (sale.totalSale || 0), 0);
+        this.renderWeeklySalesChart();
+        this.finishRequest();
+      },
+      error: () => this.finishRequest()
     });
 
     /* ================= MONTHLY SALE ================= */
-    this.reportsService.getCurrentMonthSale().subscribe(
-      (data: OrderSaleReportResponse) => {
+    this.startRequest();
+    this.reportsService.getCurrentMonthSale().subscribe({
+      next: (data: OrderSaleReportResponse) => {
         this.monthlySaleList = data.orderSaleReport || [];
 
         if (this.monthlySaleList.length) {
@@ -144,11 +207,13 @@ export class HomeComponent implements OnInit {
 
         this.renderMonthlyBreakdownChart();
         this.renderProductsHealthChart();
+        this.finishRequest();
       },
-      error => {
+      error: (error) => {
         console.error('Error fetching monthly sale report:', error);
+        this.finishRequest();
       }
-    );
+    });
   }
 
   /* ================================================================

@@ -10,7 +10,7 @@ import { faHome, faUndo, faSave, faCoffee, faSignIn } from '@fortawesome/free-so
 import { faTwitter, faFacebook, faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { faCog, faDashboard, faToolbox } from '@fortawesome/free-solid-svg-icons';
 import { faInfo, faEllipsisV, faPrint, faNewspaper, faBell, faEdit, faPlusCircle, faHistory, faFileInvoiceDollar, faShoppingCart, faSort, faSearch } from '@fortawesome/free-solid-svg-icons';
-import Swal from "sweetalert2";
+import { NotificationService } from '../../shared/services/notification.service';
 import { CommonModule } from '@angular/common';
 
 
@@ -152,7 +152,8 @@ export class CustomerComponent implements OnInit {
     private activateRoute: ActivatedRoute,
     private fb: FormBuilder,
     private cache: CacheService,
-    private loginService: LoginService) { }
+    private loginService: LoginService,
+    private notify: NotificationService) { }
 
   ngOnInit(): void {
 
@@ -208,32 +209,13 @@ export class CustomerComponent implements OnInit {
       this.customerList = data.reverse();
       this.page = 1; // reset to first page on fresh load
     });
-    //this.customerForm.get('loginId')?.setValue(null);
-    //this.customerForm.get('loginPassword')?.setValue(null);
-
-
 
     let user = sessionStorage.getItem('currentUser');
     if (typeof (user) !== 'undefined' && user !== null && user !== '') {
-      // this.customer = JSON.parse(user);
-      // this.convertToForm(this.customer);
-
-
-      // this.customerService.getCountryList().subscribe(data => {
-      //   this.countryList = data;
-      //  });
-
-      //  this.selectedCountry = this.customer.country;
-
-      //  this.customerService.getProvinceCityList(this.selectedCountry).subscribe(data=> {
-      //    this.provinceList = data;
-      //    });
 
       this.customerService.getCountryList().subscribe((data: Country[]) => {
         this.countryList = data;
       });
-
-      //this.selectedCountry = this.customer.country;
 
       this.customerService.getProvinceList().subscribe((data: StateProvince[]) => {
 
@@ -241,10 +223,6 @@ export class CustomerComponent implements OnInit {
         this.provinceBillingList = data
 
       });
-
-      // this.customerService.getProvinceList().subscribe((data: StateProvince[]) => {
-      //   this.provinceList = data;
-      // });
 
     }
 
@@ -302,7 +280,7 @@ export class CustomerComponent implements OnInit {
       this.customerService.updateCustomer(customer).subscribe(data => {
         if (data !== undefined && data >= 0) {
           this.signInUser = customer.firstName;
-          Swal.fire('Submit', 'You have succesfully saved the profile!', 'success');
+          this.notify.success('You have successfully saved the profile!');
           this.showAddFlag = false;
           this.editFlag = false;
           this.editMode = false;
@@ -434,7 +412,7 @@ export class CustomerComponent implements OnInit {
   /* ******************************************* */
 
   alertWithSuccess(userId: any) {
-    Swal.fire('Submit', 'You have successfully registered as a customer', 'success')
+    this.notify.success('You have successfully registered as a customer');
   }
 
   /* ****************************************** */
@@ -511,31 +489,32 @@ export class CustomerComponent implements OnInit {
     }
   }
 
-  onDelete() {
+  async onDelete(customer: Customer) {
 
-    Swal.fire({
-      title: 'Are you sure to delete ',
-      text: 'You can not recuperate this Customer!!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, keep it'
-    }).then((response: any) => {
+    const confirmed = await this.notify.confirmDelete('this customer');
+    if (!confirmed) {
+      this.notify.info('Your customer file is safe');
+      return;
+    }
 
-      if (response.value) {
+    this.customerService.deleteCustomer(customer.custId).subscribe({
+      next: () => {
+        const index = this.customerList.findIndex(c => c.custId === customer.custId);
+        if (index > -1) {
+          this.customerList.splice(index, 1);
+          this.customerList = [...this.customerList];
+        }
 
-        let custId: any = this.customerList;
-        // this.customerService.deleteCustomer(custId).subscribe(()=>{
-        //   delay(30000);
-        //   window.location.reload();
-        // });
+        // If we deleted the last item on the last page, step back a page
+        if (this.page > this.totalPages) {
+          this.page = this.totalPages;
+        }
 
-      } else if (response.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire(
-          'Cancelled',
-          'Your Customer file is safe',
-          'error'
-        );
+        this.notify.success('Customer has been deleted.');
+      },
+      error: (err) => {
+        console.error('Error deleting customer:', err);
+        this.notify.error('Failed to delete customer');
       }
     });
   }

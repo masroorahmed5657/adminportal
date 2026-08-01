@@ -15,8 +15,15 @@ import { HttpMethodService } from '../helper/http-method.service';
   providedIn: 'root'
 })
 export class CustomerService {
-  deleteCustomer(custId: any) {
-    throw new Error('Method not implemented.');
+
+  /* ****************************************************************** */
+  // ⚠️ Verify this endpoint matches your backend's actual delete route
+  // (checked other services in this file — they follow the pattern
+  // '<entity>/<action>', e.g. 'customer/save', 'customer/findAllCustomer' —
+  // so this assumes 'customer/delete/{custId}'. Adjust the path below if
+  // your backend uses a different route.)
+  deleteCustomer(custId: any): Observable<any> {
+    return this.http.delete(`customer/delete/${custId}`);
   }
 
   private url = environment.apiUrl; //http://localhost:9080/EZPZ_WS/customer

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { DeviceRegister } from '../../shared/models/model-classes.model';
+import { NotificationService } from '../../shared/services/notification.service';
 
 
 @Component({
@@ -18,7 +19,7 @@ export class DeviceRegisterComponent {
 
   searchText: string = '';
 
-  constructor() {
+  constructor(private notify: NotificationService) {
 
     this.resetForm();
 
@@ -48,7 +49,7 @@ export class DeviceRegisterComponent {
   saveDevice() {
 
     if (!this.device.device_name) {
-      alert('Device Name Required');
+      this.notify.warning('Device Name Required');
       return;
     }
 
@@ -64,7 +65,7 @@ export class DeviceRegisterComponent {
           ...this.device
         };
 
-        alert('Device Updated Successfully');
+        this.notify.success('Device Updated Successfully');
       }
 
     } else {
@@ -75,7 +76,7 @@ export class DeviceRegisterComponent {
         ...this.device
       });
 
-      alert('Device Added Successfully');
+      this.notify.success('Device Added Successfully');
     }
 
     this.resetForm();
@@ -88,14 +89,19 @@ export class DeviceRegisterComponent {
     };
   }
 
-  deleteDevice(item: DeviceRegister) {
+  async deleteDevice(item: DeviceRegister) {
 
-    if (confirm('Are you sure you want to delete this device?')) {
-
-      this.devicesList = this.devicesList.filter(
-        x => x.device_id != item.device_id
-      );
+    const confirmed = await this.notify.confirmDelete('this device');
+    if (!confirmed) {
+      this.notify.info('Device is safe');
+      return;
     }
+
+    this.devicesList = this.devicesList.filter(
+      x => x.device_id != item.device_id
+    );
+
+    this.notify.success('Device has been deleted.');
   }
 
   resetForm() {

@@ -5,6 +5,32 @@
    Import this file in each component's .scss:
        @import "../shared/shopify-theme";
    ===================================================================== */
+/* ===== Global custom scrollbar (matches sidebar style) ===== */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(100, 116, 139, 0.5) transparent;
+}
+
+::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgba(100, 116, 139, 0.5);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(100, 116, 139, 0.8);
+}
+
+/* ...rest of your existing shopify-theme.scss content stays below, unchanged... */
+
 
 body {
     background: #f1f2f4;
@@ -767,21 +793,34 @@ textarea.shopify-input {
 
 
 .shopify-badge {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 600;
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
 }
-.shopify-badge--success { background: #d1f7e0; color: #0a7a3c; }
-.shopify-badge--muted   { background: #f1f1f1; color: #616161; }
-.shopify-badge--danger  { background: #fde2e1; color: #c0392b; }
+
+.shopify-badge--success {
+    background: #d1f7e0;
+    color: #0a7a3c;
+}
+
+.shopify-badge--muted {
+    background: #f1f1f1;
+    color: #616161;
+}
+
+.shopify-badge--danger {
+    background: #fde2e1;
+    color: #c0392b;
+}
 
 
 
 
 /* ===== Responsive ===== */
 @media (max-width: 900px) {
+
     .shopify-grid-3,
     .shopify-grid-4 {
         grid-template-columns: repeat(2, 1fr);

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AdminUser, Departments } from '../../shared/models/model-classes.model';
 import { DepartmentsService } from '../../shared/services/departments.service';
 import { AdminUserService } from '../../shared/services/admin-user.service';
-import Swal from "sweetalert2";
+import { NotificationService } from '../../shared/services/notification.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -39,9 +39,6 @@ export class AdminUserComponent implements OnInit {
     return this.adminUserList.slice(start, start + this.pageSize);
   }
 
-  // Maps the index of a row *within the current page* back to its
-  // absolute index inside adminUserList — needed because startEdit/onSave/onDelete
-  // all operate on the full-list index.
   rowIndex(i: number): number {
     return (this.page - 1) * this.pageSize + i;
   }
@@ -55,7 +52,8 @@ export class AdminUserComponent implements OnInit {
 
   constructor(
     private adminUserService: AdminUserService,
-    private deptService: DepartmentsService
+    private deptService: DepartmentsService,
+    private notify: NotificationService
   ) { }
 
   ngOnInit(): void {
@@ -64,20 +62,6 @@ export class AdminUserComponent implements OnInit {
     });
     this.loadAdminUser();
   }
-
-  /*
-   userId?: number;
-     loginId?: any;
-     loginPassword?: any;
-     firstName?: string;
-     lastName?: string;
-     email?: string;
-     userRole?: string;
-     updatedDate: any;
-     updatedBy: any;
-  */
-
-
 
   addAdminUser() { this.addFlag = !this.addFlag; }
 
@@ -89,7 +73,7 @@ export class AdminUserComponent implements OnInit {
 
         this.adminUserList = data;
         this.adminUserMasterList = data;
-        this.page = 1; // reset to first page on fresh load
+        this.page = 1;
         this.spinnerDataLoad = false;
       },
       error: (err: any) => {
@@ -101,15 +85,12 @@ export class AdminUserComponent implements OnInit {
 
 
   /** START EDIT */
-  activeRow: number | null = null; // highlight ke liye
+  activeRow: number | null = null;
 
-
-  /* ************************ */
   startEdit(row: any) {
     this.enabledEdit = [];
     this.enabledEdit[row] = true;
-
-    this.activeRow = row; // ye row highlight hoga
+    this.activeRow = row;
   }
 
   onSave(row: any) {
@@ -129,24 +110,18 @@ export class AdminUserComponent implements OnInit {
       emp.email = (document.getElementById('email-new') as HTMLInputElement)?.value || null;
       emp.userRole = (document.getElementById('userRole-new') as HTMLSelectElement)?.value || null;
 
-
       emp.updatedBy = this.currentUser?.loginId ?? null;
 
-      // ✅ Validations
-      if (!emp.firstName) { saveFlag = false; Swal.fire('WARNING', 'Please enter First Name', 'warning'); }
+      if (!emp.firstName) { saveFlag = false; this.notify.warning('Please enter First Name'); }
       if (!emp.email) {
-        saveFlag = false; Swal.fire('WARNING', 'Please enter Email', 'warning');
+        saveFlag = false; this.notify.warning('Please enter Email');
       } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emp.email)) {
-        saveFlag = false; Swal.fire('WARNING', 'Invalid Email format', 'warning');
+        saveFlag = false; this.notify.warning('Invalid Email format');
       }
 
       if (!emp.loginId) {
-        saveFlag = false; Swal.fire('WARNING', 'Please enter LoginId', 'warning');
+        saveFlag = false; this.notify.warning('Please enter LoginId');
       }
-
-      // else if (!/^\d{14}$/.test(emp.phone)) {
-      //   saveFlag = false; Swal.fire('WARNING', 'Phone number must be exactly 11 digits', 'warning');
-      // }
 
     } else {
       if (!this.enabledEdit[row]) return;
@@ -161,67 +136,64 @@ export class AdminUserComponent implements OnInit {
       emp.updatedBy = this.currentUser?.loginId ?? null;
       emp.userRole = e.userRole;
 
-      // ✅ Validations
-      if (!emp.firstName) { saveFlag = false; Swal.fire('WARNING', 'Please enter First Name', 'warning'); }
+      if (!emp.firstName) { saveFlag = false; this.notify.warning('Please enter First Name'); }
       if (!emp.email) {
-        saveFlag = false; Swal.fire('WARNING', 'Please enter Email', 'warning');
+        saveFlag = false; this.notify.warning('Please enter Email');
       } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emp.email)) {
-        saveFlag = false; Swal.fire('WARNING', 'Invalid Email format', 'warning');
+        saveFlag = false; this.notify.warning('Invalid Email format');
       }
 
       if (!emp.loginId) {
-        saveFlag = false; Swal.fire('WARNING', 'Please enter LoginId', 'warning');
+        saveFlag = false; this.notify.warning('Please enter LoginId');
       }
-      // else if (!/^\d{11}$/.test(emp.phone)) {
-      //   saveFlag = false; Swal.fire('WARNING', 'Phone number must be exactly 11 digits', 'warning');
-      // }
 
       if (saveFlag) this.enabledEdit[row] = false;
     }
 
     if (!saveFlag) return;
 
-    // API Call Same
     this.adminUserService.save(emp).subscribe({
       next: (data: any) => {
         if (data && data.userId != null) {
-          Swal.fire('Submit', `You have saved User ${data.userId} successfully!`, 'success').then(() => {
-            this.enabledEdit[row] = false;
-            this.activeRow = null;
-          });
+          this.notify.success(`You have saved User ${data.userId} successfully!`);
+
+          this.enabledEdit[row] = false;
+          this.activeRow = null;
+
           this.loadAdminUser();
           if (row < 0) this.addFlag = false;
         } else {
-          Swal.fire('Error', 'Error in saving User', 'error');
+          this.notify.error('Error in saving User');
         }
       },
       error: (err: any) => {
         console.error('Save failed:', err);
-        Swal.fire('Error', 'Server error occurred. Please try again.', 'error');
+        this.notify.error('Server error occurred. Please try again.');
       }
     });
   }
 
 
-  onDelete(row: any) {
-    Swal.fire({
-      title: 'Are you sure want to remove?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, keep it'
-    }).then((res) => {
-      if (res.value) {
-        this.adminUserService.delete(this.adminUserList[row].userId).subscribe(() => {
-          this.adminUserList.splice(row, 1);
+  async onDelete(row: any) {
+    const confirmed = await this.notify.confirmDelete('this user');
+    if (!confirmed) {
+      this.notify.info('User is safe');
+      return;
+    }
 
-          // If we deleted the last item on the last page, step back a page
-          if (this.page > this.totalPages) {
-            this.page = this.totalPages;
-          }
+    this.adminUserService.delete(this.adminUserList[row].userId).subscribe({
+      next: () => {
+        this.adminUserList.splice(row, 1);
 
-          Swal.fire('Deleted!', 'User deleted successfully.', 'success');
-        });
+        if (this.page > this.totalPages) {
+          this.page = this.totalPages;
+        }
+
+        this.notify.success('User deleted successfully.');
+      },
+      error: (err) => {
+        console.error('Error deleting user:', err);
+        this.notify.error('Failed to delete User');
       }
     });
   }
@@ -232,6 +204,6 @@ export class AdminUserComponent implements OnInit {
       const empName = (emp.firstName + ' ' + emp.lastName).toLowerCase();
       return name ? empName.includes(name) : true;
     });
-    this.page = 1; // reset to first page whenever search changes
+    this.page = 1;
   }
 }
