@@ -3,7 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { DeviceRegister } from '../../shared/models/model-classes.model';
+<<<<<<< HEAD
 import { NotificationService } from '../../shared/services/notification.service';
+=======
+>>>>>>> e99ff1c95dd1b66647fe96478b0f65a98b54e6de
 
 
 @Component({
@@ -19,7 +22,11 @@ export class DeviceRegisterComponent {
 
   searchText: string = '';
 
+<<<<<<< HEAD
   constructor(private notify: NotificationService) {
+=======
+  constructor() {
+>>>>>>> e99ff1c95dd1b66647fe96478b0f65a98b54e6de
 
     this.resetForm();
 
@@ -49,7 +56,11 @@ export class DeviceRegisterComponent {
   saveDevice() {
 
     if (!this.device.device_name) {
+<<<<<<< HEAD
       this.notify.warning('Device Name Required');
+=======
+      alert('Device Name Required');
+>>>>>>> e99ff1c95dd1b66647fe96478b0f65a98b54e6de
       return;
     }
 
@@ -65,7 +76,11 @@ export class DeviceRegisterComponent {
           ...this.device
         };
 
+<<<<<<< HEAD
         this.notify.success('Device Updated Successfully');
+=======
+        alert('Device Updated Successfully');
+>>>>>>> e99ff1c95dd1b66647fe96478b0f65a98b54e6de
       }
 
     } else {
@@ -76,7 +91,11 @@ export class DeviceRegisterComponent {
         ...this.device
       });
 
+<<<<<<< HEAD
       this.notify.success('Device Added Successfully');
+=======
+      alert('Device Added Successfully');
+>>>>>>> e99ff1c95dd1b66647fe96478b0f65a98b54e6de
     }
 
     this.resetForm();
@@ -89,6 +108,7 @@ export class DeviceRegisterComponent {
     };
   }
 
+<<<<<<< HEAD
   async deleteDevice(item: DeviceRegister) {
 
     const confirmed = await this.notify.confirmDelete('this device');
@@ -102,6 +122,16 @@ export class DeviceRegisterComponent {
     );
 
     this.notify.success('Device has been deleted.');
+=======
+  deleteDevice(item: DeviceRegister) {
+
+    if (confirm('Are you sure you want to delete this device?')) {
+
+      this.devicesList = this.devicesList.filter(
+        x => x.device_id != item.device_id
+      );
+    }
+>>>>>>> e99ff1c95dd1b66647fe96478b0f65a98b54e6de
   }
 
   resetForm() {
@@ -125,4 +155,8 @@ export class DeviceRegisterComponent {
         .includes(this.searchText.toLowerCase())
     );
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> e99ff1c95dd1b66647fe96478b0f65a98b54e6de

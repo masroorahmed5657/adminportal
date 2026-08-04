@@ -2053,11 +2053,19 @@ htmlToPrintBarcode() {
       <div class="sheet">
         <div class="grid">`;
 
+<<<<<<< HEAD
   let footerTag = `
         </div>
       </div>
     </body>
   </html>`;
+=======
+      </head>
+      <body onload=" window.print();
+              window.onafterprint = function() {
+              window.close(); // closes AFTER print dialog
+            };">`;
+>>>>>>> e99ff1c95dd1b66647fe96478b0f65a98b54e6de
 
   let divTag = ``;
   for (let i = 0; i < this.productViewList.length; i++) {

@@ -1098,7 +1098,11 @@ export class AddInvoiceComponent implements OnInit {
       let myHtml = ` <html> ` + myHead;
       //let myBodyOrder = `<body >
       let myBodyOrder =
-        `<body onload="window.print();window.close();">
+        `
+        <body onload=" window.print();
+              window.onafterprint = function() {
+              window.close(); // closes AFTER print dialog
+            };">        
       <div class="ticket">
       <p class="centered" style="margin-left:40px !important;"><b>EZPZ FOODY</b><br>
       NTN # 0234343433

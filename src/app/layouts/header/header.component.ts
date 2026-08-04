@@ -56,8 +56,16 @@ export class HeaderComponent {
     '/layout/profit-loss': 'Profit & Loss',
     '/layout/purchase-order-add': 'PO Add',
     '/layout/purchase-order-edit/:purchaseOrderId': 'PO Edit',
+<<<<<<< HEAD
     '/layout/ezpz-tax': 'Ezpz Tax',
     '/layout/salary': 'Salary',
+=======
+    '/layout/cashier-shift': 'Cashier Shift',
+    '/layout/device-register': 'Device Register',
+    '/layout/error-logs': 'Error Logs',
+
+    
+>>>>>>> e99ff1c95dd1b66647fe96478b0f65a98b54e6de
 
     // ===== Previously missing routes (from app.routes.ts) =====
     '/layout/device-register': 'Device Register',

@@ -41,9 +41,14 @@ export const environment = {
   logoName: 'assets/images/logos/logo.png',
   background: 'assets/images/background/admin_portal_background.jpg',
 
+<<<<<<< HEAD
   //  apiUrl: 'https://cp.techmaci.com:8443/FASHION01_API/',
   // apiUrl: 'http://localhost:8080/FASHION01_API/',
   apiUrl: 'https://cp.techmaci.com:8443/DEMO_API/',
+=======
+  // apiUrl: 'https://cp.techmaci.com:8443/FASHION01_API/',
+  apiUrl: 'http://localhost:8080/FASHION01_API/',
+>>>>>>> e99ff1c95dd1b66647fe96478b0f65a98b54e6de
 
   // apiUrl: 'http://localhost:8080/WDS_API/',
 
