@@ -46,11 +46,11 @@
         <tbody>
           <tr *ngFor="let cat of filtered | paginate:{itemsPerPage:10,currentPage:p}; let i = index"
               [ngClass]="{'table-light': i % 2 === 0}">
-            <td class="text-center fw-semibold">{{ cat.categoryId }}</td>
-            <td>{{ cat.name }}</td>
+            <td class="text-center fw-semibold">{{ cat.expenseCategoryId }}</td>
+            <td>{{ cat.categoryName }}</td>
             <td class="text-center">
-              <span class="badge" [ngClass]="cat.isActive === 'Y' ? 'bg-success' : 'bg-secondary'">
-                {{ cat.isActive === 'Y' ? 'Active' : 'Inactive' }}
+              <span class="badge" [ngClass]="cat.status === 1 ? 'bg-success' : 'bg-secondary'">
+                {{ cat.status === 1 ? 'Active' : 'Inactive' }}
               </span>
             </td>
             <td class="text-center" style="white-space:nowrap;">
@@ -60,7 +60,7 @@
               <button class="btn btn-sm btn-primary me-1" title="Edit" (click)="edit(cat)">
                 <i class="bi bi-pencil-fill"></i>
               </button>
-              <button class="btn btn-sm btn-danger" title="Delete" (click)="onDelete(cat.categoryId)">
+              <button class="btn btn-sm btn-danger" title="Delete" (click)="onDelete(cat.expenseCategoryId)">
                 <i class="bi bi-trash-fill"></i>
               </button>
             </td>
@@ -81,11 +81,11 @@
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-start mb-1">
           <div>
-            <h6 class="fw-bold mb-0">{{ cat.name }}</h6>
-            <small class="text-muted">ID: {{ cat.categoryId }}</small>
+            <h6 class="fw-bold mb-0">{{ cat.categoryName }}</h6>
+            <small class="text-muted">ID: {{ cat.expenseCategoryId }}</small>
           </div>
-          <span class="badge" [ngClass]="cat.isActive === 'Y' ? 'bg-success' : 'bg-secondary'">
-            {{ cat.isActive === 'Y' ? 'Active' : 'Inactive' }}
+          <span class="badge" [ngClass]="cat.status === 1 ? 'bg-success' : 'bg-secondary'">
+            {{ cat.status === 1 ? 'Active' : 'Inactive' }}
           </span>
         </div>
         <div class="d-flex gap-2 mt-3">
@@ -95,7 +95,7 @@
           <button class="btn btn-sm btn-primary flex-fill" (click)="edit(cat)">
             <i class="bi bi-pencil-fill"></i> Edit
           </button>
-          <button class="btn btn-sm btn-danger flex-fill" (click)="onDelete(cat.categoryId)">
+          <button class="btn btn-sm btn-danger flex-fill" (click)="onDelete(cat.expenseCategoryId)">
             <i class="bi bi-trash-fill"></i> Delete
           </button>
         </div>
@@ -119,21 +119,21 @@
         <div class="modal-header bg-primary text-white">
           <h5 class="modal-title">
             <i class="bi bi-tag me-2"></i>
-            Expense Category Detail — {{ viewItem.name }}
-            <span class="badge bg-light text-primary ms-2">ID: {{ viewItem.categoryId }}</span>
+            Expense Category Detail — {{ viewItem.categoryName }}
+            <span class="badge bg-light text-primary ms-2">ID: {{ viewItem.expenseCategoryId }}</span>
           </h5>
           <button type="button" class="btn-close btn-close-white" (click)="closeDetail()"></button>
         </div>
         <div class="modal-body">
           <table class="table table-sm table-borderless">
-            <tr><th>Category Name:</th><td>{{ viewItem.name }}</td></tr>
+            <tr><th>Category Name:</th><td>{{ viewItem.categoryName }}</td></tr>
             <tr><th>Status:</th>
-              <td><span class="badge" [ngClass]="viewItem.isActive === 'Y' ? 'bg-success' : 'bg-secondary'">
-                {{ viewItem.isActive === 'Y' ? 'Active' : 'Inactive' }}
+              <td><span class="badge" [ngClass]="viewItem.status === 1 ? 'bg-success' : 'bg-secondary'">
+                {{ viewItem.status === 1 ? 'Active' : 'Inactive' }}
               </span></td>
             </tr>
-            <tr><th>Type:</th><td>{{ viewItem.type }}</td></tr>
-            <tr><th>Created At:</th><td>{{ viewItem.createdAt | date:'medium' }}</td></tr>
+            <tr><th>Type:</th><td></td></tr>
+            <tr><th>Created At:</th><td></td></tr>
           </table>
         </div>
         <div class="modal-footer">
@@ -158,20 +158,20 @@
         <h5 class="mb-0">
           <i class="bi me-2" [ngClass]="editMode ? 'bi-pencil-square' : 'bi-plus-circle'"></i>
           {{ editMode ? 'Edit Expense Category' : 'Add Expense Category' }}
-          <span *ngIf="editMode" class="badge bg-dark ms-2">ID: {{ item.categoryId }}</span>
+          <span *ngIf="editMode" class="badge bg-dark ms-2">ID: {{ item.expenseCategoryId }}</span>
         </h5>
       </div>
       <div class="card-body">
         <div class="row">
           <div class="col-md-6 mb-3">
             <label class="form-label fw-semibold">Category Name <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" [(ngModel)]="item.name" placeholder="e.g., Office Supplies">
+            <input type="text" class="form-control" [(ngModel)]="item.categoryName" placeholder="e.g., Office Supplies">
           </div>
           <div class="col-md-6 mb-3">
             <label class="form-label fw-semibold">Status</label>
-            <select class="form-select" [(ngModel)]="item.isActive">
-              <option value="Y">Active</option>
-              <option value="N">Inactive</option>
+            <select class="form-select" [(ngModel)]="item.status">
+              <option value="1">Active</option>
+              <option value="0">Inactive</option>
             </select>
           </div>
         </div>

@@ -1614,3 +1614,13 @@ export class ErrorLogs {
 
 }
 
+export class ExpenseCategory{
+   expenseCategoryId:any;
+   categoryCode:any;
+   categoryName:any;
+   description:any;
+   createdBy:any;
+   status:any;
+   companyId:any;
+
+}

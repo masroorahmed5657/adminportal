@@ -66,6 +66,8 @@ export class HeaderComponent {
     '/layout/ezpz-tax-edit/:taxId': 'Ezpz Tax Edit',
     '/layout/ezpz-tax-view/:taxId': 'Ezpz Tax View',
     '/layout/ezpz-tax-report': 'Ezpz Tax Report',
+    '/layout/expense-category': 'Expenses Category',
+    '/layout/payment': 'Payment',
 
 
 

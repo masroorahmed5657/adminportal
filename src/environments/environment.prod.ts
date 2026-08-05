@@ -2,7 +2,7 @@ export const environment = {
   production: true,
   sessionTimeout: 60,
   enableLog: true,
-  versionNumber: '31.07.2026 00072',
+  versionNumber: '05.08.2026 00073',
 
   appEnv: 'PRD'  ,  
   pageSize:25,   
@@ -44,7 +44,8 @@ export const environment = {
   logoName: 'assets/images/logos/techmaci-logo2.png',
   background: 'assets/images/background/admin_portal_background.jpg',
 
-apiUrl: 'https://cp.techmaci.com:8443/JOLLIEBEE_API/',
+// apiUrl: 'https://cp.techmaci.com:8443/JOLLIEBEE_API/',
+apiUrl: 'https://cp.techmaci.com:8443/DEMO_API/',
 
   // apiUrl: 'https://cp.techmaci.com:8443/FASHION01_API/',
 // apiUrl: 'http://localhost:8080/OPTICS_API/',

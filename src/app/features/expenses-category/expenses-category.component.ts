@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { NgxPaginationModule } from 'ngx-pagination';
 import Swal from 'sweetalert2';
 import { ExpensesCategoryService } from '../../shared/services/expenses-category.service';
-import { Categories } from '../../shared/models/model-classes.model';
+import { ExpenseCategory } from '../../shared/models/model-classes.model';
 
 @Component({
   selector: 'app-expenses-category',
@@ -27,9 +27,9 @@ export class ExpensesCategoryComponent implements OnInit {
   private searchDebounce: any;
 
   // Data
-  list: Categories[] = [];
-  item: Categories = this.getEmpty();
-  viewItem: Categories = this.getEmpty();
+  list: ExpenseCategory[] = [];
+  item: ExpenseCategory = this.getEmpty();
+  viewItem: ExpenseCategory = this.getEmpty();
 
   constructor(private service: ExpensesCategoryService) {}
 
@@ -37,14 +37,16 @@ export class ExpensesCategoryComponent implements OnInit {
     this.load();
   }
 
-  private getEmpty(): Categories {
+  private getEmpty(): ExpenseCategory {
     return {
-      categoryId: null,
-      name: '',
-      type: 'EXPENSE',
-      isActive: 'Y',
-      createdAt: null
-    };
+  expenseCategoryId: null,
+  categoryName: '',
+  categoryCode: '',
+  description: undefined,
+  createdBy: undefined,
+  status: undefined,
+  companyId: undefined
+};
   }
 
   load(): void {
@@ -69,12 +71,12 @@ export class ExpensesCategoryComponent implements OnInit {
     }, 300);
   }
 
-  get filtered(): Categories[] {
+  get filtered(): ExpenseCategory[] {
     if (!this.searchTerm.trim()) return this.list;
     const term = this.searchTerm.toLowerCase();
     return this.list.filter(cat =>
-      cat.name?.toLowerCase().includes(term) ||
-      cat.categoryId?.toString().includes(term)
+      cat.categoryName?.toLowerCase().includes(term) ||
+      cat.expenseCategoryId?.toString().includes(term)
     );
   }
 
@@ -84,13 +86,13 @@ export class ExpensesCategoryComponent implements OnInit {
     this.item = this.getEmpty();
   }
 
-  edit(cat: Categories): void {
+  edit(cat: ExpenseCategory): void {
     this.showAddFlag = true;
     this.editMode = true;
     this.item = JSON.parse(JSON.stringify(cat));
   }
 
-  view(cat: Categories): void {
+  view(cat: ExpenseCategory): void {
     this.viewItem = JSON.parse(JSON.stringify(cat));
     this.showDetailModal = true;
   }
@@ -103,10 +105,11 @@ export class ExpensesCategoryComponent implements OnInit {
     this.showAddFlag = false;
     this.editMode = false;
     this.item = this.getEmpty();
+    this.load();
   }
 
   save(): void {
-    if (!this.item.name?.trim()) {
+    if (!this.item.categoryName?.trim()) {
       Swal.fire('Validation', 'Category name is required', 'warning');
       return;
     }
@@ -147,7 +150,7 @@ export class ExpensesCategoryComponent implements OnInit {
           next: () => {
             Swal.fire('Deleted!', 'Category has been deleted.', 'success');
             this.load();
-            if (this.editMode && this.item.categoryId === id) {
+            if (this.editMode && this.item.expenseCategoryId === id) {
               this.goToList();
             }
           },
