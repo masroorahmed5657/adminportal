@@ -1,219 +1,256 @@
-<div class="shopify-page">
+<div class="shopify-main-container">
 
-    <!-- Page Header -->
-    <div class="shopify-page__header">
-        <!-- <h1 class="shopify-page__title">Warehouses</h1> -->
+  <!-- Search row -->
+  <div class="shopify-search-row">
+    <div>
+      <label class="shopify-field-label" for="searchWarehouse">Search</label>
+      <div class="shopify-input-group">
+        <span class="shopify-input-group__prefix"><i class="bi bi-search"></i></span>
+        <input type="text" class="shopify-input" id="searchWarehouse" placeholder="Search by number, name, city, country"
+          [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()">
+      </div>
+    </div>
+    <div class="d-flex align-items-end">
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="showInactive" [(ngModel)]="showInactive"
+          (ngModelChange)="applyFilter()">
+        <label class="form-check-label" for="showInactive">Show Inactive</label>
+      </div>
+    </div>
+  </div>
 
-        <div class="shopify-page__actions">
-            <button class="btn-shopify btn-shopify--outline" [disabled]="loading" (click)="loadWarehouses()">
-                Refresh
-            </button>
-            <button class="btn-shopify btn-shopify--primary" [disabled]="loading" (click)="onAddWarehouse()">
-                Add Warehouse
-            </button>
-        </div>
+  <!-- Actions row -->
+  <div class="shopify-actions-row">
+    <button class="btn-shopify btn-shopify--primary" [disabled]="loading" (click)="onAddWarehouse()">
+      <i class="bi bi-plus-lg"></i> Add Warehouse
+    </button>
+    <button class="btn-shopify btn-shopify--outline" [disabled]="loading" (click)="loadWarehouses()">
+      <i class="bi bi-arrow-clockwise"></i> Refresh
+    </button>
+  </div>
+
+  <!-- Loader -->
+  <div class="shopify-loading" *ngIf="loading">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p>Loading warehouses...</p>
+  </div>
+
+  <ng-container *ngIf="!loading">
+
+    <!-- Empty state -->
+    <div class="shopify-empty" *ngIf="filteredList.length === 0">
+      <h5>No warehouses found</h5>
+      <p>Try adjusting your search.</p>
     </div>
 
-    <!-- Filter / Search Bar -->
-    <div class="shopify-card shopify-filterbar">
-        <div class="shopify-filterbar__row">
+    <ng-container *ngIf="filteredList.length > 0">
 
-            <div class="shopify-filterbar__item">
-                <label class="shopify-filterbar__label">Search</label>
-                <input type="text" class="shopify-input" placeholder="Search by number, name, city, country"
-                    [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()">
-            </div>
+      <!-- Desktop table -->
+      <div class="shopify-table-wrap">
+        <table class="shopify-table">
+          <thead>
+            <tr>
+              <th style="width:40px;"></th>
+              <th>Warehouse #</th>
+              <th>Name</th>
+              <th>Sub Location</th>
+              <th>City</th>
+              <th>Country</th>
+              <th>Status</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let w of filteredList | paginate: { itemsPerPage: pageSize, currentPage: p }">
+              <tr>
+                <td>
+                  <button class="btn-shopify btn-shopify--outline btn-shopify--icon" (click)="toggleDetails(w)"
+                    [title]="w.showDetails ? 'Hide details' : 'Show details'">
+                    <i class="bi" [ngClass]="w.showDetails ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+                  </button>
+                </td>
+                <td>{{w.warehouseNbr}}</td>
+                <td>{{w.warehouseName}}</td>
+                <td>{{w.subLocation}}</td>
+                <td>{{w.city}}</td>
+                <td>{{w.country}}</td>
+                <td>
+                  <span class="shopify-badge shopify-badge--success" *ngIf="isActive(w)">Active</span>
+                  <span class="shopify-badge shopify-badge--danger" *ngIf="!isActive(w)">Inactive</span>
+                </td>
+                <td>
+                  <div class="shopify-table__actions">
+                    <button class="btn-shopify btn-shopify--outline btn-shopify--icon" title="Edit" (click)="onEditWarehouse(w)">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn-shopify btn-shopify--danger btn-shopify--icon" title="Delete" (click)="onDelete(w)">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
 
-            <div class="shopify-filterbar__item d-flex align-items-end">
+              <!-- Expandable details row -->
+              <tr *ngIf="w.showDetails" class="shopify-table__details-row">
+                <td></td>
+                <td colspan="7">
+                  <div class="d-flex flex-wrap gap-4 py-2">
+                    <div><strong>Description:</strong> {{w.warehouseDescription || '-'}}</div>
+                    <div><strong>Address:</strong> {{w.address || '-'}}</div>
+                    <div><strong>State/Province:</strong> {{w.stateProvince || '-'}}</div>
+                    <div><strong>Postal Code:</strong> {{w.postalCode || '-'}}</div>
+                    <div><strong>From Warehouse ID:</strong> {{w.fromWarehouseId || '-'}}</div>
+                    <div><strong>Updated By:</strong> {{w.updatedBy || '-'}}</div>
+                    <div><strong>Updated Date:</strong> {{w.updatedDate || '-'}}</div>
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile cards -->
+      <div class="shopify-mobile-list">
+        <div class="shopify-mobile-card" *ngFor="let w of filteredList | paginate: { itemsPerPage: pageSize, currentPage: p }">
+          <div class="shopify-mobile-card__row">
+            <span class="shopify-field-label--sm">Warehouse #</span>
+            <span>{{w.warehouseNbr}}</span>
+          </div>
+          <h6 class="fw-bold mb-2">{{w.warehouseName}}</h6>
+          <div class="shopify-mobile-card__row">
+            <span class="shopify-field-label--sm">Sub Location</span>
+            <span>{{w.subLocation || '-'}}</span>
+          </div>
+          <div class="shopify-mobile-card__row">
+            <span class="shopify-field-label--sm">City</span>
+            <span>{{w.city || '-'}}</span>
+          </div>
+          <div class="shopify-mobile-card__row">
+            <span class="shopify-field-label--sm">Country</span>
+            <span>{{w.country || '-'}}</span>
+          </div>
+          <div class="shopify-mobile-card__row">
+            <span class="shopify-field-label--sm">Status</span>
+            <span class="shopify-badge shopify-badge--success" *ngIf="isActive(w)">Active</span>
+            <span class="shopify-badge shopify-badge--danger" *ngIf="!isActive(w)">Inactive</span>
+          </div>
+          <div class="shopify-mobile-card__actions">
+            <button class="btn-shopify btn-shopify--outline btn-shopify--sm" (click)="onEditWarehouse(w)">
+              <i class="bi bi-pencil"></i> Edit
+            </button>
+            <button class="btn-shopify btn-shopify--danger btn-shopify--sm" (click)="onDelete(w)">
+              <i class="bi bi-trash"></i> Delete
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination (Shopify-style Previous / Next) -->
+      <pagination-template #pt="paginationApi" (pageChange)="p = $event">
+        <div class="shopify-pager">
+          <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="pt.isFirstPage()" (click)="pt.previous()">
+            <i class="bi bi-chevron-left"></i> Previous
+          </button>
+          <span class="shopify-pager__info">Page {{ pt.getCurrent() }} of {{ pt.getLastPage() }}</span>
+          <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="pt.isLastPage()" (click)="pt.next()">
+            Next <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      </pagination-template>
+
+    </ng-container>
+  </ng-container>
+
+  <!-- ============ ADD / EDIT MODAL ============ -->
+  <div class="modal fade" [ngClass]="{'show d-block': modalOpen}" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content shopify-modal">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ editMode ? 'Edit Warehouse' : 'Add Warehouse' }}</h5>
+          <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
+        </div>
+
+        <form [formGroup]="warehouseForm" (ngSubmit)="onSubmit()">
+          <div class="modal-body">
+            <div class="row g-3">
+
+              <div class="col-md-6">
+                <label class="shopify-field-label">Warehouse Number *</label>
+                <input type="text" class="shopify-input w-100" formControlName="warehouseNbr">
+                <small class="text-danger" *ngIf="submitted && f['warehouseNbr'].errors">
+                  Warehouse Number is required
+                </small>
+              </div>
+
+              <div class="col-md-6">
+                <label class="shopify-field-label">Warehouse Name *</label>
+                <input type="text" class="shopify-input w-100" formControlName="warehouseName">
+                <small class="text-danger" *ngIf="submitted && f['warehouseName'].errors">
+                  Warehouse Name is required
+                </small>
+              </div>
+
+              <div class="col-md-12">
+                <label class="shopify-field-label">Description</label>
+                <textarea class="shopify-input w-100" rows="2" formControlName="warehouseDescription"></textarea>
+              </div>
+
+              <div class="col-md-6">
+                <label class="shopify-field-label">Sub Location</label>
+                <input type="text" class="shopify-input w-100" formControlName="subLocation">
+              </div>
+
+              <div class="col-md-6">
+                <label class="shopify-field-label">From Warehouse ID</label>
+                <input type="text" class="shopify-input w-100" formControlName="fromWarehouseId">
+              </div>
+
+              <div class="col-md-12">
+                <label class="shopify-field-label">Address</label>
+                <input type="text" class="shopify-input w-100" formControlName="address">
+              </div>
+
+              <div class="col-md-4">
+                <label class="shopify-field-label">City</label>
+                <input type="text" class="shopify-input w-100" formControlName="city">
+              </div>
+
+              <div class="col-md-4">
+                <label class="shopify-field-label">State / Province</label>
+                <input type="text" class="shopify-input w-100" formControlName="stateProvince">
+              </div>
+
+              <div class="col-md-4">
+                <label class="shopify-field-label">Postal Code</label>
+                <input type="text" class="shopify-input w-100" formControlName="postalCode">
+              </div>
+
+              <div class="col-md-6">
+                <label class="shopify-field-label">Country</label>
+                <input type="text" class="shopify-input w-100" formControlName="country">
+              </div>
+
+              <div class="col-md-6 d-flex align-items-end">
                 <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="showInactive" [(ngModel)]="showInactive"
-                        (ngModelChange)="applyFilter()">
-                    <label class="form-check-label" for="showInactive">Show Inactive</label>
+                  <input type="checkbox" class="form-check-input" id="activeFlag" formControlName="activeFlag">
+                  <label class="form-check-label" for="activeFlag">Active</label>
                 </div>
+              </div>
+
             </div>
-
-        </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn-shopify btn-shopify--outline" (click)="closeModal()">Cancel</button>
+            <button type="submit" class="btn-shopify btn-shopify--primary" [disabled]="loading">
+              {{ editMode ? 'Update' : 'Save' }}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
-
-    <!-- Loading Spinner -->
-    <div class="shopify-loading" *ngIf="loading">
-        <div class="spinner-border" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-        <p>Loading Warehouses...</p>
-    </div>
-
-    <!-- ============ TABLE VIEW ============ -->
-    <div class="shopify-card shopify-table-wrap" *ngIf="!loading">
-        <div class="table-responsive">
-            <table class="shopify-table">
-                <thead>
-                    <tr>
-                        <th style="width:40px;"></th>
-                        <th>Warehouse #</th>
-                        <th>Name</th>
-                        <th>Sub Location</th>
-                        <th>City</th>
-                        <th>Country</th>
-                        <th>Status</th>
-                        <th class="text-center">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngIf="filteredList.length === 0">
-                        <td colspan="8" class="text-center text-muted">No warehouses found</td>
-                    </tr>
-
-                    <ng-container *ngFor="let w of filteredList | paginate: { itemsPerPage: pageSize, currentPage: p }">
-                        <tr>
-                            <td>
-                                <button class="shopify-icon-btn" (click)="toggleDetails(w)"
-                                    [title]="w.showDetails ? 'Hide details' : 'Show details'">
-                                    <i class="bi"
-                                        [ngClass]="w.showDetails ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
-                                </button>
-                            </td>
-                            <td>{{w.warehouseNbr}}</td>
-                            <td>{{w.warehouseName}}</td>
-                            <td>{{w.subLocation}}</td>
-                            <td>{{w.city}}</td>
-                            <td>{{w.country}}</td>
-                            <td>
-                                <span class="shopify-badge shopify-badge--success" *ngIf="isActive(w)">Active</span>
-                                <span class="shopify-badge shopify-badge--danger" *ngIf="!isActive(w)">Inactive</span>
-                            </td>
-                            <td class="text-center">
-                                <div class="shopify-table__actions">
-                                    <button class="shopify-icon-btn" (click)="onEditWarehouse(w)" title="Edit">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                    <button class="shopify-icon-btn shopify-icon-btn--danger" (click)="onDelete(w)"
-                                        title="Delete">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <!-- Expandable details row -->
-                        <tr *ngIf="w.showDetails" class="shopify-table__details-row">
-                            <td></td>
-                            <td colspan="7">
-                                <div class="d-flex flex-wrap gap-4 py-2">
-                                    <div><strong>Description:</strong> {{w.warehouseDescription || '-'}}</div>
-                                    <div><strong>Address:</strong> {{w.address || '-'}}</div>
-                                    <div><strong>State/Province:</strong> {{w.stateProvince || '-'}}</div>
-                                    <div><strong>Postal Code:</strong> {{w.postalCode || '-'}}</div>
-                                    <div><strong>From Warehouse ID:</strong> {{w.fromWarehouseId || '-'}}</div>
-                                    <div><strong>Updated By:</strong> {{w.updatedBy || '-'}}</div>
-                                    <div><strong>Updated Date:</strong> {{w.updatedDate || '-'}}</div>
-                                </div>
-                            </td>
-                        </tr>
-                    </ng-container>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="shopify-table-wrap__footer">
-            <span class="shopify-table-wrap__count">Total warehouses: {{filteredList.length}}</span>
-            <pagination-controls (pageChange)="p = $event" class="pagination-sm"></pagination-controls>
-        </div>
-    </div>
-
-    <!-- ============ ADD / EDIT MODAL ============ -->
-    <div class="modal fade" [ngClass]="{'show d-block': modalOpen}" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content shopify-modal">
-                <div class="modal-header">
-                    <h5 class="modal-title">{{ editMode ? 'Edit Warehouse' : 'Add Warehouse' }}</h5>
-                    <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
-                </div>
-
-                <form [formGroup]="warehouseForm" (ngSubmit)="onSubmit()">
-                    <div class="modal-body">
-
-                        <div class="row g-3">
-
-                            <div class="col-md-6">
-                                <label class="shopify-filterbar__label">Warehouse Number *</label>
-                                <input type="text" class="shopify-input w-100" formControlName="warehouseNbr">
-                                <small class="text-danger" *ngIf="submitted && f['warehouseNbr'].errors">
-                                    Warehouse Number is required
-                                </small>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="shopify-filterbar__label">Warehouse Name *</label>
-                                <input type="text" class="shopify-input w-100" formControlName="warehouseName">
-                                <small class="text-danger" *ngIf="submitted && f['warehouseName'].errors">
-                                    Warehouse Name is required
-                                </small>
-                            </div>
-
-                            <div class="col-md-12">
-                                <label class="shopify-filterbar__label">Description</label>
-                                <textarea class="shopify-input w-100" rows="2"
-                                    formControlName="warehouseDescription"></textarea>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="shopify-filterbar__label">Sub Location</label>
-                                <input type="text" class="shopify-input w-100" formControlName="subLocation">
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="shopify-filterbar__label">From Warehouse ID</label>
-                                <input type="text" class="shopify-input w-100" formControlName="fromWarehouseId">
-                            </div>
-
-                            <div class="col-md-12">
-                                <label class="shopify-filterbar__label">Address</label>
-                                <input type="text" class="shopify-input w-100" formControlName="address">
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="shopify-filterbar__label">City</label>
-                                <input type="text" class="shopify-input w-100" formControlName="city">
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="shopify-filterbar__label">State / Province</label>
-                                <input type="text" class="shopify-input w-100" formControlName="stateProvince">
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="shopify-filterbar__label">Postal Code</label>
-                                <input type="text" class="shopify-input w-100" formControlName="postalCode">
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="shopify-filterbar__label">Country</label>
-                                <input type="text" class="shopify-input w-100" formControlName="country">
-                            </div>
-
-                            <div class="col-md-6 d-flex align-items-end">
-                                <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" id="activeFlag"
-                                        formControlName="activeFlag">
-                                    <label class="form-check-label" for="activeFlag">Active</label>
-                                </div>
-                            </div>
-
-                        </div>
-
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn-shopify btn-shopify--outline" (click)="closeModal()">
-                            Cancel
-                        </button>
-                        <button type="submit" class="btn-shopify btn-shopify--primary" [disabled]="loading">
-                            {{ editMode ? 'Update' : 'Save' }}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+  </div>
 
 </div>

@@ -5,7 +5,6 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { DeviceRegister } from '../../shared/models/model-classes.model';
 import { NotificationService } from '../../shared/services/notification.service';
 
-
 @Component({
   selector: 'app-device-register',
   imports: [CommonModule, FormsModule, NgxPaginationModule],
@@ -13,17 +12,21 @@ import { NotificationService } from '../../shared/services/notification.service'
   styleUrl: './device-register.component.scss'
 })
 export class DeviceRegisterComponent {
+
   device: DeviceRegister = new DeviceRegister();
 
   devicesList: DeviceRegister[] = [];
 
   searchText: string = '';
 
+  // Controls Add Device form visibility
+  showAddForm = false;
+
   constructor(private notify: NotificationService) {
 
     this.resetForm();
-
     this.loadSampleData();
+
   }
 
   loadSampleData() {
@@ -44,6 +47,15 @@ export class DeviceRegisterComponent {
         active_flag: 0
       }
     ];
+
+  }
+
+  // Opens Add Device form
+  openAddDevice() {
+
+    this.resetForm();
+    this.showAddForm = true;
+
   }
 
   saveDevice() {
@@ -56,10 +68,10 @@ export class DeviceRegisterComponent {
     if (this.device.device_id) {
 
       const index = this.devicesList.findIndex(
-        x => x.device_id == this.device.device_id
+        x => x.device_id === this.device.device_id
       );
 
-      if (index != -1) {
+      if (index !== -1) {
 
         this.devicesList[index] = {
           ...this.device
@@ -80,6 +92,10 @@ export class DeviceRegisterComponent {
     }
 
     this.resetForm();
+
+    // Hide form after save
+    this.showAddForm = false;
+
   }
 
   editDevice(item: DeviceRegister) {
@@ -87,28 +103,43 @@ export class DeviceRegisterComponent {
     this.device = {
       ...item
     };
+
+    // Show form when editing
+    this.showAddForm = true;
+
   }
 
   async deleteDevice(item: DeviceRegister) {
 
     const confirmed = await this.notify.confirmDelete('this device');
+
     if (!confirmed) {
+
       this.notify.info('Device is safe');
       return;
+
     }
 
     this.devicesList = this.devicesList.filter(
-      x => x.device_id != item.device_id
+      x => x.device_id !== item.device_id
     );
 
     this.notify.success('Device has been deleted.');
+
   }
 
   resetForm() {
 
     this.device = new DeviceRegister();
-
     this.device.active_flag = 1;
+
+  }
+
+  cancelForm() {
+
+    this.resetForm();
+    this.showAddForm = false;
+
   }
 
   filteredDevices() {
@@ -118,11 +149,10 @@ export class DeviceRegisterComponent {
     }
 
     return this.devicesList.filter(x =>
-      x.device_name?.toLowerCase()
-        .includes(this.searchText.toLowerCase())
-      ||
-      x.device_uuid?.toLowerCase()
-        .includes(this.searchText.toLowerCase())
+      x.device_name?.toLowerCase().includes(this.searchText.toLowerCase()) ||
+      x.device_uuid?.toLowerCase().includes(this.searchText.toLowerCase())
     );
+
   }
+
 }

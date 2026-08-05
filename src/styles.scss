@@ -1,1 +1,39 @@
 @import 'app/shared/notification-theme';
+
+
+/* Existing global styles */
+
+/* ... */
+
+/* =========================
+   GLOBAL SHOPIFY SCROLLBAR
+========================= */
+
+html,
+body {
+    scrollbar-width: thin;
+    scrollbar-color: #bfc7d5 #f5f6f8;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+    background: #f5f6f8;
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+    background: #c5ccd8;
+    border-radius: 999px;
+    border: 2px solid #f5f6f8;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover {
+    background: #9ca8ba;
+}

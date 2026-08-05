@@ -1,8 +1,9 @@
 @import "../../shared/shopify-theme.scss";
 
-// Reuses your existing global classes (shopify-page, shopify-card, shopify-table,
-// btn-shopify, shopify-modal, shopify-badge, shopify-filterbar, etc.) already
-// defined elsewhere in the project — no duplicate styling needed here.
+// Now using shopify-main-container / shopify-search-row / shopify-actions-row
+// / shopify-table-wrap / shopify-pager — same family as Brands/Category —
+// which ARE properly defined in the shared theme file, so no local
+// container overrides needed here anymore.
 
 .shopify-table__details-row {
   background: #fafafa;

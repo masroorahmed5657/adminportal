@@ -1,33 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import Swal from 'sweetalert2';
 import { NgxPaginationModule } from 'ngx-pagination';
 
 import { environment } from '../../../environments/environment';
 import { Warehouse, AdminUser } from '../../shared/models/model-classes.model';
 import { WarehouseService } from '../../shared/services/warehouse.service';
+import { NotificationService } from '../../shared/services/notification.service';
 
-/**
- * ===========================================================================
- *  WarehouseComponent
- * ===========================================================================
- *  Complete A-to-Z warehouse screen, matching the same "shopify-*" theme
- *  used across the app (products screen etc.):
- *
- *   1) List all warehouses in a table
- *   2) Search / filter (by number, name, city, country)
- *   3) Add new warehouse (modal form)
- *   4) Edit existing warehouse (modal form, pre-filled)
- *   5) Delete warehouse (confirmation dialog)
- *   6) Active / Inactive toggle
- *   7) Expandable row -> shows full address / extra details
- *
- *  WarehousService only exposes: saveWareHouse(), delete(), getWareHouseList()
- *  -> saveWareHouse() is used for BOTH create and update: if the form's
- *     warehouseId is empty/null it's a create, otherwise it's an update.
- * ===========================================================================
- */
 @Component({
   selector: 'app-warehouse',
   standalone: true,
@@ -75,7 +55,7 @@ export class WarehouseComponent implements OnInit {
     updatedBy: new FormControl()
   });
 
-  constructor(private warehouseService: WarehouseService) { }
+  constructor(private warehouseService: WarehouseService, private notify: NotificationService) { }
 
   ngOnInit(): void {
     const user = sessionStorage.getItem('currentUser');
@@ -104,7 +84,7 @@ export class WarehouseComponent implements OnInit {
       error: (err) => {
         console.error('Error loading warehouses:', err);
         this.loading = false;
-        Swal.fire('Error', 'Could not load warehouse list', 'error');
+        this.notify.error('Could not load warehouse list');
       }
     });
   }
@@ -227,14 +207,14 @@ export class WarehouseComponent implements OnInit {
     this.warehouseService.saveWareHouse(warehouse).subscribe({
       next: (data) => {
         this.loading = false;
-        Swal.fire('Success', `Warehouse "${warehouse.warehouseName}" saved successfully!`, 'success');
+        this.notify.success(`Warehouse "${warehouse.warehouseName}" saved successfully!`);
         this.closeModal();
         this.loadWarehouses();
       },
       error: (err) => {
         console.error('Error saving warehouse:', err);
         this.loading = false;
-        Swal.fire('Error', 'Could not save warehouse', 'error');
+        this.notify.error('Could not save warehouse');
       }
     });
   }
@@ -242,32 +222,25 @@ export class WarehouseComponent implements OnInit {
   /* ***************************************************************** */
   /* ----------------------------- Delete ----------------------------- */
 
-  onDelete(w: Warehouse) {
-    Swal.fire({
-      title: 'Are you sure to delete this Warehouse?',
-      text: `"${w.warehouseName}" will be permanently removed. This cannot be undone!`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, keep it'
-    }).then((response: any) => {
-      if (response.value) {
-        this.loading = true;
+  async onDelete(w: Warehouse) {
+    const confirmed = await this.notify.confirmDelete(`"${w.warehouseName}"`);
+    if (!confirmed) {
+      this.notify.info('Your warehouse is safe');
+      return;
+    }
 
-        this.warehouseService.delete(w.warehouseId).subscribe({
-          next: () => {
-            this.loading = false;
-            Swal.fire('Deleted', 'Warehouse has been deleted', 'success');
-            this.loadWarehouses();
-          },
-          error: (err) => {
-            console.error('Error deleting warehouse:', err);
-            this.loading = false;
-            Swal.fire('Error', 'Could not delete warehouse', 'error');
-          }
-        });
-      } else if (response.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire('Cancelled', 'Your Warehouse is safe', 'error');
+    this.loading = true;
+
+    this.warehouseService.delete(w.warehouseId).subscribe({
+      next: () => {
+        this.loading = false;
+        this.notify.success('Warehouse has been deleted');
+        this.loadWarehouses();
+      },
+      error: (err) => {
+        console.error('Error deleting warehouse:', err);
+        this.loading = false;
+        this.notify.error('Could not delete warehouse');
       }
     });
   }
