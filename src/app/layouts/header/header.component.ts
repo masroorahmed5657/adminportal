@@ -30,6 +30,9 @@ export class HeaderComponent {
     '/layout/inventory-adjustment': 'Inventory',
     '/layout/sales': 'Sales List',
     '/layout/departments': 'Department',
+    
+    '/layout/departmentemployee': 'Department Employee',
+    '/layout/pos': 'POS',
     '/layout/store-hours': 'Store Hours',
     '/layout/employees': 'Employees',
     '/layout/customer': 'Customers',
@@ -57,7 +60,12 @@ export class HeaderComponent {
     '/layout/purchase-order-add': 'PO Add',
     '/layout/purchase-order-edit/:purchaseOrderId': 'PO Edit',
     '/layout/ezpz-tax': 'Ezpz Tax',
-    '/layout/salary': 'Salary'
+    '/layout/salary': 'Salary',
+    '/layout/expense': 'Expense',
+    '/layout/ezpz-tax-add': 'Ezpz Tax Add',
+    '/layout/ezpz-tax-edit/:taxId': 'Ezpz Tax Edit',
+    '/layout/ezpz-tax-view/:taxId': 'Ezpz Tax View',
+    '/layout/ezpz-tax-report': 'Ezpz Tax Report',
 
 
 
