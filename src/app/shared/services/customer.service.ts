@@ -15,9 +15,20 @@ import { HttpMethodService } from '../helper/http-method.service';
   providedIn: 'root'
 })
 export class CustomerService {
-  deleteCustomer(custId: any) {
-    throw new Error('Method not implemented.');
+<<<<<<< HEAD
+
+  /* ****************************************************************** */
+  // ⚠️ Verify this endpoint matches your backend's actual delete route
+  // (checked other services in this file — they follow the pattern
+  // '<entity>/<action>', e.g. 'customer/save', 'customer/findAllCustomer' —
+  // so this assumes 'customer/delete/{custId}'. Adjust the path below if
+  // your backend uses a different route.)
+  deleteCustomer(custId: any): Observable<any> {
+    return this.http.delete(`customer/delete/${custId}`);
   }
+=======
+  
+>>>>>>> e99ff1c95dd1b66647fe96478b0f65a98b54e6de
 
   private url = environment.apiUrl; //http://localhost:9080/EZPZ_WS/customer
   private errors: Errors = new Errors();
@@ -27,6 +38,13 @@ export class CustomerService {
     // super('customer')
     // this.http.setEndpoint('customer')
 
+  }
+
+  
+
+  deleteCustomer(custId: any): Observable<any> {
+    return this.http.delete(`customer/delete/${custId}`);
+  
   }
 
   saveCustomer(customer: CustomerRequest): Observable<CustomerResponse> {
@@ -67,7 +85,7 @@ export class CustomerService {
     return this.http.get<Country[]>('country/findAll')
   }
   /* ********************************************************************** */
-  getProvinceCityList(countryId: Number): Observable<StateProvince[]> {
+  getProvinceCityList(countryId: any): Observable<StateProvince[]> {
 
     return this.http.get<StateProvince[]>(`stateProvince/findAllByCountryId/${countryId}`)
   }

@@ -1,5 +1,13 @@
+<!-- Loader (matches Brand / Category pages) -->
+<div class="shopify-loading" *ngIf="spinnerDataLoad">
+    <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+    <p>Loading dashboard...</p>
+</div>
+
 <!-- Page wrapper start -->
-<div class="page-wrapper">
+<div class="page-wrapper" *ngIf="!spinnerDataLoad">
     <!-- Main container start -->
     <div class="main-container">
         <!-- Content wrapper scroll start -->

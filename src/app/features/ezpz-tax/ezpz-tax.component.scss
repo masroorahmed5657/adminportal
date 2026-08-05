@@ -1,0 +1,256 @@
+@import "../../shared/shopify-theme";
+
+/* ==========================================================
+   EZPZ TAX PAGE
+   Uses Shopify Shared Theme
+========================================================== */
+
+/* Search section */
+.shopify-search-row {
+  margin-bottom: 1.5rem;
+
+  > div {
+    max-width: 450px;
+  }
+}
+
+/* Action bar */
+.shopify-actions-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Table */
+.shopify-table {
+  min-width: 900px;
+
+  th:nth-child(1),
+  td:nth-child(1) {
+    width: 70px;
+  }
+
+  th:nth-child(2),
+  td:nth-child(2) {
+    min-width: 220px;
+  }
+
+  th:nth-child(3),
+  td:nth-child(3) {
+    width: 120px;
+    text-align: center;
+  }
+
+  th:nth-child(4),
+  td:nth-child(4) {
+    width: 150px;
+    text-align: center;
+  }
+
+  th:nth-child(5),
+  td:nth-child(5) {
+    width: 120px;
+    text-align: center;
+  }
+
+  th:last-child,
+  td:last-child {
+    width: 150px;
+    text-align: center;
+  }
+}
+
+/* Actions */
+.shopify-table__actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: .45rem;
+
+  .btn-shopify {
+    transition: .2s ease;
+  }
+
+  .btn-shopify:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* Mobile Card */
+.shopify-mobile-card {
+  transition: .2s ease;
+}
+
+.shopify-mobile-card:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,.08);
+}
+
+.shopify-mobile-card h6 {
+  margin-bottom: 1rem;
+  color: #202223;
+}
+
+.shopify-mobile-card__row:last-child {
+  margin-bottom: 0;
+}
+
+.shopify-mobile-card__actions {
+  margin-top: 1rem;
+}
+
+/* Add/Edit Form */
+.shopify-card {
+  max-width: 900px;
+  margin: auto;
+}
+
+.shopify-card__header {
+  font-size: 1rem;
+}
+
+.shopify-grid-3 {
+  margin-bottom: 1rem;
+}
+
+.shopify-grid-3 .shopify-input,
+.shopify-grid-3 select {
+  height: 42px;
+}
+
+/* Loading */
+.shopify-loading {
+  min-height: 250px;
+
+  .spinner-border {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  p {
+    margin-top: 1rem;
+    font-weight: 500;
+  }
+}
+
+/* Empty State */
+.shopify-empty {
+  background: #fff;
+  border: 1px solid #e1e3e5;
+  border-radius: 12px;
+}
+
+.shopify-empty h5 {
+  margin-bottom: .5rem;
+}
+
+/* Modal */
+.shopify-modal__dialog {
+  max-width: 550px;
+}
+
+.shopify-modal__body .shopify-mobile-card__row {
+  padding: .6rem 0;
+  border-bottom: 1px solid #ececec;
+}
+
+.shopify-modal__body .shopify-mobile-card__row:last-child {
+  border-bottom: none;
+}
+
+.shopify-modal__footer {
+  justify-content: flex-end;
+}
+
+/* Pager */
+.shopify-pager {
+  margin-top: 1rem;
+}
+
+/* Search Input */
+.shopify-input-group {
+  box-shadow: 0 1px 2px rgba(0,0,0,.03);
+}
+
+.shopify-input-group:focus-within {
+  box-shadow: 0 0 0 3px rgba(26,26,26,.08);
+}
+
+/* Better spacing */
+.shopify-field-label {
+  margin-bottom: .45rem;
+}
+
+/* Buttons */
+.btn-shopify i {
+  font-size: .9rem;
+}
+
+/* Form buttons */
+.shopify-card .shopify-actions-row {
+  margin-top: 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+
+  .shopify-grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .shopify-actions-row {
+    gap: .75rem;
+  }
+
+  .shopify-table {
+    min-width: 850px;
+  }
+
+}
+
+@media (max-width: 768px) {
+
+  .shopify-search-row > div {
+    max-width: 100%;
+  }
+
+  .shopify-card {
+    width: 100%;
+  }
+
+  .shopify-mobile-card__actions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: .5rem;
+  }
+
+  .shopify-mobile-card__actions .btn-shopify {
+    width: 100%;
+  }
+
+}
+
+@media (max-width: 576px) {
+
+  .shopify-grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .shopify-actions-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .shopify-actions-row .btn-shopify {
+    width: 100%;
+  }
+
+  .shopify-mobile-card__actions {
+    grid-template-columns: 1fr;
+  }
+
+  .shopify-modal__dialog {
+    width: calc(100% - 20px);
+  }
+
+}

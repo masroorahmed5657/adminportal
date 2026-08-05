@@ -59,8 +59,10 @@ export class HeaderComponent {
     '/layout/profit-loss': 'Profit & Loss',
     '/layout/purchase-order-add': 'PO Add',
     '/layout/purchase-order-edit/:purchaseOrderId': 'PO Edit',
+<<<<<<< HEAD
     '/layout/ezpz-tax': 'Ezpz Tax',
     '/layout/salary': 'Salary',
+<<<<<<< HEAD
     '/layout/expense': 'Expense',
     '/layout/ezpz-tax-add': 'Ezpz Tax Add',
     '/layout/ezpz-tax-edit/:taxId': 'Ezpz Tax Edit',
@@ -68,8 +70,44 @@ export class HeaderComponent {
     '/layout/ezpz-tax-report': 'Ezpz Tax Report',
     '/layout/expense-category': 'Expenses Category',
     '/layout/payment': 'Payment',
+=======
+=======
+    '/layout/cashier-shift': 'Cashier Shift',
+    '/layout/device-register': 'Device Register',
+    '/layout/error-logs': 'Error Logs',
+>>>>>>> 494b07fee74c939e5f9a60835cf0c87718a31655
 
+    
+>>>>>>> e99ff1c95dd1b66647fe96478b0f65a98b54e6de
 
+    // ===== Previously missing routes (from app.routes.ts) =====
+    '/layout/device-register': 'Device Register',
+    '/layout/warehouse': 'Warehouse',
+    '/layout/error-logs': 'Error Logs',
+    '/layout/expense-category': 'Expense Category',
+    '/layout/payment': 'Payment',
+    '/layout/order-number': 'Order Number',
+    '/layout/departmentmanager': 'Department Manager',
+    '/layout/departmentemployee': 'Department Employee',
+    '/layout/add-invoice': 'Add Invoice',
+    '/layout/add-user': 'Add User',
+    '/layout/import-products': 'Import Products',
+    '/layout/list-invoice': 'List Invoice',
+    '/layout/catreports': 'Category Reports',
+    '/layout/reports': 'Reports',
+    '/layout/user-list': 'User List',
+    '/layout/products-master-add': 'Products Master Add',
+    '/layout/products-simple-add': 'Products Simple Add',
+    '/layout/product-add-without-image': 'Product Add',
+    '/layout/product-edit-without-image': 'Product Edit',
+    '/layout/productreports': 'Product Reports',
+    '/layout/products-edit/:productId': 'Products Edit',
+    '/layout/products-master-edit/:productId': 'Products Master Edit',
+    '/layout/products-simple-edit/:productId': 'Products Simple Edit',
+    '/layout/purchase-invoice/:receiveId': 'Purchase Invoice',
+    '/layout/stock-report': 'Stock Report',
+    '/layout/inventory-report': 'Inventory Report',
+    '/layout/home2': 'Home',
 
   };
 
@@ -112,31 +150,37 @@ export class HeaderComponent {
 
     }
   }
+
   updatePageTitle(url: string): void {
-    //const matchingRoute = Object.keys(this.pageTitles).find(route => url.startsWith(route));
-    //this.currentPageTitle = matchingRoute ? this.pageTitles[matchingRoute] : 'TechMaci';
+    // Strip any query string before matching
+    const cleanUrl = url.split('?')[0];
 
-    this.currentPageTitle = url ? this.pageTitles[url] : 'TechMaci';
+    // 1. Try an exact match first (covers all static routes)
+    if (this.pageTitles[cleanUrl]) {
+      this.currentPageTitle = this.pageTitles[cleanUrl];
+      return;
+    }
 
-    let i = 0;
+    // 2. Fall back to matching routes that contain a dynamic ":param"
+    //    segment — e.g. '/layout/products-edit/:productId' should match
+    //    an actual URL like '/layout/products-edit/42'.
+    const matchedKey = Object.keys(this.pageTitles).find(route => {
+      if (!route.includes('/:')) return false;
+      const routeBase = route.split('/:')[0];
+      return cleanUrl.startsWith(routeBase + '/');
+    });
+
+    this.currentPageTitle = matchedKey ? this.pageTitles[matchedKey] : 'TechMaci';
   }
 
   /* ************************************************************** */
   signOut() {
-    //this.cache.set('currentUser', null);
     sessionStorage.removeItem('currentUser');
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('username');
 
     sessionStorage.clear();
 
-    //this.cache.resetAllData();
-
-    //this.isLoggedIn = false;
-    // if (this.isLoggedIn) {
-    //   //this.loginService.logOutUser();
-    //   //this.serverLogout();
-    // }
     this.router.navigate(['login']);
   }
 
