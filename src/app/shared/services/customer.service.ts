@@ -1,154 +1,113 @@
 import { Injectable } from '@angular/core';
 
-import { Customer, CustomerType, Address, Category, Country, CountryStateProvince, StateProvince, CustomerRequest, City, CustomerResponse } from '../models/model-classes.model';
-import { Observable, of } from 'rxjs';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { catchError, map, tap } from 'rxjs/operators';
+import {
+  Customer,
+  CustomerType,
+  Address,
+  Category,
+  Country,
+  StateProvince,
+  CustomerRequest,
+  City,
+  CustomerResponse
+} from '../models/model-classes.model';
+
+import { Observable } from 'rxjs';
+import { HttpHeaders } from '@angular/common/http';
+import { catchError } from 'rxjs/operators';
+
 import { AppLoggerService } from './app-logger.service';
 import { environment } from '../../../environments/environment';
-import { Errors } from '../errors/errors'
-import { BaseHttpService } from '../helper/base.http.service';
+import { Errors } from '../errors/errors';
 import { HttpMethodService } from '../helper/http-method.service';
-
 
 @Injectable({
   providedIn: 'root'
 })
 export class CustomerService {
 
+  private url = environment.apiUrl;
+  private errors: Errors = new Errors();
+
+  constructor(
+    private http: HttpMethodService,
+    private appLogService: AppLoggerService
+  ) {}
+
   /* ****************************************************************** */
-  // ⚠️ Verify this endpoint matches your backend's actual delete route
-  // (checked other services in this file — they follow the pattern
-  // '<entity>/<action>', e.g. 'customer/save', 'customer/findAllCustomer' —
-  // so this assumes 'customer/delete/{custId}'. Adjust the path below if
-  // your backend uses a different route.)
   deleteCustomer(custId: any): Observable<any> {
     return this.http.delete(`customer/delete/${custId}`);
   }
 
-  private url = environment.apiUrl; //http://localhost:9080/EZPZ_WS/customer
-  private errors: Errors = new Errors();
-
-  constructor(private http: HttpMethodService,
-    private appLogService: AppLoggerService) {
-    // super('customer')
-    // this.http.setEndpoint('customer')
-
-  }
-
+  /* ****************************************************************** */
   saveCustomer(customer: CustomerRequest): Observable<CustomerResponse> {
-
-    return this.http.post<CustomerResponse>('customer/save', customer)
-
+    return this.http.post<CustomerResponse>('customer/save', customer);
   }
 
   /* ****************************************************************** */
   updateCustomer(customer: CustomerRequest): Observable<number> {
-
-    return this.http.post<number>('customer/save', customer)
-
+    return this.http.post<number>('customer/save', customer);
   }
+
   /* ****************************************************************** */
   saveAddress(address: Address): Observable<Address> {
-
-    return this.http.post<Address>('customer/save', address)
-
+    return this.http.post<Address>('customer/save', address);
   }
 
   /* ****************************************************************** */
   getCustomerTypeList(): Observable<CustomerType[]> {
-
-    let myUrl = `${this.url}` + `customerTypes/findAllCustomerType`;
-
-
-    return this.http.get<CustomerType[]>('customerTypes/findAllCustomerType')
+    return this.http.get<CustomerType[]>('customerTypes/findAllCustomerType');
   }
+
   /* ****************************************************************** */
   getCategoryList(): Observable<Category[]> {
-
-    return this.http.get<Category[]>('category/findAllCategories')
+    return this.http.get<Category[]>('category/findAllCategories');
   }
-  /* ********************************************************************** */
+
+  /* ****************************************************************** */
   getCountryList(): Observable<Country[]> {
-
-    return this.http.get<Country[]>('country/findAll')
-  }
-  /* ********************************************************************** */
-  getProvinceCityList(countryId: Number): Observable<StateProvince[]> {
-
-    return this.http.get<StateProvince[]>(`stateProvince/findAllByCountryId/${countryId}`)
+    return this.http.get<Country[]>('country/findAll');
   }
 
-  /* ********************************************************************** */
+  /* ****************************************************************** */
+  getProvinceCityList(countryId: any): Observable<StateProvince[]> {
+    return this.http.get<StateProvince[]>(`stateProvince/findAllByCountryId/${countryId}`);
+  }
+
+  /* ****************************************************************** */
   getCityList(countryId: Number): Observable<City[]> {
-
-    return this.http.get<City[]>(`city/findAllByStateId/${countryId}`)
+    return this.http.get<City[]>(`city/findAllByStateId/${countryId}`);
   }
 
-  /* ********************************************************************** */
+  /* ****************************************************************** */
   getProvinceList(): Observable<StateProvince[]> {
-
-    return this.http.get<StateProvince[]>('stateProvince/findAllState')
+    return this.http.get<StateProvince[]>('stateProvince/findAllState');
   }
+
   /* ****************************************************************** */
   getAllCustomers(): Observable<Customer[]> {
-
-    return this.http.get<Customer[]>('customer/findAllCustomer')
+    return this.http.get<Customer[]>('customer/findAllCustomer');
   }
 
-  /* ********************************************************************** */
+  // ===============================
+  // External APIs (currently unused)
+  // ===============================
 
-  // error in these api !
+  /*
+  getAPI(): Observable<any> {
 
-  // getAPI(): Observable<any> {
+    const myUrl = `https://www.universal-tutorial.com/api/getaccesstoken`;
 
-  //   let myUrl = `https://www.universal-tutorial.com/api/getaccesstoken`;
+    const headers = new HttpHeaders()
+      .set('content-type', 'application/json')
+      .set('Access-Control-Allow-Origin', '*')
+      .set('api-token', 'YOUR_API_TOKEN')
+      .set('user-email', 'info@techmaci.com');
 
-  //   const headers = new HttpHeaders()
-  //     .set('content-type', 'application/json')
-  //     .set('Access-Control-Allow-Origin', '*')
-  //     .set('api-token', 'G6IQ20qqCQxpoEBXZz4bawPYcujL47gdZlMpiCjMpaAXvpBqAFXzIpOoMERBDafXMjs')
-  //     .set('user-email', 'info@techmaci.com');
-
-  //   return this.http.get<string>(myUrl, { headers }).pipe(
-  //     //tap( error ==> this.log('Fetched Countries') ),
-  //     catchError(this.errors.handleError<string>('getAPI'))
-  //   );
-
-  // }
-
-  // getAPIFree(): Observable<any> {
-
-  //   let myUrl = `https://www.pwrc.usgs.gov/bbl/manual/country_codes.cfm`;
-
-  //   const headers = new HttpHeaders()
-  //     .set('content-type', 'application/json')
-  //     .set('Access-Control-Allow-Origin', '*');
-
-
-
-  //   return this.http.get<string>(myUrl, { headers }).pipe(
-  //     //tap( error ==> this.log('Fetched Countries') ),
-  //     catchError(this.errors.handleError<string>('getAPI'))
-  //   );
-
-  // }
-
-  // getAPICountries(): Observable<any> {
-
-  //   let myUrl = `https://www.universal-tutorial.com/api/countries/`;
-
-  //   const headers = new HttpHeaders()
-  //     .set('Accept', 'application/json')
-  //     .set('Authorization', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7I…zI0fQ.oK4sdkwZYMiU4J0wlpxHstNIidV28L6y3R7XPUymA9M');
-
-
-  //   return this.http.get<string>(myUrl, { headers }).pipe(
-  //     //tap( error ==> this.log('Fetched Countries') ),
-  //     catchError(this.errors.handleError<string>('getAPI'))
-  //   );
-
-  // } 
-
+    return this.http.get<string>(myUrl, { headers }).pipe(
+      catchError(this.errors.handleError<string>('getAPI'))
+    );
+  }
+  */
 
 }

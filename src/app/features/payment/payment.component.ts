@@ -28,7 +28,12 @@ export class PaymentComponent implements OnInit {
     { id: 'PAID', text: 'Paid' },
     { id: 'PENDING', text: 'Pending' },
     { id: 'UNPAID', text: 'Unpaid' },
-    { id: 'REFUNDED', text: 'Refunded' }
+    { id: 'REFUNDED', text: 'Refunded' },
+    { id: 'CANCELLED', text: 'Cancelled' },
+    { id: 'FAILED', text: 'Failed' },
+    { id: 'PARTIALLY_PAID', text: 'Partially Paid' },
+    { id: 'PARTIALLY_REFUNDED', text: 'Partially Refunded' },
+    { id: 'COMPLETED', text: 'Completed' },
   ];
 
   methodList: CodeDropDown[] = [

@@ -30,6 +30,9 @@ export class HeaderComponent {
     '/layout/inventory-adjustment': 'Inventory',
     '/layout/sales': 'Sales List',
     '/layout/departments': 'Department',
+    
+    '/layout/departmentemployee': 'Department Employee',
+    '/layout/pos': 'POS',
     '/layout/store-hours': 'Store Hours',
     '/layout/employees': 'Employees',
     '/layout/customer': 'Customers',
@@ -56,9 +59,17 @@ export class HeaderComponent {
     '/layout/profit-loss': 'Profit & Loss',
     '/layout/purchase-order-add': 'PO Add',
     '/layout/purchase-order-edit/:purchaseOrderId': 'PO Edit',
+
+    // Resolved merge conflict items
     '/layout/ezpz-tax': 'Ezpz Tax',
     '/layout/salary': 'Salary',
-
+    '/layout/expense': 'Expense',
+    '/layout/ezpz-tax-add': 'Ezpz Tax Add',
+    '/layout/ezpz-tax-edit/:taxId': 'Ezpz Tax Edit',
+    '/layout/ezpz-tax-view/:taxId': 'Ezpz Tax View',
+    '/layout/ezpz-tax-report': 'Ezpz Tax Report',
+    '/layout/cashier-shift': 'Cashier Shift',
+    
     // ===== Previously missing routes (from app.routes.ts) =====
     '/layout/device-register': 'Device Register',
     '/layout/warehouse': 'Warehouse',
@@ -67,7 +78,6 @@ export class HeaderComponent {
     '/layout/payment': 'Payment',
     '/layout/order-number': 'Order Number',
     '/layout/departmentmanager': 'Department Manager',
-    '/layout/departmentemployee': 'Department Employee',
     '/layout/add-invoice': 'Add Invoice',
     '/layout/add-user': 'Add User',
     '/layout/import-products': 'Import Products',

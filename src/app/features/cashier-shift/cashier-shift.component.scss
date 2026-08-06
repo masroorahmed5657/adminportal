@@ -1,0 +1,21 @@
+@import "../../shared/shopify-theme";
+
+/* cashier-shift.component.scss */
+
+.shopify-card {
+  margin-bottom: 0;
+}
+
+.shopify-actions-row {
+  justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+  .shopify-table {
+    font-size: 13px;
+  }
+
+  .btn-shopify {
+    font-size: 13px;
+  }
+}

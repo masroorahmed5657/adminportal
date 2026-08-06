@@ -1,0 +1,203 @@
+<!-- cashier-shift.component.html -->
+
+<div class="shopify-main-container">
+
+  <!-- Search row -->
+  <div class="shopify-search-row">
+    <div>
+      <label class="shopify-field-label" for="searchText">Search Shift</label>
+      <div class="shopify-input-group">
+        <span class="shopify-input-group__prefix"><i class="bi bi-search"></i></span>
+        <input type="text" class="shopify-input" id="searchText" placeholder="Search Shift..." [(ngModel)]="searchText">
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+
+    <!-- EDIT FORM -->
+    <div class="col-12 col-lg-3">
+
+      <div class="shopify-card">
+
+        <div class="shopify-card__header">
+          Edit Shift
+        </div>
+
+        <div class="shopify-card__body">
+
+          <!-- USER ID -->
+          <div class="mb-3">
+            <label class="shopify-field-label">User ID</label>
+            <input type="number" class="shopify-input" [(ngModel)]="shift.userId">
+          </div>
+
+          <!-- DEVICE ID -->
+          <div class="mb-3">
+            <label class="shopify-field-label">Device ID</label>
+            <input type="number" class="shopify-input" [(ngModel)]="shift.deviceId">
+          </div>
+
+          <!-- OPENING BALANCE -->
+          <div class="mb-3">
+            <label class="shopify-field-label">Opening Balance</label>
+            <input type="number" class="shopify-input text-end" [(ngModel)]="shift.openingBalance">
+          </div>
+
+          <!-- CLOSING BALANCE -->
+          <div class="mb-3">
+            <label class="shopify-field-label">Closing Balance</label>
+            <input type="number" class="shopify-input text-end" [(ngModel)]="shift.closingBalance">
+          </div>
+
+          <!-- OPENED AT -->
+          <div class="mb-3">
+            <label class="shopify-field-label">Opened At</label>
+            <input type="datetime-local" class="shopify-input" [(ngModel)]="shift.openedAt" step="1">
+          </div>
+
+          <!-- CLOSED AT -->
+          <div class="mb-3">
+            <label class="shopify-field-label">Closed At</label>
+            <input type="datetime-local" class="shopify-input" [(ngModel)]="shift.closedAt" step="1">
+          </div>
+
+          <!-- STATUS -->
+          <div class="mb-3">
+            <label class="shopify-field-label">Shift Status</label>
+            <select class="shopify-select" [(ngModel)]="shift.shiftStatus">
+              <option value="OPEN">OPEN</option>
+              <option value="CLOSED">CLOSED</option>
+            </select>
+          </div>
+
+          <!-- BUTTONS -->
+          <div class="shopify-actions-row">
+            <button class="btn-shopify btn-shopify--success flex-fill" [disabled]="!shift.shiftId"
+              (click)="updateShift()">
+              <i class="bi bi-check-circle"></i> Update
+            </button>
+
+            <button class="btn-shopify btn-shopify--outline flex-fill" (click)="resetForm()">
+              <i class="bi bi-arrow-clockwise"></i> Reset
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- LIST SECTION -->
+    <div class="col-12 col-lg-9">
+
+      <div class="shopify-card">
+
+        <div class="shopify-card__header">
+          Cashier Shifts List
+        </div>
+
+        <div class="shopify-card__body">
+
+          <!-- DESKTOP TABLE -->
+          <div class="shopify-table-wrap">
+            <table class="shopify-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>User</th>
+                  <th>Device</th>
+                  <th>Opening</th>
+                  <th>Closing</th>
+                  <th>Status</th>
+                  <th>Opened</th>
+                  <th>Closed</th>
+                  <th class="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of filteredShifts(); let i = index">
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ item.userId }}</td>
+                  <td>{{ item.deviceId }}</td>
+                  <td class="text-end">{{ item.openingBalance | number:'1.2-2' }}</td>
+                  <td class="text-end">{{ item.closingBalance | number:'1.2-2' }}</td>
+                  <td>
+                    <span class="shopify-badge"
+                      [ngClass]="item.shiftStatus === 'OPEN' ? 'shopify-badge--success' : 'shopify-badge--danger'">
+                      {{ item.shiftStatus }}
+                    </span>
+                  </td>
+                  <td>{{ item.openedAt | date:'dd-MMM-yyyy hh:mm a' }}</td>
+                  <td>{{ item.closedAt | date:'dd-MMM-yyyy hh:mm a' }}</td>
+                  <td class="text-center">
+                    <div class="shopify-table__actions">
+                      <button class="btn-shopify btn-shopify--outline btn-shopify--icon" title="Edit"
+                        (click)="editShift(item)">
+                        <i class="bi bi-pencil-square"></i>
+                      </button>
+                      <button class="btn-shopify btn-shopify--danger btn-shopify--icon" title="Delete"
+                        (click)="deleteShift(item)">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- MOBILE VIEW -->
+          <div class="shopify-mobile-list">
+            <div class="shopify-mobile-card" *ngFor="let item of filteredShifts(); let i = index">
+
+              <div class="shopify-mobile-card__row">
+                <h6 class="fw-bold mb-0">User #{{ item.userId }}</h6>
+                <span class="shopify-badge"
+                  [ngClass]="item.shiftStatus === 'OPEN' ? 'shopify-badge--success' : 'shopify-badge--danger'">
+                  {{ item.shiftStatus }}
+                </span>
+              </div>
+
+              <div class="shopify-mobile-card__field">
+                <label class="shopify-field-label--sm">Device</label>
+                <span>{{ item.deviceId }}</span>
+              </div>
+              <div class="shopify-mobile-card__field">
+                <label class="shopify-field-label--sm">Opening</label>
+                <span>{{ item.openingBalance | number:'1.2-2' }}</span>
+              </div>
+              <div class="shopify-mobile-card__field">
+                <label class="shopify-field-label--sm">Closing</label>
+                <span>{{ item.closingBalance | number:'1.2-2' }}</span>
+              </div>
+              <div class="shopify-mobile-card__field">
+                <label class="shopify-field-label--sm">Opened</label>
+                <span>{{ item.openedAt | date:'dd-MMM-yyyy hh:mm a' }}</span>
+              </div>
+              <div class="shopify-mobile-card__field">
+                <label class="shopify-field-label--sm">Closed</label>
+                <span>{{ item.closedAt | date:'dd-MMM-yyyy hh:mm a' }}</span>
+              </div>
+
+              <div class="shopify-mobile-card__actions">
+                <button class="btn-shopify btn-shopify--outline btn-shopify--sm" (click)="editShift(item)">
+                  <i class="bi bi-pencil-square"></i> Edit
+                </button>
+                <button class="btn-shopify btn-shopify--danger btn-shopify--sm" (click)="deleteShift(item)">
+                  <i class="bi bi-trash"></i> Delete
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

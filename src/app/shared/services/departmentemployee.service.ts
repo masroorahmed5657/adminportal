@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { DepartmentEmployee, Departments, Employees } from '../../shared/models/model-classes.model';
+import { DepartmentEmployee, Departments, DeptEmpResponse, Employees } from '../../shared/models/model-classes.model';
 import { HttpMethodService } from '../../shared/helper/http-method.service';
 
 @Injectable({ providedIn: 'root' })
@@ -8,9 +8,14 @@ export class DepartmentEmployeeService {
 
   constructor(private http: HttpMethodService) {}
 
-  getAllDeptEmployees(): Observable<DepartmentEmployee[]> {
-    return this.http.get<DepartmentEmployee[]>('deptEmployee/findAll');
+  getAllDeptEmployees(): Observable<DeptEmpResponse[]> {
+    return this.http.get<DeptEmpResponse[]>('deptEmployee/findAll');
   }
+
+  getAlllDeptEmployeesByDeptId(deptId: any): Observable<DeptEmpResponse[]> {
+    return this.http.get<DeptEmpResponse[]>(`deptEmployee/findByDept/${deptId}`);
+  }
+
 
   saveDeptEmployee(deptEmp: DepartmentEmployee): Observable<DepartmentEmployee> {
     return this.http.post<DepartmentEmployee>('deptEmployee/save', deptEmp);

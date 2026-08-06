@@ -23,10 +23,8 @@ export class DeviceRegisterComponent {
   showAddForm = false;
 
   constructor(private notify: NotificationService) {
-
     this.resetForm();
     this.loadSampleData();
-
   }
 
   loadSampleData() {
@@ -50,12 +48,9 @@ export class DeviceRegisterComponent {
 
   }
 
-  // Opens Add Device form
   openAddDevice() {
-
     this.resetForm();
     this.showAddForm = true;
-
   }
 
   saveDevice() {
@@ -92,8 +87,6 @@ export class DeviceRegisterComponent {
     }
 
     this.resetForm();
-
-    // Hide form after save
     this.showAddForm = false;
 
   }
@@ -104,7 +97,6 @@ export class DeviceRegisterComponent {
       ...item
     };
 
-    // Show form when editing
     this.showAddForm = true;
 
   }
@@ -114,10 +106,8 @@ export class DeviceRegisterComponent {
     const confirmed = await this.notify.confirmDelete('this device');
 
     if (!confirmed) {
-
       this.notify.info('Device is safe');
       return;
-
     }
 
     this.devicesList = this.devicesList.filter(

@@ -9,7 +9,7 @@ export class PaymentService {
   constructor(private http: HttpMethodService) {}
 
   getAllPayments(): Observable<Payment[]> {
-    return this.http.get<Payment[]>('payment/findAll');
+    return this.http.get<Payment[]>('payment/findAllPayment');
   }
 
   searchPayments(search: any): Observable<Payment[]> {

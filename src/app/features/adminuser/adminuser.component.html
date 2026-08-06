@@ -196,23 +196,23 @@
       <div class="shopify-grid-3">
         <div>
           <label class="shopify-field-label">Login ID</label>
-          <input type="text" class="shopify-input" id="loginId-new" placeholder="Login ID">
+          <input type="text" class="shopify-input" [(ngModel)]="newAdminUser.loginId" placeholder="Login ID">
         </div>
         <div>
           <label class="shopify-field-label">Password</label>
-          <input type="password" class="shopify-input" id="loginPassword-new" placeholder="Password">
+          <input type="password" class="shopify-input" [(ngModel)]="newAdminUser.loginPassword" placeholder="Password">
         </div>
         <div>
           <label class="shopify-field-label">First Name</label>
-          <input type="text" class="shopify-input" id="firstName-new" placeholder="First Name">
+          <input type="text" class="shopify-input" [(ngModel)]="newAdminUser.firstName" placeholder="First Name">
         </div>
         <div>
           <label class="shopify-field-label">Last Name</label>
-          <input type="text" class="shopify-input" id="lastName-new" placeholder="Last Name">
+          <input type="text" class="shopify-input" [(ngModel)]="newAdminUser.lastName" placeholder="Last Name">
         </div>
         <div>
           <label class="shopify-field-label">User Role</label>
-          <select class="shopify-input" id="userRole-new">
+          <select class="shopify-input" [(ngModel)]="newAdminUser.userRole">
             <option value="">User Role</option>
             <option *ngFor="let role of roles" [ngValue]="role">
               {{ role }}
@@ -221,7 +221,7 @@
         </div>
         <div>
           <label class="shopify-field-label">Email</label>
-          <input type="email" class="shopify-input" id="email-new" placeholder="Email">
+          <input type="email" class="shopify-input" [(ngModel)]="newAdminUser.email" placeholder="Email">
         </div>
       </div>
 

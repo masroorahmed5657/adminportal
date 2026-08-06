@@ -536,6 +536,18 @@ export class DepartmentManager {
    toDate: any;
 }
 
+export class DeptEmpResponse {
+    deptId:any;
+    empId: any;
+    fromDate: any;
+    toDate: any;
+    deptName: any;
+    firstName: any;
+    lastName: any;
+
+}
+
+
 export class Salaries {
    empId: any;
    salary: any;
@@ -1602,3 +1614,13 @@ export class ErrorLogs {
 
 }
 
+export class ExpenseCategory{
+   expenseCategoryId:any;
+   categoryCode:any;
+   categoryName:any;
+   description:any;
+   createdBy:any;
+   status:any;
+   companyId:any;
+
+}

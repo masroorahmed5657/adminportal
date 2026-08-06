@@ -16,3 +16,36 @@
 :host ::ng-deep .shopify-main-container {
   margin-top: 60px !important;
 }
+
+.card {
+  border-radius: 18px;
+}
+
+.form-control,
+.form-select {
+  border-radius: 10px;
+}
+
+.btn {
+  border-radius: 10px;
+}
+
+.table td,
+.table th {
+  vertical-align: middle;
+}
+
+.badge {
+  font-size: 12px;
+  padding: 6px 10px;
+}
+
+@media (max-width: 768px) {
+  .table {
+    font-size: 13px;
+  }
+
+  .btn {
+    font-size: 13px;
+  }
+}

@@ -47,12 +47,12 @@ export class ProductsComponent implements OnInit {
 
 
   // ===== Normal Printer (A4 sticker sheet) precise alignment =====
-normalLabelWidthMM: number = 63;   // apni physical label ki width (mm) - screenshot jaisi sheet ke liye adjust karein
-normalLabelHeightMM: number = 38;  // apni physical label ki height (mm)
-normalColGapMM: number = 3;        // do labels ke darmiyan horizontal gap
-normalRowGapMM: number = 3;        // do rows ke darmiyan vertical gap
-normalTopMarginMM: number = 15;    // sheet ka pehla label kitna neeche se start hota hai (page ke top se)
-normalLeftMarginMM: number = 5;    // sheet ka pehla label kitna left se start hota hai
+  normalLabelWidthMM: number = 63;   // apni physical label ki width (mm) - screenshot jaisi sheet ke liye adjust karein
+  normalLabelHeightMM: number = 38;  // apni physical label ki height (mm)
+  normalColGapMM: number = 3;        // do labels ke darmiyan horizontal gap
+  normalRowGapMM: number = 3;        // do rows ke darmiyan vertical gap
+  normalTopMarginMM: number = 15;    // sheet ka pehla label kitna neeche se start hota hai (page ke top se)
+  normalLeftMarginMM: number = 5;    // sheet ka pehla label kitna left se start hota hai
 
   
   printOrientation: string = 'portrait'; // NEW: 'landscape' ya 'portrait'
@@ -1731,7 +1731,7 @@ normalLeftMarginMM: number = 5;    // sheet ka pehla label kitna left se start h
     if (this.pageNo > 0) {
       currentPage = this.pageNo - 1;
     }
-    //alert('Current Page:'+ currentPage + '    catId:' + this.selectedCategory);
+    //alert('Current Page:'+ currentPage + '   catId:' + this.selectedCategory);
     //Get all Products for selected Category
     //let pageNo = 0;
 
@@ -2049,7 +2049,7 @@ htmlToPrintBarcode() {
         }
       </style>
     </head>
-    <body onload="window.print();window.close()">
+    <body onload="window.print(); window.onafterprint = function() { window.close(); };">
       <div class="sheet">
         <div class="grid">`;
 

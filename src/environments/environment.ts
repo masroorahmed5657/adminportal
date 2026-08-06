@@ -2,7 +2,7 @@ export const environment = {
   production: false,
   sessionTimeout: 60,
   enableLog: true,
-  versionNumber: '15.05.2026 00071',
+  versionNumber: '05.08.2026 00073',
   pageSize: 25,
 
   appEnv: 'LCL',
@@ -41,9 +41,12 @@ export const environment = {
   logoName: 'assets/images/logos/logo.png',
   background: 'assets/images/background/admin_portal_background.jpg',
 
+  // apiUrl: 'http://localhost:8080/JOLLIEBEE_API/',
+     apiUrl: 'https://cp.techmaci.com:8443/DEMO_API/',
+  //  apiUrl: 'https://cp.techmaci.com:8443/RESTAURANT_API/',
   //  apiUrl: 'https://cp.techmaci.com:8443/FASHION01_API/',
   // apiUrl: 'http://localhost:8080/FASHION01_API/',
-  apiUrl: 'https://cp.techmaci.com:8443/DEMO_API/',
+   //apiUrl: 'https://cp.techmaci.com:8443/FASHION_API/',
 
   // apiUrl: 'http://localhost:8080/WDS_API/',
 
