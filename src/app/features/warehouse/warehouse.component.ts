@@ -199,8 +199,16 @@ export class WarehouseComponent implements OnInit {
     warehouse.fromWarehouseId = this.warehouseForm.get('fromWarehouseId')?.value;
     warehouse.updatedBy = loggedInUser?.loginId;
     warehouse.createdBy = loggedInUser?.loginId;
-    warehouse.createdBy = this.warehouseForm.get('createdBy')?.value;
+    
     warehouse.createdDate = this.warehouseForm.get('createdDate')?.value;
+
+    //Validate warehouse data
+    if (!this.validateWarehouseData(warehouse)) {
+      return;
+    }    
+
+
+
 
     this.loading = true;
 
@@ -244,4 +252,62 @@ export class WarehouseComponent implements OnInit {
       }
     });
   }
+
+/* ***************************************************************** */
+validateWarehouseData(warehouse: Warehouse): boolean {
+
+ if (!warehouse.warehouseNbr || !warehouse.warehouseName) {
+      this.notify.error('Warehouse Number and Name are required');
+      return false;
+    }
+
+    // Check for duplicate warehouse number
+    const duplicate = this.warehouseList.find(w => w.warehouseNbr?.toLowerCase() === warehouse.warehouseNbr?.toLowerCase() && w.warehouseId !== warehouse.warehouseId); 
+    if (duplicate) {
+      this.notify.error('Warehouse Number already exists');
+      return false;
+    }
+    //Check for duplicate warehouse name
+    const duplicateName = this.warehouseList.find(w => w.warehouseName?.toLowerCase() === warehouse.warehouseName?.toLowerCase() && w.warehouseId !== warehouse.warehouseId);
+    if (duplicateName) {
+      this.notify.error('Warehouse Name already exists');
+      return false;
+    }
+      
+    
+    //Check for Empty warehouse number
+    if (!warehouse.warehouseNbr || warehouse.warehouseNbr.trim() === '') {
+      this.notify.error('Warehouse Number cannot be empty');
+      return false;
+    }
+    //Check for Empty warehouse name
+    if (!warehouse.warehouseName || warehouse.warehouseName.trim() === '') {
+      this.notify.error('Warehouse Name cannot be empty');
+      return false;
+    }
+    //Check for leading and trailing spaces in warehouse number
+    if (warehouse.warehouseNbr !== warehouse.warehouseNbr.trim()) {
+      this.notify.error('Warehouse Number should not have leading or trailing spaces');
+      return false;
+    }
+
+    //Check for leading and trailing spaces in warehouse name
+    if (warehouse.warehouseName !== warehouse.warehouseName.trim()) {
+      this.notify.error('Warehouse Name should not have leading or trailing spaces');
+      return false;
+    }
+    //Check for special characters in warehouse number
+    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+    if (specialCharRegex.test(warehouse.warehouseNbr)) {
+      this.notify.error('Warehouse Number should not contain special characters');
+      return false;
+    }
+    //Check for special characters in warehouse name
+    if (specialCharRegex.test(warehouse.warehouseName)) {
+      this.notify.error('Warehouse Name should not contain special characters');
+      return false;
+    }
+
+    return true;
+}
 }
