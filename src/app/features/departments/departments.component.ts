@@ -95,10 +95,10 @@ export class DepartmentsComponent {
         // this.department.updatedDate = new Date();
         this.department.updatedBy = this.currentUser?.loginId || 'Admin';//'Admin';
 
-        /* Date: 2024-06-19
-*  Developer: Masroor Ahmed
-* Validation for department name
-*/
+        /* Date: 2026-08-07
+      *  Developer: Masroor Ahmed
+      * Validation for department name
+      */
 
 
         if (!this.validateData()) {
@@ -116,10 +116,10 @@ export class DepartmentsComponent {
 
       // this.department.updatedDate = new Date();
 
-      /* Date: 2024-06-19
-*  Developer: Masroor Ahmed
-* Validation for department name
-*/
+      /* Date: 2026-08-07
+      *  Developer: Masroor Ahmed
+      * Validation for department name
+      */
 
 
       if (!this.validateData()) {
@@ -239,7 +239,7 @@ export class DepartmentsComponent {
   }
 
   /* ****************************************************************** */
-  /* Date: 2024-06-19
+  /* Date: 2026-08-07
   *  Developer: Masroor Ahmed
   * Validation for department name
   */
