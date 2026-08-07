@@ -80,7 +80,13 @@ export class DepartmentsComponent {
   saveDepartment() {
 
     if (!this.department.deptName) {
-      alert('Department Name Required');
+       Swal.fire({
+        title: 'Department Name Required',
+        text: 'Please enter a department name.',
+        icon: 'warning'
+      });
+
+     
       return;
     }
 

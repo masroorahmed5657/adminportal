@@ -14,6 +14,7 @@ import { TableModule } from 'primeng/table';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { DialogModule } from 'primeng/dialog';
 import { ProductsService } from '../../shared/services/products.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-category',
@@ -186,6 +187,15 @@ export class CategoryComponent implements OnInit {
         this.notify.warning('Please Enter Sub Category');
       }
 
+      /* Date: 2026-08-07
+      *  Developer: Masroor Ahmed
+      * Validation for Category and Sub Category
+      */
+      if (!this.validateData(category)) {
+        return;
+      }
+
+
     } else {
       if (!this.enabledEdit[row]) return;
 
@@ -222,6 +232,16 @@ export class CategoryComponent implements OnInit {
     }
 
     if (!saveFlag) return;
+    
+          /* Date: 2026-08-07
+      *  Developer: Masroor Ahmed
+      * Validation for Category and Sub Category
+      */
+      if (!this.validateData(category)) {
+        return;
+      }
+
+
 
     this.categoryService.saveCategory(category).subscribe(
       (data: Category) => {
@@ -489,6 +509,81 @@ export class CategoryComponent implements OnInit {
 
       window.location.reload();
     });
+  }
+  /* ****************************************************************** */
+    /* Date: 2026-08-07
+  *  Developer: Masroor Ahmed
+  * Validation for department name
+  */
+
+  validateData(category?: Category): boolean {
+    let bRet=true;
+
+     //Check for duplicate category name
+      const duplicate = this.categoryList.find(
+        x => ( (x.category?.toLowerCase() === category?.category?.toLowerCase()) && (x.subCategory?.toLowerCase() === category?.subCategory?.toLowerCase()) )
+      ); 
+      if (duplicate && category?.categoryId !== duplicate.categoryId) {
+        Swal.fire({
+          title: 'Category and Sub-Category Name already exists',
+          text: 'Please choose a different Category/Sub-Category name.',
+          icon: 'warning'
+        });
+        return false;
+      }
+
+      //Check for emptry category name
+      if (!category?.category || category.category.trim() === '') {
+        Swal.fire({
+          title: 'Category Name Required',
+          text: 'Please enter a category name.',
+          icon: 'warning'
+        });
+        return false;
+      }
+      //Check for Alphabetic Category name
+      //const alphabeticRegex = /^[A-Za-z\s]+$/;
+      const alphabeticRegex = /^[A-Za-z][A-Za-z0-9\s]*$/;
+      if (!alphabeticRegex.test(category?.category)) {
+        Swal.fire({
+          title: 'Invalid Category Name',
+          text: 'Category name should contain only alpha numeric characters.',
+          icon: 'warning'
+        });
+        return false;
+      }
+      //check for leading ad trailing spaces
+      if (category?.category !== category?.category.trim()) {
+        Swal.fire({
+          title: 'Invalid Category Name',
+          text: 'Category name should not have leading or trailing spaces.',
+          icon: 'warning'
+        });
+        return false;
+      }
+      //Check for special characters in category name
+      const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+      if (specialCharRegex.test(category?.category)) {
+        Swal.fire({
+          title: 'Invalid Category Name',
+          text: 'Category name should not contain special characters.', 
+          icon: 'warning'
+        });
+        return false;
+      }
+      //Check for category name length
+      if (category?.category.length > 50) {
+        Swal.fire({
+          title: 'Invalid Category Name',
+          text: 'Category name should not exceed 50 characters.', 
+          icon: 'warning'
+        });
+        return false;
+      }
+      else{ 
+        return true;
+      }
+
   }
 
 }
