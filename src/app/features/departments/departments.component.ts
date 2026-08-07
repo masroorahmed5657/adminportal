@@ -95,6 +95,10 @@ export class DepartmentsComponent {
         // this.department.updatedDate = new Date();
         this.department.updatedBy = this.currentUser?.loginId || 'Admin';//'Admin';
 
+ if (!this.validateData()) {
+        return;
+      }
+
         this.departmentsList[index] = {
           ...this.department
         };
@@ -105,6 +109,10 @@ export class DepartmentsComponent {
       // this.department.deptId = Date.now();
 
       // this.department.updatedDate = new Date();
+
+       if (!this.validateData()) {
+        return;
+      }
 
       this.department.updatedBy = this.currentUser?.loginId || 'Admin';//'Admin';
 
@@ -218,5 +226,75 @@ export class DepartmentsComponent {
     reader.readAsDataURL(file);
   }
 
+  /* ****************************************************************** */
+  validateData(){
+    let bRet=true;
+
+     //Check for duplicate department name
+      const duplicate = this.departmentsList.find(
+        x => x.deptName?.toLowerCase() === this.department.deptName?.toLowerCase()
+      ); 
+      if (duplicate) {
+        Swal.fire({
+          title: 'Department Name already exists',
+          text: 'Please choose a different department name.',
+          icon: 'warning'
+        });
+        return false;
+      }
+
+      //Check for emptry department name
+      if (!this.department.deptName || this.department.deptName.trim() === '') {
+        Swal.fire({
+          title: 'Department Name Required',
+          text: 'Please enter a department name.',
+          icon: 'warning'
+        });
+        return false;
+      }
+      //Check for Alphabetic department name
+      //const alphabeticRegex = /^[A-Za-z\s]+$/;
+      const alphabeticRegex = /^[A-Za-z][A-Za-z0-9\s]*$/;
+      if (!alphabeticRegex.test(this.department.deptName)) {
+        Swal.fire({
+          title: 'Invalid Department Name',
+          text: 'Department name should contain only alpha numeric characters.',
+          icon: 'warning'
+        });
+        return false;
+      }
+      //check for leading ad trailing spaces
+      if (this.department.deptName !== this.department.deptName.trim()) {
+        Swal.fire({
+          title: 'Invalid Department Name',
+          text: 'Department name should not have leading or trailing spaces.',
+          icon: 'warning'
+        });
+        return false;
+      }
+      //Check for special characters in department name
+      const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+      if (specialCharRegex.test(this.department.deptName)) {
+        Swal.fire({
+          title: 'Invalid Department Name',
+          text: 'Department name should not contain special characters.', 
+          icon: 'warning'
+        });
+        return false;
+      }
+      //Check for department name length
+      if (this.department.deptName.length > 50) {
+        Swal.fire({
+          title: 'Invalid Department Name',
+          text: 'Department name should not exceed 50 characters.', 
+          icon: 'warning'
+        });
+        return false;
+      }
+      else{ 
+        return true;
+      }
+
+  }
 
 }
