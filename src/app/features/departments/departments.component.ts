@@ -127,7 +127,6 @@ export class DepartmentsComponent {
       * Validation for department name
       */
 
-
       if (!this.validateData()) {
         return;
       }

@@ -9,6 +9,7 @@ import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { DialogModule } from 'primeng/dialog';
 //import { window } from 'rxjs';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 
 @Component({
@@ -116,6 +117,16 @@ export class BrandsComponent implements OnInit {
         this.notify.warning('Please Enter Brand Code');
       }
 
+      /* Date: 2026-08-07
+      *  Developer: Masroor Ahmed
+      * Validation for brand name
+      */
+
+      if (!this.validateData(brand)) {
+        return;
+      }
+
+
       // // ✅ Duplicate check (only if no empty error)
       // if (
       //   saveFlag &&
@@ -142,6 +153,16 @@ export class BrandsComponent implements OnInit {
 
       brand.brandName = brandNameInput?.value ? brandNameInput.value.trim() : '';
       brand.brandCode = brandCodeInput?.value ? brandCodeInput.value.trim() : '';
+
+      /* Date: 2026-08-07
+      *  Developer: Masroor Ahmed
+      * Validation for brand name
+      */
+
+      if (!this.validateData(brand)) {
+        return;
+      }
+
 
       if (!brand.brandName) {
         saveFlag = false;
@@ -331,5 +352,140 @@ export class BrandsComponent implements OnInit {
     // after successful save:
     this.brandSaved.emit();
   }
+
+  /* ****************************************************************** */
+  /* Date: 2026-08-07
+  *  Developer: Masroor Ahmed
+  * Validation for department name
+  */
+
+  validateData(brand: Brands) {
+    let bRet = true;
+    //Check for duplicate brand Code
+    const duplicateCode = this.brandMasterList.find(
+      x => x.brandCode === brand.brandCode
+    );
+    if (duplicateCode) {
+      Swal.fire({
+        title: 'Brand Code already exists',
+        text: 'Please choose a different brand code.',
+        icon: 'warning'
+      });
+      return false;
+    }
+
+    //Check for duplicate brand name
+    const duplicate = this.brandMasterList.find(
+      x => x.brandName?.toLowerCase() === brand.brandName?.toLowerCase()
+    );
+    if (duplicate) {
+      Swal.fire({
+        title: 'Brand Name already exists',
+        text: 'Please choose a different brand name.',
+        icon: 'warning'
+      });
+      return false;
+    }
+
+    //Check for emptry brand name
+    if (!brand.brandName || brand.brandName.trim() === '') {
+      Swal.fire({
+        title: 'Brand Name Required',
+        text: 'Please enter a brand name.',
+        icon: 'warning'
+      });
+      return false;
+    }
+    //Check for emptry brand code
+    if (!brand.brandCode || brand.brandCode.trim() === '') {
+      Swal.fire({
+        title: 'Brand Code Required',
+        text: 'Please enter a brand code.',
+        icon: 'warning'
+      });
+      return false;
+    }
+
+
+    //Check for Alphabetic brand name
+    //const alphabeticRegex = /^[A-Za-z\s]+$/;
+    const alphabeticRegex = /^[A-Za-z][A-Za-z0-9\s]*$/;
+    if (!alphabeticRegex.test(brand.brandName)) {
+      Swal.fire({
+        title: 'Invalid Brand Name',
+        text: 'Brand name should contain only alpha numeric characters.',
+        icon: 'warning'
+      });
+      return false;
+    }
+
+    //Check for Alphabetic brand name
+    //const alphabeticRegex = /^[A-Za-z\s]+$/;
+    const alphabeticRegex2 = /^[A-Za-z][A-Za-z0-9\s]*$/;
+    if (!alphabeticRegex2.test(brand.brandCode)) {
+      Swal.fire({
+        title: 'Invalid Brand Code',
+        text: 'Brand code should contain only alpha numeric characters.',
+        icon: 'warning'
+      });
+      return false;
+    }
+
+    //check for leading ad trailing spaces
+    if (brand.brandCode !== brand.brandCode.trim()) {
+      Swal.fire({
+        title: 'Invalid Brand Code',
+        text: 'Brand code should not have leading or trailing spaces.',
+        icon: 'warning'
+      });
+      return false;
+    }
+
+    //check for leading ad trailing spaces
+    if (brand.brandName !== brand.brandName.trim()) {
+      Swal.fire({
+        title: 'Invalid Brand Name',
+        text: 'Brand name should not have leading or trailing spaces.',
+        icon: 'warning'
+      });
+      return false;
+    }
+    //Check for special characters in brand code
+    const specialCharRegex2 = /[!@#$%^&*(),.?":{}|<>]/;
+    if (specialCharRegex2.test(brand.brandCode)) {  
+      Swal.fire({
+        title: 'Invalid Brand Code',
+        text: 'Brand code should not contain special characters.',
+        icon: 'warning'
+      });
+      return false;
+    }
+
+
+    //Check for special characters in brand name
+    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+    if (specialCharRegex.test(brand.brandName)) {
+      Swal.fire({
+        title: 'Invalid Brand Name',
+        text: 'Brand name should not contain special characters.',
+        icon: 'warning'
+      });
+      return false;
+    }
+    //Check for brand name length
+    if (brand.brandName.length > 50) {
+      Swal.fire({
+        title: 'Invalid Brand Name',
+        text: 'Brand name should not exceed 50 characters.',
+        icon: 'warning'
+      });
+      return false;
+    }
+    else {
+      return true;
+    }
+
+  }
+
 
 }
