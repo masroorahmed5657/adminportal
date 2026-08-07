@@ -1,202 +1,202 @@
 <!-- ============================================================
-     SEARCH + ADD BUTTON
+     EXPENSE CATEGORY — LIST VIEW
      ============================================================ -->
-<div class="shopify-search-row">
-  <div>
-    <label class="shopify-field-label" for="searchTerm">Search Expense Category</label>
-    <div class="shopify-input-group">
-      <span class="shopify-input-group__prefix"><i class="bi bi-search"></i></span>
-      <input type="search" id="searchTerm" [(ngModel)]="searchTerm" (input)="onSearchInput()"
-        placeholder="Search by name or ID..." class="shopify-input">
+<div class="shopify-main-container" *ngIf="!addFlag">
+
+  <!-- Search row -->
+  <div class="shopify-search-row">
+    <div>
+      <label class="shopify-field-label" for="searchCode">Search Code</label>
+      <div class="shopify-input-group">
+        <span class="shopify-input-group__prefix"><i class="bi bi-search"></i></span>
+        <input type="text" class="shopify-input" placeholder="Search by code" id="searchCode"
+          [(ngModel)]="searchCode" (ngModelChange)="categorySearch()">
+      </div>
+    </div>
+    <div>
+      <label class="shopify-field-label" for="searchName">Search Name</label>
+      <div class="shopify-input-group">
+        <span class="shopify-input-group__prefix"><i class="bi bi-search"></i></span>
+        <input type="text" class="shopify-input" placeholder="Search by name" id="searchName"
+          [(ngModel)]="searchName" (ngModelChange)="categorySearch()">
+      </div>
     </div>
   </div>
-  <div class="d-flex align-items-end">
-    <button class="btn-shopify btn-shopify--success" (click)="add()">
-      <i class="bi bi-plus-circle"></i> Add Category
+
+  <!-- Actions row -->
+  <div class="shopify-actions-row">
+    <button type="button" class="btn-shopify btn-shopify--primary" (click)="addCategory()">
+      <i class="bi bi-plus-lg"></i> Add Category
     </button>
   </div>
-</div>
 
-<!-- ============================================================
-     LOADING SPINNER
-     ============================================================ -->
-<div *ngIf="isLoading" class="shopify-loading">
-  <div class="spinner-border" role="status">
-    <span class="visually-hidden">Loading...</span>
-  </div>
-  <p>Loading categories...</p>
-</div>
-
-<!-- ============================================================
-     LIST (visible when form is NOT shown)
-     ============================================================ -->
-<div *ngIf="!showAddFlag && !isLoading">
-
-  <!-- Empty state -->
-  <div class="shopify-empty" *ngIf="filtered.length === 0">
-    <h5>No categories found</h5>
-    <p>No expense categories match your search.</p>
+  <!-- Loader -->
+  <div class="shopify-loading" *ngIf="spinnerDataLoad">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p>Loading categories...</p>
   </div>
 
-  <ng-container *ngIf="filtered.length > 0">
+  <ng-container *ngIf="!spinnerDataLoad">
 
-    <!-- ── DESKTOP TABLE ── -->
-    <div class="shopify-table-wrap">
-      <table class="shopify-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Category Name</th>
-            <th>Status</th>
-            <th class="text-center">Manage</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let cat of filtered | paginate:{itemsPerPage:10,currentPage:p}; let i = index">
-            <td>{{ cat.expenseCategoryId }}</td>
-            <td>{{ cat.categoryName }}</td>
-            <td>
-              <span class="shopify-badge"
-                [ngClass]="cat.status === 1 ? 'shopify-badge--success' : 'shopify-badge--muted'">
-                {{ cat.status === 1 ? 'Active' : 'Inactive' }}
-              </span>
-            </td>
-            <td>
-              <div class="shopify-table__actions">
-                <button class="btn-shopify btn-shopify--info btn-shopify--icon" title="View Detail" (click)="view(cat)">
-                  <i class="bi bi-eye-fill"></i>
-                </button>
-                <button class="btn-shopify btn-shopify--outline btn-shopify--icon" title="Edit" (click)="edit(cat)">
-                  <i class="bi bi-pencil-fill"></i>
-                </button>
-                <button class="btn-shopify btn-shopify--danger btn-shopify--icon" title="Delete"
-                  (click)="onDelete(cat.expenseCategoryId)">
-                  <i class="bi bi-trash-fill"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="shopify-pagination">
-        <pagination-controls (pageChange)="p = $event"></pagination-controls>
-      </div>
+    <!-- Empty state -->
+    <div class="shopify-empty" *ngIf="pagedCategoryList.length === 0">
+      <h5>No categories found</h5>
+      <p>No expense categories match your search.</p>
     </div>
 
-    <!-- ── MOBILE CARDS ── -->
-    <div class="shopify-mobile-list">
-      <div class="shopify-mobile-card" *ngFor="let cat of filtered | paginate:{itemsPerPage:10,currentPage:p}">
-        <div class="shopify-mobile-card__row">
-          <div>
-            <h6 class="fw-bold mb-0">{{ cat.categoryName }}</h6>
-            <small class="text-muted">ID: {{ cat.expenseCategoryId }}</small>
+    <ng-container *ngIf="pagedCategoryList.length > 0">
+
+      <!-- Desktop table -->
+      <div class="shopify-table-wrap">
+        <table class="shopify-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Category Code</th>
+              <th>Category Name</th>
+              <th>Status</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let cat of pagedCategoryList; let i = index"
+              [ngClass]="{'is-active': activeRow === rowIndex(i)}">
+              <td>{{ cat.expenseCategoryId }}</td>
+              <td>
+                <input type="text" class="shopify-input" id="categoryCode-{{ rowIndex(i) }}"
+                  [(ngModel)]="cat.categoryCode" [disabled]="!enabledEdit[rowIndex(i)]">
+              </td>
+              <td>
+                <input type="text" class="shopify-input" id="categoryName-{{ rowIndex(i) }}"
+                  [(ngModel)]="cat.categoryName" [disabled]="!enabledEdit[rowIndex(i)]">
+              </td>
+              <td>
+                <select class="shopify-select" [(ngModel)]="cat.status" [disabled]="!enabledEdit[rowIndex(i)]">
+                  <option [ngValue]="1">Active</option>
+                  <option [ngValue]="0">Inactive</option>
+                </select>
+              </td>
+              <td>
+                <div class="shopify-table__actions">
+                  <button *ngIf="!enabledEdit[rowIndex(i)]" class="btn-shopify btn-shopify--outline btn-shopify--icon"
+                    title="Edit" (click)="startEdit(rowIndex(i))">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button *ngIf="enabledEdit[rowIndex(i)]" class="btn-shopify btn-shopify--success btn-shopify--icon"
+                    title="Save" (click)="onSave(cat.expenseCategoryId!, rowIndex(i))" [disabled]="isSaving">
+                    <i class="bi bi-check-lg"></i>
+                  </button>
+                  <button class="btn-shopify btn-shopify--danger btn-shopify--icon" title="Delete"
+                    (click)="onDelete(cat.expenseCategoryId!, rowIndex(i))">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile cards -->
+      <div class="shopify-mobile-list">
+        <div class="shopify-mobile-card" *ngFor="let cat of pagedCategoryList; let i = index"
+          [ngClass]="{'is-active': activeRow === rowIndex(i)}">
+          <div class="shopify-mobile-card__row">
+            <span class="shopify-field-label--sm">Category ID</span>
+            <span>{{ cat.expenseCategoryId }}</span>
           </div>
-          <span class="shopify-badge" [ngClass]="cat.status === 1 ? 'shopify-badge--success' : 'shopify-badge--muted'">
-            {{ cat.status === 1 ? 'Active' : 'Inactive' }}
-          </span>
-        </div>
-        <div class="shopify-mobile-card__actions">
-          <button class="btn-shopify btn-shopify--info btn-shopify--sm" (click)="view(cat)">
-            <i class="bi bi-eye-fill"></i> View
-          </button>
-          <button class="btn-shopify btn-shopify--outline btn-shopify--sm" (click)="edit(cat)">
-            <i class="bi bi-pencil-fill"></i> Edit
-          </button>
-          <button class="btn-shopify btn-shopify--danger btn-shopify--sm" (click)="onDelete(cat.expenseCategoryId)">
-            <i class="bi bi-trash-fill"></i> Delete
-          </button>
+          <div class="shopify-mobile-card__field">
+            <label class="shopify-field-label--sm">Category Code</label>
+            <input type="text" class="shopify-input" [(ngModel)]="cat.categoryCode"
+              [disabled]="!enabledEdit[rowIndex(i)]">
+          </div>
+          <div class="shopify-mobile-card__field">
+            <label class="shopify-field-label--sm">Category Name</label>
+            <input type="text" class="shopify-input" [(ngModel)]="cat.categoryName"
+              [disabled]="!enabledEdit[rowIndex(i)]">
+          </div>
+          <div class="shopify-mobile-card__field">
+            <label class="shopify-field-label--sm">Status</label>
+            <select class="shopify-select" [(ngModel)]="cat.status" [disabled]="!enabledEdit[rowIndex(i)]">
+              <option [ngValue]="1">Active</option>
+              <option [ngValue]="0">Inactive</option>
+            </select>
+          </div>
+          <div class="shopify-mobile-card__actions">
+            <button *ngIf="!enabledEdit[rowIndex(i)]" class="btn-shopify btn-shopify--outline btn-shopify--sm"
+              (click)="startEdit(rowIndex(i))">
+              <i class="bi bi-pencil"></i> Edit
+            </button>
+            <button *ngIf="enabledEdit[rowIndex(i)]" class="btn-shopify btn-shopify--success btn-shopify--sm"
+              (click)="onSave(cat.expenseCategoryId!, rowIndex(i))" [disabled]="isSaving">
+              <i class="bi bi-check-lg"></i> Save
+            </button>
+            <button class="btn-shopify btn-shopify--danger btn-shopify--sm"
+              (click)="onDelete(cat.expenseCategoryId!, rowIndex(i))">
+              <i class="bi bi-trash"></i> Delete
+            </button>
+          </div>
         </div>
       </div>
-      <div class="shopify-pagination">
-        <pagination-controls (pageChange)="p = $event"></pagination-controls>
-      </div>
-    </div>
 
+      <!-- Pagination (Shopify-style Previous / Next) -->
+      <div class="shopify-pager" *ngIf="totalPages > 1">
+        <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="page <= 1"
+          (click)="goToPage(page - 1)">
+          <i class="bi bi-chevron-left"></i> Previous
+        </button>
+        <span class="shopify-pager__info">Page {{ page }} of {{ totalPages }}</span>
+        <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="page >= totalPages"
+          (click)="goToPage(page + 1)">
+          Next <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+
+    </ng-container>
   </ng-container>
 </div>
 
 <!-- ============================================================
-     VIEW DETAIL MODAL
+     EXPENSE CATEGORY — ADD FORM
      ============================================================ -->
-<ng-container *ngIf="showDetailModal && viewItem">
-  <div class="shopify-modal-backdrop" (click)="closeDetail()"></div>
-  <div class="shopify-modal">
-    <div class="shopify-modal__dialog">
-      <div class="shopify-modal__header">
-        <h5 class="shopify-modal__title">
-          <i class="bi bi-tag me-2"></i>
-          {{ viewItem.categoryName }}
-        </h5>
-        <button type="button" class="btn-close" (click)="closeDetail()"></button>
-      </div>
-      <div class="shopify-modal__body">
-        <div class="shopify-detail-grid">
-          <dt>Category Name:</dt>
-          <dd>{{ viewItem.categoryName }}</dd>
-          <dt>ID:</dt>
-          <dd>{{ viewItem.expenseCategoryId }}</dd>
-          <dt>Status:</dt>
-          <dd>
-            <span class="shopify-badge"
-              [ngClass]="viewItem.status === 1 ? 'shopify-badge--success' : 'shopify-badge--muted'">
-              {{ viewItem.status === 1 ? 'Active' : 'Inactive' }}
-            </span>
-          </dd>
-        </div>
-      </div>
-      <div class="shopify-modal__footer">
-        <button class="btn-shopify btn-shopify--primary" (click)="edit(viewItem); closeDetail()">
-          <i class="bi bi-pencil-fill"></i> Edit
-        </button>
-        <button class="btn-shopify btn-shopify--outline" (click)="closeDetail()">Close</button>
-      </div>
-    </div>
-  </div>
-</ng-container>
+<div class="shopify-main-container" *ngIf="addFlag">
 
-<!-- ============================================================
-     ADD / EDIT FORM
-     ============================================================ -->
-<div *ngIf="showAddFlag">
-
-  <div class="shopify-actions-row">
-    <button class="btn-shopify btn-shopify--outline" (click)="goToList()">
-      <i class="bi bi-arrow-left"></i> Back to List
+  <div class="shopify-actions-row" *ngIf="showCategoryListFlag">
+    <button class="btn-shopify btn-shopify--outline" (click)="backToList()">
+      <i class="bi bi-arrow-left"></i> Back to Category List
     </button>
   </div>
 
   <div class="shopify-card">
-    <div class="shopify-card__header">
-      {{ editMode ? 'Edit Expense Category' : 'Add Expense Category' }}
-      <span *ngIf="editMode" class="shopify-badge shopify-badge--neutral ms-2">ID: {{ item.expenseCategoryId }}</span>
-    </div>
+    <div class="shopify-card__header">Add new expense category</div>
     <div class="shopify-card__body">
-
-      <div class="shopify-grid-2">
+      <div class="shopify-grid-3">
+        <div>
+          <label class="shopify-field-label">Category Code</label>
+          <input type="text" class="shopify-input" [(ngModel)]="newCategory.categoryCode"
+            placeholder="Category code">
+        </div>
         <div>
           <label class="shopify-field-label">Category Name <span class="text-danger">*</span></label>
-          <input type="text" class="shopify-input" [(ngModel)]="item.categoryName" placeholder="e.g., Office Supplies">
+          <input type="text" class="shopify-input" [(ngModel)]="newCategory.categoryName"
+            placeholder="e.g., Office Supplies">
         </div>
         <div>
           <label class="shopify-field-label">Status</label>
-          <select class="shopify-select" [(ngModel)]="item.status">
-            <option value="1">Active</option>
-            <option value="0">Inactive</option>
+          <select class="shopify-select" [(ngModel)]="newCategory.status">
+            <option [ngValue]="1">Active</option>
+            <option [ngValue]="0">Inactive</option>
           </select>
         </div>
       </div>
-
       <div class="shopify-actions-row mt-3">
-        <button type="button" class="btn-shopify btn-shopify--primary" (click)="save()" [disabled]="isSaving">
+        <button class="btn-shopify btn-shopify--primary" (click)="onSave(-1, -1)" [disabled]="isSaving">
           <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-1"></span>
-          <i *ngIf="!isSaving" class="bi bi-save-fill"></i>
-          {{ isSaving ? 'Saving...' : 'Save' }}
-        </button>
-        <button type="button" class="btn-shopify btn-shopify--outline" (click)="goToList()">
-          <i class="bi bi-arrow-left"></i> Back to List
+          <i *ngIf="!isSaving" class="bi bi-save"></i> Save Category
         </button>
       </div>
-
     </div>
   </div>
 

@@ -44,95 +44,110 @@
     </div>
   </div>
 
-  <!-- Desktop Table -->
-  <div class="shopify-table-wrap">
-    <table class="shopify-table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Order ID</th>
-          <th>Total Amount</th>
-          <th>Advance</th>
-          <th>Method</th>
-          <th>Status</th>
-          <th>Discount</th>
-          <th>Currency</th>
-          <th class="text-center">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngIf="paymentList.length === 0">
-          <td colspan="9" class="text-center text-muted py-4">No payments found.</td>
-        </tr>
-        <tr *ngFor="let p of paymentList; let i = index">
-          <td>{{ i + 1 }}</td>
-          <td>{{ p.orderId }}</td>
-          <td>{{ p.totalAmount }}</td>
-          <td>{{ p.advanceAmount }}</td>
-          <td>
-            <span class="shopify-badge"
-              [ngClass]="{'shopify-badge--success': p.paymentMethod === 'CASH', 'shopify-badge--neutral': p.paymentMethod !== 'CASH'}">
-              {{ p.paymentMethod || 'N/A' }}
-            </span>
-          </td>
-          <td>
+  <!-- Loading -->
+  <div class="shopify-loading" *ngIf="isLoading">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p>Loading payments...</p>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+
+    <!-- Empty state -->
+    <div class="shopify-empty" *ngIf="paymentList.length === 0">
+      <h5>No payments found</h5>
+      <p>No payments match your search.</p>
+    </div>
+
+    <ng-container *ngIf="paymentList.length > 0">
+
+      <!-- Desktop Table -->
+      <div class="shopify-table-wrap">
+        <table class="shopify-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Order ID</th>
+              <th>Total Amount</th>
+              <th>Advance</th>
+              <th>Method</th>
+              <th>Status</th>
+              <th>Discount</th>
+              <th>Currency</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of paymentList; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ p.orderId }}</td>
+              <td>{{ p.totalAmount }}</td>
+              <td>{{ p.advanceAmount }}</td>
+              <td>
+                <span class="shopify-badge"
+                  [ngClass]="{'shopify-badge--success': p.paymentMethod === 'CASH', 'shopify-badge--neutral': p.paymentMethod !== 'CASH'}">
+                  {{ p.paymentMethod || 'N/A' }}
+                </span>
+              </td>
+              <td>
+                <span class="shopify-badge"
+                  [ngClass]="{'shopify-badge--success': p.paymentStatus === 'PAID', 'shopify-badge--danger': p.paymentStatus === 'UNPAID', 'shopify-badge--muted': p.paymentStatus !== 'PAID' && p.paymentStatus !== 'UNPAID'}">
+                  {{ p.paymentStatus || 'N/A' }}
+                </span>
+              </td>
+              <td>{{ p.discount || 0 }}</td>
+              <td>{{ p.currency || 'USD' }}</td>
+              <td>
+                <div class="shopify-table__actions">
+                  <button class="btn-shopify btn-shopify--outline btn-shopify--icon" title="Edit" (click)="onEdit(p)">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button class="btn-shopify btn-shopify--danger btn-shopify--icon" title="Delete"
+                    (click)="onDelete(p.paymentId)">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile Cards -->
+      <div class="shopify-mobile-list">
+        <div class="shopify-mobile-card" *ngFor="let p of paymentList; let i = index">
+          <div class="shopify-mobile-card__row">
+            <h6 class="fw-bold mb-0">Order #{{ p.orderId }}</h6>
             <span class="shopify-badge"
               [ngClass]="{'shopify-badge--success': p.paymentStatus === 'PAID', 'shopify-badge--danger': p.paymentStatus === 'UNPAID', 'shopify-badge--muted': p.paymentStatus !== 'PAID' && p.paymentStatus !== 'UNPAID'}">
               {{ p.paymentStatus || 'N/A' }}
             </span>
-          </td>
-          <td>{{ p.discount || 0 }}</td>
-          <td>{{ p.currency || 'USD' }}</td>
-          <td>
-            <div class="shopify-table__actions">
-              <button class="btn-shopify btn-shopify--outline btn-shopify--icon" title="Edit" (click)="onEdit(p)">
-                <i class="bi bi-pencil"></i>
-              </button>
-              <button class="btn-shopify btn-shopify--danger btn-shopify--icon" title="Delete"
-                (click)="onDelete(p.paymentId)">
-                <i class="bi bi-trash"></i>
-              </button>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+          </div>
 
-  <!-- Mobile Cards -->
-  <div class="shopify-mobile-list">
-    <div *ngIf="paymentList.length === 0" class="shopify-empty">
-      No payments found.
-    </div>
-    <div class="shopify-mobile-card" *ngFor="let p of paymentList; let i = index">
-      <div class="shopify-mobile-card__row">
-        <h6 class="fw-bold mb-0">Order #{{ p.orderId }}</h6>
-        <span class="shopify-badge"
-          [ngClass]="{'shopify-badge--success': p.paymentStatus === 'PAID', 'shopify-badge--danger': p.paymentStatus === 'UNPAID', 'shopify-badge--muted': p.paymentStatus !== 'PAID' && p.paymentStatus !== 'UNPAID'}">
-          {{ p.paymentStatus || 'N/A' }}
-        </span>
+          <div class="shopify-mobile-card__field">
+            <small class="text-muted d-block">Total: {{ p.totalAmount }}</small>
+            <small class="text-muted d-block">Advance: {{ p.advanceAmount }}</small>
+            <small class="text-muted d-block">Method: {{ p.paymentMethod || 'N/A' }}</small>
+            <small class="text-muted d-block">Currency: {{ p.currency || 'USD' }}</small>
+            <small class="text-muted d-block">Discount: {{ p.discount || 0 }}</small>
+          </div>
+
+          <div class="shopify-mobile-card__actions">
+            <button class="btn-shopify btn-shopify--outline btn-shopify--sm" (click)="onEdit(p)">
+              <i class="bi bi-pencil me-1"></i> Edit
+            </button>
+            <button class="btn-shopify btn-shopify--danger btn-shopify--sm" (click)="onDelete(p.paymentId)">
+              <i class="bi bi-trash me-1"></i> Delete
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div class="shopify-mobile-card__field">
-        <small class="text-muted d-block">Total: {{ p.totalAmount }}</small>
-        <small class="text-muted d-block">Advance: {{ p.advanceAmount }}</small>
-        <small class="text-muted d-block">Method: {{ p.paymentMethod || 'N/A' }}</small>
-        <small class="text-muted d-block">Currency: {{ p.currency || 'USD' }}</small>
-        <small class="text-muted d-block">Discount: {{ p.discount || 0 }}</small>
-      </div>
+    </ng-container>
+  </ng-container>
 
-      <div class="shopify-mobile-card__actions">
-        <button class="btn-shopify btn-shopify--outline btn-shopify--sm" (click)="onEdit(p)">
-          <i class="bi bi-pencil me-1"></i> Edit
-        </button>
-        <button class="btn-shopify btn-shopify--danger btn-shopify--sm" (click)="onDelete(p.paymentId)">
-          <i class="bi bi-trash me-1"></i> Delete
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal (kept as Bootstrap modal — shopify theme has no modal component of its own) -->
+  <!-- Add/Edit Modal -->
   <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="shopify-modal__dialog" style="max-width:100%;">
@@ -144,11 +159,11 @@
         <div class="shopify-modal__body">
           <div class="shopify-grid-2">
             <div>
-              <label class="shopify-field-label--sm">Order ID</label>
+              <label class="shopify-field-label--sm">Order ID <span class="text-danger">*</span></label>
               <input type="text" class="shopify-input" [(ngModel)]="formData.orderId" placeholder="Order ID" />
             </div>
             <div>
-              <label class="shopify-field-label--sm">Total Amount</label>
+              <label class="shopify-field-label--sm">Total Amount <span class="text-danger">*</span></label>
               <input type="number" class="shopify-input" [(ngModel)]="formData.totalAmount" placeholder="0.00" />
             </div>
             <div>
@@ -160,14 +175,14 @@
               <input type="number" class="shopify-input" [(ngModel)]="formData.taxesAmount" placeholder="0.00" />
             </div>
             <div>
-              <label class="shopify-field-label--sm">Payment Method</label>
+              <label class="shopify-field-label--sm">Payment Method <span class="text-danger">*</span></label>
               <select class="shopify-select" [(ngModel)]="formData.paymentMethod">
                 <option value="">Select Method</option>
                 <option *ngFor="let m of methodList" [value]="m.id">{{ m.text }}</option>
               </select>
             </div>
             <div>
-              <label class="shopify-field-label--sm">Payment Status</label>
+              <label class="shopify-field-label--sm">Payment Status <span class="text-danger">*</span></label>
               <select class="shopify-select" [(ngModel)]="formData.paymentStatus">
                 <option value="">Select Status</option>
                 <option *ngFor="let s of statusList" [value]="s.id">{{ s.text }}</option>
@@ -189,7 +204,7 @@
               <label class="shopify-field-label--sm">Currency</label>
               <input type="text" class="shopify-input" [(ngModel)]="formData.currency" placeholder="USD" />
             </div>
-            <div class="shopify-grid-3__full" style="grid-column: 1 / -1;">
+            <div style="grid-column: 1 / -1;">
               <label class="shopify-field-label--sm">Discount Reasoning</label>
               <textarea class="shopify-input" rows="2" [(ngModel)]="formData.discountReasoning"
                 placeholder="Reason for discount..."></textarea>
@@ -198,8 +213,9 @@
         </div>
         <div class="shopify-modal__footer">
           <button class="btn-shopify btn-shopify--outline" data-bs-dismiss="modal">Cancel</button>
-          <button class="btn-shopify btn-shopify--primary" (click)="onSave()">
-            <i class="bi bi-save"></i> Save
+          <button class="btn-shopify btn-shopify--primary" (click)="onSave()" [disabled]="isSaving">
+            <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-1"></span>
+            <i *ngIf="!isSaving" class="bi bi-save"></i> {{ isSaving ? 'Saving...' : 'Save' }}
           </button>
         </div>
       </div>

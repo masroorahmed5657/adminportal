@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NgxPaginationModule } from 'ngx-pagination';
 import Swal from 'sweetalert2';
 import { ExpensesCategoryService } from '../../shared/services/expenses-category.service';
 import { ExpenseCategory } from '../../shared/models/model-classes.model';
@@ -9,116 +8,153 @@ import { ExpenseCategory } from '../../shared/models/model-classes.model';
 @Component({
   selector: 'app-expenses-category',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgxPaginationModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './expenses-category.component.html',
   styleUrls: ['./expenses-category.component.scss']
 })
 export class ExpensesCategoryComponent implements OnInit {
-  // UI flags
-  showAddFlag = false;
-  editMode = false;
-  isLoading = false;
-  isSaving = false;
-  showDetailModal = false;
-
-  // Pagination & search
-  p = 1;
-  searchTerm = '';
-  private searchDebounce: any;
 
   // Data
-  list: ExpenseCategory[] = [];
-  item: ExpenseCategory = this.getEmpty();
-  viewItem: ExpenseCategory = this.getEmpty();
+  categoryList: ExpenseCategory[] = [];
+  pagedCategoryList: ExpenseCategory[] = [];
+
+  // Search
+  searchCode = '';
+  searchName = '';
+
+  // Pagination
+  page = 1;
+  pageSize = 10;
+  totalPages = 1;
+
+  // Inline edit tracking (keyed by expenseCategoryId)
+  enabledEdit: { [key: number]: boolean } = {};
+  activeRow: number | null = null;
+
+  // Flags
+  addFlag = false;
+  showCategoryListFlag = true;
+  spinnerDataLoad = false;
+  isSaving = false;
+
+  // New category form model
+  newCategory: ExpenseCategory = this.getEmpty();
 
   constructor(private service: ExpensesCategoryService) {}
 
   ngOnInit(): void {
-    this.load();
+    this.loadCategories();
   }
 
   private getEmpty(): ExpenseCategory {
     return {
-  expenseCategoryId: null,
-  categoryName: '',
-  categoryCode: '',
-  description: undefined,
-  createdBy: undefined,
-  status: undefined,
-  companyId: undefined
-};
+      expenseCategoryId: null,
+      categoryCode: '',
+      categoryName: '',
+      status: 1
+    };
   }
 
-  load(): void {
-    this.isLoading = true;
+  loadCategories(): void {
+    this.spinnerDataLoad = true;
     this.service.getAll().subscribe({
       next: (data) => {
-        this.list = data;
-        this.isLoading = false;
+        this.categoryList = data || [];
+        this.page = 1;
+        this.applyPagination();
+        this.spinnerDataLoad = false;
       },
       error: (err) => {
         console.error(err);
         Swal.fire('Error', 'Failed to load expense categories', 'error');
-        this.isLoading = false;
+        this.spinnerDataLoad = false;
       }
     });
   }
 
-  onSearchInput(): void {
-    clearTimeout(this.searchDebounce);
-    this.searchDebounce = setTimeout(() => {
-      this.p = 1;
-    }, 300);
+  categorySearch(): void {
+    this.page = 1;
+    this.applyPagination();
   }
 
-  get filtered(): ExpenseCategory[] {
-    if (!this.searchTerm.trim()) return this.list;
-    const term = this.searchTerm.toLowerCase();
-    return this.list.filter(cat =>
-      cat.categoryName?.toLowerCase().includes(term) ||
-      cat.expenseCategoryId?.toString().includes(term)
-    );
+  private get filteredList(): ExpenseCategory[] {
+    return this.categoryList.filter(cat => {
+      const codeMatch = this.searchCode.trim()
+        ? (cat.categoryCode || '').toLowerCase().includes(this.searchCode.trim().toLowerCase())
+        : true;
+      const nameMatch = this.searchName.trim()
+        ? (cat.categoryName || '').toLowerCase().includes(this.searchName.trim().toLowerCase())
+        : true;
+      return codeMatch && nameMatch;
+    });
   }
 
-  add(): void {
-    this.showAddFlag = true;
-    this.editMode = false;
-    this.item = this.getEmpty();
+  applyPagination(): void {
+    const filtered = this.filteredList;
+    this.totalPages = Math.max(1, Math.ceil(filtered.length / this.pageSize));
+    if (this.page > this.totalPages) this.page = this.totalPages;
+    const start = (this.page - 1) * this.pageSize;
+    this.pagedCategoryList = filtered.slice(start, start + this.pageSize);
   }
 
-  edit(cat: ExpenseCategory): void {
-    this.showAddFlag = true;
-    this.editMode = true;
-    this.item = JSON.parse(JSON.stringify(cat));
+  goToPage(newPage: number): void {
+    if (newPage < 1 || newPage > this.totalPages) return;
+    this.page = newPage;
+    this.applyPagination();
   }
 
-  view(cat: ExpenseCategory): void {
-    this.viewItem = JSON.parse(JSON.stringify(cat));
-    this.showDetailModal = true;
+  rowIndex(i: number): number {
+    const item = this.pagedCategoryList[i];
+    return item?.expenseCategoryId ?? -1;
   }
 
-  closeDetail(): void {
-    this.showDetailModal = false;
+  startEdit(id: number): void {
+    this.enabledEdit[id] = true;
+    this.activeRow = id;
   }
 
-  goToList(): void {
-    this.showAddFlag = false;
-    this.editMode = false;
-    this.item = this.getEmpty();
-    this.load();
+  addCategory(): void {
+    this.addFlag = true;
+    this.showCategoryListFlag = true;
+    this.newCategory = this.getEmpty();
   }
 
-  save(): void {
-    if (!this.item.categoryName?.trim()) {
-      Swal.fire('Validation', 'Category name is required', 'warning');
-      return;
+  backToList(): void {
+    this.addFlag = false;
+    this.newCategory = this.getEmpty();
+    this.loadCategories();
+  }
+
+  onSave(id: number, rowIdx: number): void {
+    let payload: ExpenseCategory;
+
+    if (id === -1) {
+      if (!this.newCategory.categoryName?.trim()) {
+        Swal.fire('Validation', 'Category name is required', 'warning');
+        return;
+      }
+      payload = this.newCategory;
+    } else {
+      const row = this.categoryList.find(c => c.expenseCategoryId === id);
+      if (!row) return;
+      if (!row.categoryName?.trim()) {
+        Swal.fire('Validation', 'Category name is required', 'warning');
+        return;
+      }
+      payload = row;
     }
 
     this.isSaving = true;
-    this.service.save(this.item).subscribe({
+    this.service.save(payload).subscribe({
       next: () => {
         Swal.fire('Success', 'Expense category saved successfully', 'success');
-        this.onSaveComplete();
+        this.isSaving = false;
+        if (id !== -1) {
+          this.enabledEdit[id] = false;
+        } else {
+          this.addFlag = false;
+        }
+        this.loadCategories();
       },
       error: (err) => {
         console.error(err);
@@ -128,14 +164,7 @@ export class ExpensesCategoryComponent implements OnInit {
     });
   }
 
-  private onSaveComplete(): void {
-    this.isSaving = false;
-    this.showAddFlag = false;
-    this.editMode = false;
-    this.load();
-  }
-
-  onDelete(id: number): void {
+  onDelete(id: number, rowIdx?: number): void {
     Swal.fire({
       title: 'Are you sure?',
       text: 'This category will be permanently deleted.',
@@ -145,19 +174,16 @@ export class ExpensesCategoryComponent implements OnInit {
       cancelButtonText: 'No, keep it'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.isLoading = true;
+        this.spinnerDataLoad = true;
         this.service.delete(id).subscribe({
           next: () => {
             Swal.fire('Deleted!', 'Category has been deleted.', 'success');
-            this.load();
-            if (this.editMode && this.item.expenseCategoryId === id) {
-              this.goToList();
-            }
+            this.loadCategories();
           },
           error: (err) => {
             console.error(err);
             Swal.fire('Error', 'Delete failed', 'error');
-            this.isLoading = false;
+            this.spinnerDataLoad = false;
           }
         });
       }

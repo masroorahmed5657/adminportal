@@ -56,7 +56,6 @@ export class DepartmentComponent implements OnInit {
     this.loadDepartments();
   }
 
-  // ✅ activeFlag ab boolean hai (true = Active, false = Inactive)
   private getEmptyDepartment(): Departments {
     return {
       deptId: null,
@@ -74,13 +73,8 @@ export class DepartmentComponent implements OnInit {
     this.isLoading = true;
     this.deptService.getDepartmentList().subscribe({
       next: (data) => {
-        // ✅ Agar backend se pehle se boolean aa raha hai to ye line optional hai,
-        // lekin agar kabhi 'Y'/'N' ya 0/1 mix aaye to normalize kar deti hai
-        this.departmentsList = data.map(d => ({
-          ...d,
-          //activeFlag: this.normalizeToBoolean(d.activeFlag)
-        }));
-        this.page = 1; // reset to first page on fresh load
+        this.departmentsList = data.map(d => ({ ...d }));
+        this.page = 1;
         this.isLoading = false;
       },
       error: (err) => {
@@ -91,18 +85,16 @@ export class DepartmentComponent implements OnInit {
     });
   }
 
-  // ✅ Helper: kisi bhi format (Y/N, 1/0, true/false) ko boolean bana deta hai
   private normalizeToBoolean(value: any): boolean {
     if (typeof value === 'boolean') return value;
     if (value === 'Y' || value === '1' || value === 1) return true;
     return false;
   }
 
-  // Search with debounce
   onSearchInput(): void {
     clearTimeout(this.searchDebounce);
     this.searchDebounce = setTimeout(() => {
-      this.page = 1; // reset to first page whenever the search changes
+      this.page = 1;
     }, 300);
   }
 
@@ -116,7 +108,6 @@ export class DepartmentComponent implements OnInit {
     );
   }
 
-  // Add / Edit / View
   addDepartment(): void {
     this.showAddFlag = false;
     this.editMode = false;
@@ -129,7 +120,6 @@ export class DepartmentComponent implements OnInit {
     this.showAddFlag = true;
     this.editMode = true;
     this.department = JSON.parse(JSON.stringify(dept));
-    // ✅ ensure boolean rahay (JSON stringify/parse se type change nahi hota, phir bhi safe check)
     this.department.activeFlag = this.normalizeToBoolean(this.department.activeFlag);
     this.selectedFile = null;
   }
@@ -151,12 +141,10 @@ export class DepartmentComponent implements OnInit {
     this.selectedFile = null;
   }
 
-  // File selection
   onFileSelected(event: any): void {
     this.selectedFile = event.target.files[0];
   }
 
-  // Save (with optional image upload)
   save(): void {
     if (!this.department.deptName?.trim()) {
       Swal.fire('Validation', 'Department name is required', 'warning');
@@ -170,7 +158,6 @@ export class DepartmentComponent implements OnInit {
     const loggedInUser: AdminUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
     this.isSaving = true;
 
-    // ✅ activeFlag ko explicitly boolean bana kar bhej rahay hain
     const deptToSave = {
       ...this.department,
       activeFlag: this.normalizeToBoolean(this.department.activeFlag)
@@ -212,7 +199,6 @@ export class DepartmentComponent implements OnInit {
     this.loadDepartments();
   }
 
-  // Delete
   onDelete(deptId: number): void {
     Swal.fire({
       title: 'Are you sure?',
@@ -242,7 +228,6 @@ export class DepartmentComponent implements OnInit {
     });
   }
 
-  // Remove image
   deleteImage(deptId: number): void {
     Swal.fire({
       title: 'Remove image?',

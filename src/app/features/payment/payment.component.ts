@@ -5,7 +5,6 @@ import Swal from 'sweetalert2';
 import { Payment, CodeDropDown } from '../../shared/models/model-classes.model';
 import { PaymentService } from '../../shared/services/payment.service';
 
-
 declare var bootstrap: any;
 
 @Component({
@@ -20,6 +19,8 @@ export class PaymentComponent implements OnInit {
   paymentList: Payment[] = [];
   formData: Payment = new Payment();
   isEdit = false;
+  isSaving = false;
+  isLoading = false;
   modal: any;
 
   search: any = { orderId: '', paymentStatus: '', paymentMethod: '' };
@@ -50,16 +51,30 @@ export class PaymentComponent implements OnInit {
   }
 
   loadPayments(): void {
+    this.isLoading = true;
     this.paymentService.getAllPayments().subscribe({
-      next: (data: Payment[]) => this.paymentList = data,
-      error: () => Swal.fire('Error', 'Failed to load payments', 'error')
+      next: (data: Payment[]) => {
+        this.paymentList = data || [];
+        this.isLoading = false;
+      },
+      error: () => {
+        Swal.fire('Error', 'Failed to load payments', 'error');
+        this.isLoading = false;
+      }
     });
   }
 
   onSearch(): void {
+    this.isLoading = true;
     this.paymentService.searchPayments(this.search).subscribe({
-      next: (data: Payment[]) => this.paymentList = data,
-      error: () => Swal.fire('Error', 'Search failed', 'error')
+      next: (data: Payment[]) => {
+        this.paymentList = data || [];
+        this.isLoading = false;
+      },
+      error: () => {
+        Swal.fire('Error', 'Search failed', 'error');
+        this.isLoading = false;
+      }
     });
   }
 
@@ -80,7 +95,30 @@ export class PaymentComponent implements OnInit {
     this.showModal();
   }
 
+  private validateForm(): boolean {
+    if (!this.formData.orderId?.toString().trim()) {
+      Swal.fire('Validation', 'Order ID is required', 'warning');
+      return false;
+    }
+    if (this.formData.totalAmount === null || this.formData.totalAmount === undefined || this.formData.totalAmount < 0) {
+      Swal.fire('Validation', 'Valid total amount is required', 'warning');
+      return false;
+    }
+    if (!this.formData.paymentMethod) {
+      Swal.fire('Validation', 'Please select a payment method', 'warning');
+      return false;
+    }
+    if (!this.formData.paymentStatus) {
+      Swal.fire('Validation', 'Please select a payment status', 'warning');
+      return false;
+    }
+    return true;
+  }
+
   onSave(): void {
+    if (!this.validateForm()) return;
+
+    this.isSaving = true;
     const obs = this.isEdit
       ? this.paymentService.updatePayment(this.formData)
       : this.paymentService.savePayment(this.formData);
@@ -88,10 +126,15 @@ export class PaymentComponent implements OnInit {
     obs.subscribe({
       next: () => {
         Swal.fire('Success', `Payment ${this.isEdit ? 'updated' : 'saved'} successfully!`, 'success');
+        this.isSaving = false;
         this.hideModal();
+        this.formData = new Payment();
         this.loadPayments();
       },
-      error: () => Swal.fire('Error', 'Failed to save payment', 'error')
+      error: () => {
+        Swal.fire('Error', 'Failed to save payment', 'error');
+        this.isSaving = false;
+      }
     });
   }
 
@@ -102,15 +145,20 @@ export class PaymentComponent implements OnInit {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete!'
+      confirmButtonText: 'Yes, delete!',
+      cancelButtonText: 'Cancel'
     }).then(result => {
       if (result.isConfirmed) {
+        this.isLoading = true;
         this.paymentService.deletePayment(id).subscribe({
           next: () => {
             Swal.fire('Deleted!', 'Payment deleted.', 'success');
             this.loadPayments();
           },
-          error: () => Swal.fire('Error', 'Failed to delete', 'error')
+          error: () => {
+            Swal.fire('Error', 'Failed to delete', 'error');
+            this.isLoading = false;
+          }
         });
       }
     });
@@ -118,7 +166,10 @@ export class PaymentComponent implements OnInit {
 
   showModal(): void {
     const el = document.getElementById('paymentModal');
-    if (el) { this.modal = new bootstrap.Modal(el); this.modal.show(); }
+    if (el) {
+      this.modal = new bootstrap.Modal(el);
+      this.modal.show();
+    }
   }
 
   hideModal(): void {

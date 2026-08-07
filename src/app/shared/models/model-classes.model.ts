@@ -1329,6 +1329,10 @@ export class Warehouse {
    createdBy:any;
    createdDate:any;
 
+ 
+
+
+
 }
 
 export class WarehouseProducts {
@@ -1614,13 +1618,14 @@ export class ErrorLogs {
 
 }
 
-export class ExpenseCategory{
-   expenseCategoryId:any;
-   categoryCode:any;
-   categoryName:any;
-   description:any;
-   createdBy:any;
-   status:any;
-   companyId:any;
 
+
+export class ExpenseCategory {
+  expenseCategoryId: any;
+  categoryCode?: string;
+  categoryName: any;
+  description?: string;
+  createdBy?: number;
+  status?: number;
+  companyId?: number;
 }
