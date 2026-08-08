@@ -127,6 +127,37 @@ export class SupplierComponent implements OnInit {
      }
 
     // ---------------- COMMON VALIDATIONS ----------------
+     //Check for duplicate supplier name or code
+    const duplicate = this.suppliertList.find(s => s.supplierCode?.toLowerCase() === supplier.supplierCode?.toLowerCase() && s.supplierId !== supplier.supplierId); 
+
+    // let duplicateFound = this.suppliertList.some(
+    //   (s, i) => 
+    //     i !== row &&
+    //     (
+    //       s.supplierName.toLowerCase() === supplier.supplierName.toLowerCase() ||
+    //       s.supplierCode.toLowerCase() === supplier.supplierCode.toLowerCase()
+    //     )
+    // );
+    if (duplicate) {
+      Swal.fire('Error', 'Supplier Code Already Exists', 'error');
+      return;
+    }
+
+    const duplicateName = this.suppliertList.find(s => s.supplierName?.toLowerCase() === supplier.supplierName?.toLowerCase() && s.supplierId !== supplier.supplierId); 
+
+    // let duplicateFound = this.suppliertList.some(
+    //   (s, i) => 
+    //     i !== row &&
+    //     (
+    //       s.supplierName.toLowerCase() === supplier.supplierName.toLowerCase() ||
+    //       s.supplierCode.toLowerCase() === supplier.supplierCode.toLowerCase()
+    //     )
+    // );
+    if (duplicateName) {
+      Swal.fire('Error', 'Supplier Name Already Exists', 'error');
+      return;
+    }
+
     if (!supplier.supplierName) 
       { saveFlag = false; Swal.fire('WARNING', 'Please Enter Supplier Name', 'warning'); }
     else if (!nameRegex.test(supplier.supplierName)) 
@@ -159,14 +190,25 @@ export class SupplierComponent implements OnInit {
             }
           });
 
-          if (row < 0) {
-            this.suppliertList.unshift(data); // add new supplier to top
-            this.addFlag = false;
-            this.page = 1; // jump to first page so the new supplier is visible
-          } else {
-            this.suppliertList[row] = { ...data }; // update edited supplier
-          }
-        } else {
+          // if (row < 0) {
+          //   this.suppliertList.unshift(data); // add new supplier to top
+          //   this.addFlag = false;
+          //   this.page = 1; // jump to first page so the new supplier is visible
+          // } 
+          // else {
+          //   this.suppliertList[row] = { ...data }; // update edited supplier
+          // }
+          //disable edit mode and refresh list
+          this.enabledEdit = [];
+          this.activeRow = null;
+          this.suppliertList = [...this.suppliertList];
+          this.enabledEdit[row] = false;
+          this.addFlag = false;
+          this.page = 1;
+          this.loadSuppliers(); // Refresh the list after save
+
+        } 
+        else {
           Swal.fire('Error', 'Error in saving Supplier', 'error');
         }
       },
