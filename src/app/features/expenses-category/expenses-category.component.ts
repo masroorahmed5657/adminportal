@@ -144,6 +144,14 @@ export class ExpensesCategoryComponent implements OnInit {
       payload = row;
     }
 
+            /* Date: 2026-08-07
+      *  Developer: Masroor Ahmed
+      * Validation for Category and Sub Category
+      */
+      if (!this.validateData(payload)) {
+        return;
+      }
+
     this.isSaving = true;
     this.service.save(payload).subscribe({
       next: () => {
@@ -189,4 +197,82 @@ export class ExpensesCategoryComponent implements OnInit {
       }
     });
   }
+
+
+    /* ****************************************************************** */
+      /* Date: 2026-08-07
+    *  Developer: Masroor Ahmed
+    * Validation for department name
+    */
+  
+    validateData(category?: ExpenseCategory): boolean {
+      let bRet=true;
+  
+       //Check for duplicate category name
+        const duplicate = this.categoryList.find(
+          x => ( (x.categoryCode?.toLowerCase() === category?.categoryCode?.toLowerCase()) && (x.categoryName?.toLowerCase() === category?.categoryName?.toLowerCase()) )
+        ); 
+        if (duplicate && category?.expenseCategoryId !== duplicate.expenseCategoryId) {
+          Swal.fire({
+            title: 'Category and Sub-Category Name already exists',
+            text: 'Please choose a different Category/Sub-Category name.',
+            icon: 'warning'
+          });
+          return false;
+        }
+  
+        //Check for emptry category name
+        if (!category?.categoryName || category.categoryName.trim() === '') {
+          Swal.fire({
+            title: 'Category Name Required',
+            text: 'Please enter a category name.',
+            icon: 'warning'
+          });
+          return false;
+        }
+        //Check for Alphabetic Category name
+        //const alphabeticRegex = /^[A-Za-z\s]+$/;
+        const alphabeticRegex = /^[A-Za-z][A-Za-z0-9\s]*$/;
+        if (!alphabeticRegex.test(category?.categoryName)) {
+          Swal.fire({
+            title: 'Invalid Category Name',
+            text: 'Category name should contain only alpha numeric characters.',
+            icon: 'warning'
+          });
+          return false;
+        }
+        //check for leading ad trailing spaces
+        if (category?.categoryName !== category?.categoryName.trim()) {
+          Swal.fire({
+            title: 'Invalid Category Name',
+            text: 'Category name should not have leading or trailing spaces.',
+            icon: 'warning'
+          });
+          return false;
+        }
+        //Check for special characters in category name
+        const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+        if (specialCharRegex.test(category?.categoryName)) {
+          Swal.fire({
+            title: 'Invalid Category Name',
+            text: 'Category name should not contain special characters.', 
+            icon: 'warning'
+          });
+          return false;
+        }
+        //Check for category name length
+        if (category?.categoryName.length > 50) {
+          Swal.fire({
+            title: 'Invalid Category Name',
+            text: 'Category name should not exceed 50 characters.', 
+            icon: 'warning'
+          });
+          return false;
+        }
+        else{ 
+          return true;
+        }
+  
+    }
+  
 }
