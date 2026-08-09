@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
-import { Orders, CodeDropDown } from '../../shared/models/model-classes.model';
+import { Orders, CodeDropDown, OrderNumber } from '../../shared/models/model-classes.model';
 import { OrderNumberService } from '../../shared/services/ordernumber.service';
 
 
@@ -17,9 +17,9 @@ declare var bootstrap: any;
 })
 export class OrderNumberComponent implements OnInit {
 
-  orderList: Orders[] = [];
-  formData: Orders = new Orders();
-  selectedOrder: Orders | null = null;
+  orderList: OrderNumber[] = [];
+  formData: OrderNumber = new OrderNumber();
+  selectedOrder: OrderNumber | null = null;
   isEdit = false;
   modal: any;
   viewModal: any;
@@ -42,14 +42,14 @@ export class OrderNumberComponent implements OnInit {
 
   loadOrders(): void {
     this.orderService.getAllOrders().subscribe({
-      next: (data: Orders[]) => this.orderList = data,
+      next: (data: OrderNumber[]) => this.orderList = data,
       error: () => Swal.fire('Error', 'Failed to load orders', 'error')
     });
   }
 
   onSearch(): void {
     this.orderService.searchOrders(this.search).subscribe({
-      next: (data: Orders[]) => this.orderList = data,
+      next: (data: OrderNumber[]) => this.orderList = data,
       error: () => Swal.fire('Error', 'Search failed', 'error')
     });
   }
@@ -61,28 +61,47 @@ export class OrderNumberComponent implements OnInit {
 
   openAddModal(): void {
     this.isEdit = false;
-    this.formData = new Orders();
+    this.formData = new OrderNumber();
     this.showModal();
   }
 
-  onView(o: Orders): void {
+  onView(o: OrderNumber): void {
     this.selectedOrder = o;
     const el = document.getElementById('orderViewModal');
     if (el) { this.viewModal = new bootstrap.Modal(el); this.viewModal.show(); }
   }
 
-  onEdit(o: Orders): void {
+  onEdit(o: OrderNumber): void {
     this.isEdit = true;
     this.formData = { ...o };
     this.showModal();
   }
+activeRow: number | null = null; // highlight ke liye
+enabledEdit: any[] = [];
+  // Maps the index of a row *within the current page* back to its
+  // absolute index inside brandList — needed because startEdit/onSave/onDelete
+  // all operate on the full-list index.
+  rowIndex(i: number): number {
+    return (this.page - 1) * this.pageSize + i;
+  }
+
+    /* ===== Pagination (Shopify-style Previous / Next) ===== */
+  page: number = 1;
+  pageSize: number = 5; // same page size PrimeNG paginator used before
+
 
   onSave(): void {
-    const obs = this.isEdit
-      ? this.orderService.updateOrder(this.formData)
-      : this.orderService.saveOrder(this.formData);
+    // const obs = this.isEdit
+    //   ? this.orderService.updateOrder(this.formData)
+    //   : this.orderService.saveOrder(this.formData);
+    //this.orderList[this.rowIndex(this.orderList.indexOf(this.formData))] = this.formData; // Update the orderList with the new data
 
-    obs.subscribe({
+    const orderNumInput = document.getElementById('orderNum-' + 0) as HTMLInputElement;  
+
+this.formData.orderNum = orderNumInput.value; // Update the orderNum in formData
+this.formData.orderNumPk = this.orderList[0]?.orderNumPk; // Ensure orderNumPk is set correctly
+
+    this.orderService.saveOrder(this.formData).subscribe({
       next: () => {
         Swal.fire('Success', `Order ${this.isEdit ? 'updated' : 'saved'} successfully!`, 'success');
         this.hideModal();

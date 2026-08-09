@@ -1629,3 +1629,8 @@ export class ExpenseCategory {
   status?: number;
   companyId?: number;
 }
+
+export class OrderNumber{
+   orderNum: any;
+   orderNumPk:any;
+}

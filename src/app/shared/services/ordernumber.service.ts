@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Orders } from '../../shared/models/model-classes.model';
+import { OrderNumber, Orders } from '../../shared/models/model-classes.model';
 import { HttpMethodService } from '../../shared/helper/http-method.service';
 
 @Injectable({ providedIn: 'root' })
@@ -8,31 +8,31 @@ export class OrderNumberService {
 
   constructor(private http: HttpMethodService) {}
 
-  getAllOrders(): Observable<Orders[]> {
-    return this.http.get<Orders[]>('orders/findAll');
+  getAllOrders(): Observable<OrderNumber[]> {
+    return this.http.get<OrderNumber[]>('orderNumber/findAll');
   }
 
-  searchOrders(search: any): Observable<Orders[]> {
-    return this.http.post<Orders[]>('orders/search', search);
+  searchOrders(search: any): Observable<OrderNumber[]> {
+    return this.http.post<OrderNumber[]>('orderNumber/search', search);
   }
 
-  saveOrder(order: Orders): Observable<Orders> {
-    return this.http.post<Orders>('orders/save', order);
+  saveOrder(order: OrderNumber): Observable<OrderNumber> {
+    return this.http.post<OrderNumber>('orderNumber/save', order);
   }
 
-  updateOrder(order: Orders): Observable<Orders> {
-    return this.http.put<Orders>('orders/update', order);
+  updateOrder(order: OrderNumber): Observable<OrderNumber> {
+    return this.http.put<OrderNumber>('orderNumber/update', order);
   }
 
   deleteOrder(id: any): Observable<any> {
-    return this.http.delete(`orders/delete/${id}`);
+    return this.http.delete(`orderNumber/delete/${id}`);
   }
 
-  getOrderByOrderNumber(orderNum: any): Observable<Orders> {
-    return this.http.get<Orders>(`orders/findByOrderNum/${orderNum}`);
+  getOrderByOrderNumber(orderNum: any): Observable<OrderNumber> {
+    return this.http.get<OrderNumber>(`orderNumber/findByOrderNum/${orderNum}`);
   }
 
   generateOrderNumber(): Observable<any> {
-    return this.http.get<any>('orders/generateOrderNumber');
+    return this.http.get<any>('orderNumber/generateOrderNumber');
   }
 }
