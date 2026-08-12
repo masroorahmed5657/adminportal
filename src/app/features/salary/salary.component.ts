@@ -17,9 +17,9 @@ export class SalaryComponent implements OnInit {
   salaryList: SalaryView[] = [];
   formData: Salary = new Salary();
   isEdit = false;
-  modal: any; // for Bootstrap modal
+  showModal = false;
 
-  constructor(private salaryService: SalaryService) {}
+  constructor(private salaryService: SalaryService) { }
 
   ngOnInit(): void {
     this.loadSalaries();
@@ -37,7 +37,7 @@ export class SalaryComponent implements OnInit {
   openAddModal(): void {
     this.isEdit = false;
     this.formData = new Salary();
-    this.showModal();
+    this.showModal = true;
   }
 
   onEdit(salary: SalaryView): void {
@@ -59,7 +59,11 @@ export class SalaryComponent implements OnInit {
       createdAt: salary.createdAt,
       updatedAt: salary.updatedAt
     };
-    this.showModal();
+    this.showModal = true;
+  }
+
+  closeModal(): void {
+    this.showModal = false;
   }
 
   onSave(): void {
@@ -70,7 +74,7 @@ export class SalaryComponent implements OnInit {
     obs.subscribe({
       next: () => {
         Swal.fire('Success', `Salary ${this.isEdit ? 'updated' : 'saved'} successfully!`, 'success');
-        this.hideModal();
+        this.closeModal();
         this.loadSalaries();
       },
       error: () => Swal.fire('Error', 'Failed to save salary', 'error')
@@ -96,18 +100,5 @@ export class SalaryComponent implements OnInit {
         });
       }
     });
-  }
-
-  // Helper functions for Bootstrap modal (same as your payment component)
-  showModal(): void {
-    const el = document.getElementById('salaryModal');
-    if (el) {
-      this.modal = new (window as any).bootstrap.Modal(el);
-      this.modal.show();
-    }
-  }
-
-  hideModal(): void {
-    if (this.modal) this.modal.hide();
   }
 }

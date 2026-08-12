@@ -1,111 +1,129 @@
-<div class="container-fluid px-2 px-md-3 py-3  mt-5">
+<div class="shopify-main-container">
 
   <!-- Header -->
-  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-    <h5 class="fw-bold text-primary mb-0"><i class="bi bi-person-badge me-2"></i>Department Managers</h5>
-    <button class="btn btn-primary rounded-pill px-4 fw-semibold" (click)="openAddModal()">
-      <i class="bi bi-plus-circle me-1"></i> Assign Manager
+  <div class="shopify-actions-row" style="justify-content: space-between;">
+    <span class="shopify-page-title mb-0"><i class="bi bi-person-badge me-2"></i>Department Managers</span>
+    <button class="btn-shopify btn-shopify--primary" (click)="openAddModal()">
+      <i class="bi bi-plus-circle"></i> Assign Manager
     </button>
   </div>
 
-  <!-- Desktop Table -->
-  <div class="table-responsive d-none d-md-block">
-    <table class="table table-hover align-middle bg-white rounded shadow-sm mb-0">
-      <thead class="bg-light">
-        <tr>
-          <th class="py-3 px-3">#</th>
-          <th class="py-3 px-3">Department</th>
-          <th class="py-3 px-3">Employee</th>
-          <th class="py-3 px-3">From Date</th>
-          <th class="py-3 px-3">To Date</th>
-          <th class="py-3 px-3 text-center">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngIf="managerList.length === 0">
-          <td colspan="6" class="text-center text-muted py-4">No department managers assigned.</td>
-        </tr>
-        <tr *ngFor="let m of managerList; let i = index">
-          <td class="px-3">{{ i + 1 }}</td>
-          <td class="px-3 fw-semibold">{{ getDeptName(m.deptId) }}</td>
-          <td class="px-3">{{ getEmpName(m.empId) }}</td>
-          <td class="px-3">{{ m.fromDate | date:'dd MMM yyyy' }}</td>
-          <td class="px-3">{{ m.toDate ? (m.toDate | date:'dd MMM yyyy') : 'Present' }}</td>
-          <td class="px-3 text-center">
-            <div class="d-flex justify-content-center gap-1">
-              <button class="btn btn-sm btn-outline-primary rounded-pill px-2" (click)="onEdit(m)"><i class="bi bi-pencil"></i></button>
-              <button class="btn btn-sm btn-outline-danger rounded-pill px-2" (click)="onDelete(m.deptId, m.empId)"><i class="bi bi-trash"></i></button>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- Empty state -->
+  <div class="shopify-empty" *ngIf="managerList.length === 0">
+    <h5>No department managers assigned</h5>
+    <p>Click <strong>Assign Manager</strong> to add one.</p>
   </div>
 
-  <!-- Mobile Cards -->
-  <div class="d-block d-md-none">
-    <div class="row g-3">
-      <div *ngIf="managerList.length === 0" class="col-12 text-center text-muted py-4">No department managers assigned.</div>
-      <div class="col-12" *ngFor="let m of managerList">
-        <div class="card shadow-sm border-0 rounded-3">
-          <div class="card-body p-3">
-            <h6 class="fw-bold text-primary mb-2 border-bottom pb-1">{{ getDeptName(m.deptId) }}</h6>
-            <div class="row g-1 small text-muted mb-2">
-              <div class="col-12"><span class="fw-semibold">Manager:</span> {{ getEmpName(m.empId) }}</div>
-              <div class="col-6"><span class="fw-semibold">From:</span> {{ m.fromDate | date:'dd MMM yyyy' }}</div>
-              <div class="col-6"><span class="fw-semibold">To:</span> {{ m.toDate ? (m.toDate | date:'dd MMM yyyy') : 'Present' }}</div>
-            </div>
-            <div class="d-flex gap-2">
-              <button class="btn btn-sm btn-outline-primary rounded-pill px-3 w-100" (click)="onEdit(m)"><i class="bi bi-pencil me-1"></i>Edit</button>
-              <button class="btn btn-sm btn-outline-danger rounded-pill px-3 w-100" (click)="onDelete(m.deptId, m.empId)"><i class="bi bi-trash me-1"></i>Remove</button>
-            </div>
-          </div>
+  <ng-container *ngIf="managerList.length > 0">
+
+    <!-- Desktop Table -->
+    <div class="shopify-table-wrap">
+      <table class="shopify-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Department</th>
+            <th>Employee</th>
+            <th>From Date</th>
+            <th>To Date</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let m of managerList; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td class="fw-semibold">{{ getDeptName(m.deptId) }}</td>
+            <td>{{ getEmpName(m.empId) }}</td>
+            <td>{{ m.fromDate | date:'dd MMM yyyy' }}</td>
+            <td>{{ m.toDate ? (m.toDate | date:'dd MMM yyyy') : 'Present' }}</td>
+            <td>
+              <div class="shopify-table__actions">
+                <button class="btn-shopify btn-shopify--outline btn-shopify--icon" title="Edit" (click)="onEdit(m)">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn-shopify btn-shopify--danger btn-shopify--icon" title="Remove"
+                  (click)="onDelete(m.deptId, m.empId)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Mobile Cards -->
+    <div class="shopify-mobile-list">
+      <div class="shopify-mobile-card" *ngFor="let m of managerList">
+        <h6 class="fw-bold mb-2">{{ getDeptName(m.deptId) }}</h6>
+        <div class="shopify-mobile-card__field">
+          <span class="shopify-field-label--sm">Manager</span>
+          <span>{{ getEmpName(m.empId) }}</span>
+        </div>
+        <div class="shopify-mobile-card__field">
+          <span class="shopify-field-label--sm">From</span>
+          <span>{{ m.fromDate | date:'dd MMM yyyy' }}</span>
+        </div>
+        <div class="shopify-mobile-card__field">
+          <span class="shopify-field-label--sm">To</span>
+          <span>{{ m.toDate ? (m.toDate | date:'dd MMM yyyy') : 'Present' }}</span>
+        </div>
+        <div class="shopify-mobile-card__actions">
+          <button class="btn-shopify btn-shopify--outline btn-shopify--sm" (click)="onEdit(m)">
+            <i class="bi bi-pencil"></i> Edit
+          </button>
+          <button class="btn-shopify btn-shopify--danger btn-shopify--sm" (click)="onDelete(m.deptId, m.empId)">
+            <i class="bi bi-trash"></i> Remove
+          </button>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Modal -->
+  </ng-container>
+
+  <!-- Modal (kept as Bootstrap modal since shopify theme has no modal component) -->
   <div class="modal fade" id="deptManagerModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content rounded-3 border-0 shadow">
-        <div class="modal-header bg-primary text-white rounded-top-3">
-          <h5 class="modal-title fw-bold"><i class="bi bi-person-badge me-2"></i>{{ isEdit ? 'Edit' : 'Assign' }} Manager</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      <div class="shopify-modal__dialog">
+        <div class="shopify-modal__header">
+          <h5 class="shopify-modal__title"><i class="bi bi-person-badge me-2"></i>{{ isEdit ? 'Edit' : 'Assign' }}
+            Manager</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
-        <div class="modal-body p-4">
-          <div class="row g-3">
-            <div class="col-12">
-              <label class="form-label small fw-semibold">Department</label>
-              <select class="form-select" [(ngModel)]="formData.deptId" [disabled]="isEdit">
-                <option value="">Select Department</option>
-                <option *ngFor="let d of departmentList" [value]="d.deptId">{{ d.deptName }}</option>
-              </select>
+        <div class="shopify-modal__body">
+          <div class="mb-3">
+            <label class="shopify-field-label--sm">Department</label>
+            <select class="shopify-select" [(ngModel)]="formData.deptId" [disabled]="isEdit">
+              <option value="">Select Department</option>
+              <option *ngFor="let d of departmentList" [value]="d.deptId">{{ d.deptName }}</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="shopify-field-label--sm">Employee (Manager)</label>
+            <select class="shopify-select" [(ngModel)]="formData.empId">
+              <option value="">Select Employee</option>
+              <option *ngFor="let e of employeeList" [value]="e.empId">{{ e.firstName }} {{ e.lastName }}</option>
+            </select>
+          </div>
+          <div class="shopify-grid-2">
+            <div>
+              <label class="shopify-field-label--sm">From Date</label>
+              <input type="date" class="shopify-input" [(ngModel)]="formData.fromDate" />
             </div>
-            <div class="col-12">
-              <label class="form-label small fw-semibold">Employee (Manager)</label>
-              <select class="form-select" [(ngModel)]="formData.empId">
-                <option value="">Select Employee</option>
-                <option *ngFor="let e of employeeList" [value]="e.empId">{{ e.firstName }} {{ e.lastName }}</option>
-              </select>
-            </div>
-            <div class="col-12 col-md-6">
-              <label class="form-label small fw-semibold">From Date</label>
-              <input type="date" class="form-control" [(ngModel)]="formData.fromDate" />
-            </div>
-            <div class="col-12 col-md-6">
-              <label class="form-label small fw-semibold">To Date <span class="text-muted">(optional)</span></label>
-              <input type="date" class="form-control" [(ngModel)]="formData.toDate" />
+            <div>
+              <label class="shopify-field-label--sm">To Date <span class="text-muted">(optional)</span></label>
+              <input type="date" class="shopify-input" [(ngModel)]="formData.toDate" />
             </div>
           </div>
         </div>
-        <div class="modal-footer border-0 pt-0">
-          <button class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
-          <button class="btn btn-primary rounded-pill px-4 fw-semibold" (click)="onSave()">
-            <i class="bi bi-save me-1"></i> Save
+        <div class="shopify-modal__footer">
+          <button class="btn-shopify btn-shopify--outline" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn-shopify btn-shopify--primary" (click)="onSave()">
+            <i class="bi bi-save"></i> Save
           </button>
         </div>
       </div>
     </div>
   </div>
+
 </div>

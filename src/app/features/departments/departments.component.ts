@@ -1,254 +1,262 @@
-import { Component } from '@angular/core';
-import { Departments } from '../../shared/models/model-classes.model';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NgxPaginationModule } from 'ngx-pagination';
-import { DepartmentsService } from '../../shared/services/departments.service';
 import Swal from 'sweetalert2';
+import { DepartmentsService } from '../../shared/services/departments.service';
+import { AdminUser, Departments } from '../../shared/models/model-classes.model';
 
 @Component({
   selector: 'app-departments',
-  imports: [CommonModule, FormsModule, NgxPaginationModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './departments.component.html',
-  styleUrl: './departments.component.scss'
+  styleUrls: ['./departments.component.scss']
 })
-export class DepartmentsComponent {
+export class DepartmentsComponent implements OnInit {
+  // UI flags
+  showAddFlag = false;
+  editMode = false;
+  isLoading = false;
+  isSaving = false;
+  showDetailModal = false;
 
+  // Search
+  searchTerm = '';
+  private searchDebounce: any;
 
-  department: Departments = new Departments();
-
+  // Data
   departmentsList: Departments[] = [];
-  currentUser: any;
+  department: Departments = this.getEmptyDepartment();
+  viewDepartment: Departments = this.getEmptyDepartment();
 
-  searchText: string = '';
+  // Selected file for upload
+  selectedFile: File | null = null;
 
-  constructor(private departmentService: DepartmentsService) {
+  /* ===== Pagination (Shopify-style Previous / Next) ===== */
+  page: number = 1;
+  pageSize: number = 10;
 
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredDepartments.length / this.pageSize));
   }
 
-  /* ************************ */
-  ngOnInit() {
+  get pagedDepartments(): Departments[] {
+    const start = (this.page - 1) * this.pageSize;
+    return this.filteredDepartments.slice(start, start + this.pageSize);
+  }
 
-    // Current user
-    let user = sessionStorage.getItem('currentUser');
-    if (user) {
-      this.currentUser = JSON.parse(user);
-    }
+  goToPage(p: number) {
+    if (p < 1 || p > this.totalPages) return;
+    this.page = p;
+  }
 
+  constructor(private deptService: DepartmentsService) { }
 
+  ngOnInit(): void {
     this.loadDepartments();
   }
-  /* ************************ */
 
-  loadDepartments() {
-    this.departmentService.getDepartmentList().subscribe({
-      next: (data: Departments[]) => {
-        this.departmentsList = data.reverse();
+  private getEmptyDepartment(): Departments {
+    return {
+      deptId: null,
+      deptName: '',
+      activeFlag: true,
+      printerName: '',
+      finalImage: '',
+      imageType: '',
+      updatedDate: null,
+      updatedBy: ''
+    };
+  }
+
+  loadDepartments(): void {
+    this.isLoading = true;
+    this.deptService.getDepartmentList().subscribe({
+      next: (data) => {
+        this.departmentsList = data.map(d => ({ ...d }));
+        this.page = 1;
+        this.isLoading = false;
       },
       error: (err) => {
         console.error(err);
+        Swal.fire('Error', 'Failed to load departments', 'error');
+        this.isLoading = false;
       }
     });
   }
 
-  // loadSampleData() {
+  private normalizeToBoolean(value: any): boolean {
+    if (typeof value === 'boolean') return value;
+    if (value === 'Y' || value === '1' || value === 1) return true;
+    return false;
+  }
 
-  //     this.departmentsList = [
-  //         {
-  //             deptId: 1,
-  //             deptName: 'Kitchen',
-  //             activeFlag: true,
-  //             printerName: 'Kitchen Printer',
-  //             updatedDate: new Date(),
-  //             updatedBy: 'Admin',
-  //             finalImage: '',
-  //             imageType: ''
-  //         },
-  //         {
-  //             deptId: 2,
-  //             deptName: 'Bar',
-  //             activeFlag: true,
-  //             printerName: 'Bar Printer',
-  //             updatedDate: new Date(),
-  //             updatedBy: 'Admin',
-  //             finalImage: '',
-  //             imageType: ''
-  //         }
-  //     ];
-  // }
-  /* ****************************************************************** */
-  saveDepartment() {
+  onSearchInput(): void {
+    clearTimeout(this.searchDebounce);
+    this.searchDebounce = setTimeout(() => {
+      this.page = 1;
+    }, 300);
+  }
 
-    if (!this.department.deptName) {
-       Swal.fire({
-        title: 'Department Name Required',
-        text: 'Please enter a department name.',
-        icon: 'warning'
-      });
+  get filteredDepartments(): Departments[] {
+    if (!this.searchTerm.trim()) return this.departmentsList;
+    const term = this.searchTerm.toLowerCase();
+    return this.departmentsList.filter(dept =>
+      dept.deptName?.toLowerCase().includes(term) ||
+      dept.printerName?.toLowerCase().includes(term) ||
+      dept.deptId?.toString().includes(term)
+    );
+  }
 
-     
+  addDepartment(): void {
+    this.showAddFlag = false;
+    this.editMode = false;
+    this.department = this.getEmptyDepartment();
+    this.selectedFile = null;
+    this.showAddFlag = true;
+  }
+
+  editDepartment(dept: Departments): void {
+    this.showAddFlag = true;
+    this.editMode = true;
+    this.department = JSON.parse(JSON.stringify(dept));
+    this.department.activeFlag = this.normalizeToBoolean(this.department.activeFlag);
+    this.selectedFile = null;
+  }
+
+  viewDetail(dept: Departments): void {
+    this.viewDepartment = JSON.parse(JSON.stringify(dept));
+    this.viewDepartment.activeFlag = this.normalizeToBoolean(this.viewDepartment.activeFlag);
+    this.showDetailModal = true;
+  }
+
+  closeDetail(): void {
+    this.showDetailModal = false;
+  }
+
+  goToList(): void {
+    this.showAddFlag = false;
+    this.editMode = false;
+    this.department = this.getEmptyDepartment();
+    this.selectedFile = null;
+  }
+
+  onFileSelected(event: any): void {
+    this.selectedFile = event.target.files[0];
+  }
+
+  save(): void {
+    if (!this.department.deptName?.trim()) {
+      Swal.fire('Validation', 'Department name is required', 'warning');
+      return;
+    }
+    if (!this.department.printerName?.trim()) {
+      Swal.fire('Validation', 'Printer name is required', 'warning');
       return;
     }
 
-    if (this.department.deptId) {
-
-      const index = this.departmentsList.findIndex(
-        x => x.deptId == this.department.deptId
-      );
-
-      if (index != -1) {
-
-        // this.department.updatedDate = new Date();
-        this.department.updatedBy = this.currentUser?.loginId || 'Admin';//'Admin';
-
-        /* Date: 2026-08-07
-      *  Developer: Masroor Ahmed
-      * Validation for department name
-      */
-
-
-        if (!this.validateData()) {
-          return;
-        }
-
-        this.departmentsList[index] = {
-          ...this.department
-        };
-      }
-
-    } else {
-
-      // this.department.deptId = Date.now();
-
-      // this.department.updatedDate = new Date();
-
-      /* Date: 2026-08-07
-      *  Developer: Masroor Ahmed
-      * Validation for department name
-      */
-
-      if (!this.validateData()) {
-        return;
-      }
-
-      this.department.updatedBy = this.currentUser?.loginId || 'Admin';//'Admin';
-
-      this.departmentsList.unshift({
-        ...this.department
-      });
+    if (!this.validateData()) {
+      return;
     }
 
-    this.departmentService.saveDep(this.department).subscribe({
-      next: (data) => {
-        console.log('Department saved successfully:', data);
+
+    const loggedInUser: AdminUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+    this.isSaving = true;
+
+    const deptToSave = {
+      ...this.department,
+      activeFlag: this.normalizeToBoolean(this.department.activeFlag)
+    };
+
+    deptToSave.updatedBy = loggedInUser?.loginId;
+
+    this.deptService.saveDep(deptToSave).subscribe({
+      next: (saved) => {
+        if (this.selectedFile) {
+          this.deptService.upload(this.selectedFile, saved.deptId).subscribe({
+            next: () => {
+              Swal.fire('Success', 'Department saved with image', 'success');
+              this.onSaveComplete();
+            },
+            error: () => {
+              Swal.fire('Warning', 'Department saved but image upload failed', 'warning');
+              this.onSaveComplete();
+            }
+          });
+        } else {
+          Swal.fire('Success', 'Department saved successfully', 'success');
+          this.onSaveComplete();
+        }
       },
       error: (err) => {
-        console.error('Error saving department:', err);
+        console.error(err);
+        Swal.fire('Error', 'Failed to save department', 'error');
+        this.isSaving = false;
       }
     });
-
-
-    //this.resetForm();
   }
-  /* ****************************************************************** */
-  editDepartment(item: Departments) {
 
-    this.department = {
-      ...item
-    };
+  private onSaveComplete(): void {
+    this.isSaving = false;
+    this.showAddFlag = false;
+    this.editMode = false;
+    this.selectedFile = null;
+    this.loadDepartments();
   }
-  /* ****************************************************************** */
-  deleteDepartment(item: Departments) {
 
-    // if (confirm('Are you sure you want to delete this department?')) {
-
-    //     this.departmentsList = this.departmentsList.filter(
-    //         x => x.deptId != item.deptId
-    //     );
-    // }
-
-
+  onDelete(deptId: number): void {
     Swal.fire({
-      title: 'Are you sure you want to delete this department?',
-      text: 'You cannot recover this department!',
+      title: 'Are you sure?',
+      text: 'You will not be able to recover this department!',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes, delete it!',
       cancelButtonText: 'No, keep it'
-    }).then((response: any) => {
-      if (response.isConfirmed) {
-
-        this.departmentService.delete(item.deptId).subscribe({
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.isLoading = true;
+        this.deptService.delete(deptId).subscribe({
           next: () => {
-
-
-            this.departmentsList = this.departmentsList.filter(
-              x => x.deptId != item.deptId
-            );
-
-            Swal.fire('Deleted!', 'department has been deleted.', 'success');
+            Swal.fire('Deleted!', 'Department has been deleted.', 'success');
+            this.loadDepartments();
+            if (this.editMode && this.department.deptId === deptId) {
+              this.goToList();
+            }
           },
           error: (err) => {
-            console.error('Error deleting department:', err);
-            Swal.fire('Error', 'Failed to delete department', 'error');
+            console.error(err);
+            Swal.fire('Error', 'Delete failed', 'error');
+            this.isLoading = false;
           }
         });
-
-      }
-      else if (response.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire('Cancelled', 'Your department is safe', 'info');
       }
     });
-
-
-  }
-  /* ****************************************************************** */
-  resetForm() {
-
-    this.department = new Departments();
-
-    this.department.activeFlag = true;
   }
 
-  /* ****************************************************************** */
-  filteredDepartments() {
-
-    if (!this.searchText) {
-      return this.departmentsList;
-    }
-
-    return this.departmentsList.filter(x =>
-      x.deptName?.toLowerCase()
-        .includes(this.searchText.toLowerCase())
-    );
+  deleteImage(deptId: number): void {
+    Swal.fire({
+      title: 'Remove image?',
+      text: 'This action cannot be undone.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, remove'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.deptService.deleteImage(deptId).subscribe({
+          next: () => {
+            Swal.fire('Removed', 'Image removed successfully', 'success');
+            this.loadDepartments();
+            if (this.editMode && this.department.deptId === deptId) {
+              this.department.finalImage = '';
+            }
+          },
+          error: () => Swal.fire('Error', 'Failed to remove image', 'error')
+        });
+      }
+    });
   }
+  /* ******************************************************** */
   /* ****************************************************************** */
-
-  onFileSelected(event: any) {
-
-    const file = event.target.files[0];
-
-    if (!file) {
-      return;
-    }
-
-    this.department.imageType = file.type;
-
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      this.department.finalImage = reader.result;
-    };
-
-    reader.readAsDataURL(file);
-  }
-
-  /* ****************************************************************** */
-  /* Date: 2026-08-07
-  *  Developer: Masroor Ahmed
-  * Validation for department name
-  */
-
   validateData() {
     let bRet = true;
 
@@ -318,5 +326,6 @@ export class DepartmentsComponent {
     }
 
   }
+
 
 }
