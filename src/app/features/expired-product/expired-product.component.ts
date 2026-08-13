@@ -128,5 +128,28 @@ export class ExpiredProductComponent implements OnInit {
     return this.productViewList;
   }
 
+  /* *********************************************************************** */
+showSimpleProduct= environment.showSimpleProduct;
+  onEditProduct(product: any) {
+
+    if (this.showSimpleProduct){
+      let url = '/layout/products-simple-edit/' + product.productId;
+      this.router.navigate([url]);
+
+    }
+    else{
+      let url = '/layout/products-master-edit/' + product.productId;
+      this.router.navigate([url]);
+
+    }
+    
+
+
+
+
+
+  }
+
+
   /* ******************************************* END OF COMPONENT ****************************** */
 }//end of component

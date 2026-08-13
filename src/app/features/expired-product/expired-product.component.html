@@ -24,7 +24,7 @@
     <!-- ================= PRODUCT GRID ================= -->
     <div class="expired-products-grid" *ngIf="productViewList.length > 0">
 
-      <div class="shopify-card" *ngFor="let product of productViewList">
+      <div class="shopify-card" *ngFor="let product of productViewList"  (click)="onEditProduct(product)">
 
         <!-- Product Image -->
         <img class="shopify-product-image" [src]="'data:' + product.imageMimeType + ';base64,' + product.productImage"
