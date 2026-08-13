@@ -4,12 +4,11 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { Categories, Expenses, ExpensesView, FinanceCategory } from '../../shared/models/model-classes.model';
 import { Router } from '@angular/router';
 import { CacheService } from '../../shared/services/cache.service';
-import Swal from "sweetalert2";
+import { NotificationService } from '../../shared/services/notification.service';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { ExpenseService } from '../../shared/services/expense-service.service';
 import { environment } from '../../../environments/environment';
-//import html2pdf
 
 @Component({
   selector: 'app-expenses',
@@ -27,6 +26,8 @@ export class ExpensesComponent {
   expenses: Expenses = new Expenses();
   totalExpense = 0;
   reportDate: any;
+  
+  isSaving = false; // 👈 Added this flag to prevent multiple API calls
 
   /* ===== Pagination (Shopify-style Previous / Next) ===== */
   page: number = 1;
@@ -41,9 +42,6 @@ export class ExpensesComponent {
     return this.expensesList.slice(start, start + this.pageSize);
   }
 
-  // Maps the index of a row *within the current page* back to its
-  // absolute index inside expensesList — needed because editExpense/onDelete
-  // operate on the full-list index.
   rowIndex(i: number): number {
     return (this.page - 1) * this.pageSize + i;
   }
@@ -56,7 +54,8 @@ export class ExpensesComponent {
   constructor(
     private cache: CacheService,
     private router: Router,
-    private expenseService: ExpenseService
+    private expenseService: ExpenseService,
+    private notify: NotificationService
   ) {
 
   }
@@ -120,9 +119,7 @@ export class ExpensesComponent {
   }
 
   loadReport() {
-    //console.log('Load report for:', this.selectedYear, this.selectedMonth);
-
-      this.expenseService.getExpenseByDateList(this.selectedYear, this.selectedMonth).subscribe((data: ExpensesView[]) => {
+    this.expenseService.getExpenseByDateList(this.selectedYear, this.selectedMonth).subscribe((data: ExpensesView[]) => {
       this.expensesList = data;
 
       this.totalExpense = this.getTotalAmount();
@@ -157,59 +154,55 @@ export class ExpensesComponent {
     this.expenseForm = this.expensesList[row];
   }
 
-  onDelete(expenseId: any, row: any) {
-    Swal.fire({
-      title: 'Are you sure want to Delete this Expense?',
-      text: 'You can not undo this Expense!!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, keep it'
-    }).then((response: any) => {
+  async onDelete(expenseId: any, row: any) {
+    const confirmed = await this.notify.confirmDelete('this Expense');
+    if (!confirmed) {
+      this.notify.info('Expense is safe');
+      return;
+    }
 
-      if (response.value) {
-        this.expenseService.deleteExpenses(expenseId).subscribe(() => {
-          window.location.reload();
-        })
-
-      } else if (response.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire(
-          'Cancelled',
-          'Party is safe',
-          'error'
-        )
-      }
+    this.expenseService.deleteExpenses(expenseId).subscribe(() => {
+      window.location.reload();
+    }, (error) => {
+      this.notify.error('Failed to delete expense. Try again.');
     });
-
   }
 
   addExpense() {
     this.addEditFlag = true;
-    this.expenseForm.transactionType='EXPENSE';
+    this.expenseForm.transactionType = 'EXPENSE';
   }
+
   saveExpense() {
+    if (this.isSaving) return; // 👈 Prevent multiple clicks if already saving
+    this.isSaving = true;      // 👈 Set flag to true
+
     let desc = this.expenseForm.description;
 
     this.expenseService.saveExpenses(this.expenseForm).subscribe(
       (data: Expenses) => {
+        this.isSaving = false; // 👈 Reset on response
+        
         let retExpense = data;
         if (data !== null) {
           if (data === undefined) {
-            Swal.fire('Error', 'Error in saving Expenses', 'error');
+            this.notify.error('Error in saving Expenses');
           }
           else {
             if (retExpense.expenseId !== null) {
 
-              Swal.fire('Submit', 'You have saved Expenses ' + retExpense.expenseId + ' Succesfully!', 'success');
+              this.notify.success('You have saved Expenses ' + retExpense.expenseId + ' Succesfully!', 'Submit');
               window.location.reload();
 
             }
           }
         }
-      });
-
-
-
+      },
+      (error) => {
+        this.isSaving = false; // 👈 Reset on error
+        this.notify.error('Failed to save expense. Please try again.');
+      }
+    );
   }
 
   cancel() {
@@ -217,9 +210,6 @@ export class ExpensesComponent {
   }
 
   /* ******************************************************* */
-
-  //import html2canvas from 'html2canvas';
-  //import jsPDF from 'jspdf';
 
   exportToPDF() {
     const elements = document.querySelectorAll('.pdf-hide');
@@ -255,22 +245,15 @@ export class ExpensesComponent {
   exportToPDF2() {
     const elements = document.querySelectorAll('.pdf-hide');
     elements.forEach(el => el.classList.add('d-none'));
-
-    //html2pdf(document.getElementById('content'));
-
     elements.forEach(el => el.classList.remove('d-none'));
   }
 
 
   openPDF(): void {
-
-
     let DATA: any = document.getElementById('print-table');
 
     const elements = document.querySelectorAll('.pdf-hide');
     elements.forEach(el => el.classList.add('d-none'));
-
-    //html2canvas(document.getElementById(DATA));
 
     elements.forEach(el => el.classList.remove('d-none'));
 
@@ -282,20 +265,15 @@ export class ExpensesComponent {
       let position = 0;
       PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight);
       PDF.save('expense.pdf');
-
     });
-
-
   }
 
   print() {
     let printWindow: any;
 
-
     const printContentObj = document.getElementById('print-table');
     const printContent = printContentObj?.innerHTML;
     const originalContent = document.body.innerHTML;
-
 
     printWindow = window.open('', '_blank');
 
@@ -311,7 +289,7 @@ export class ExpensesComponent {
      @media print {
             .no-print { display: none; }
             .page-break {page-break-after: always;
-			}
+      }
 
       table { width: 100%; border-collapse: collapse; }
           th, td { border: 1px solid black; padding: 8px; text-align: left; }
@@ -324,8 +302,6 @@ export class ExpensesComponent {
      </head>    
      <body  onload="window.print();window.close();">`;
 
-
-
     let footerHtml =
       `</body>
      </html>
@@ -336,13 +312,6 @@ export class ExpensesComponent {
     printWindow.document.write(finalHTMLTag);
 
     printWindow.document.close();
-    //printWindow.focus();
-    //printWindow.print();  
-
-
   }
-
-
-
 
 }

@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import Swal from 'sweetalert2';
 import { Payment, CodeDropDown } from '../../shared/models/model-classes.model';
 import { PaymentService } from '../../shared/services/payment.service';
+import { NotificationService } from '../../shared/services/notification.service';
 
 declare var bootstrap: any;
 
@@ -44,7 +44,10 @@ export class PaymentComponent implements OnInit {
     { id: 'ONLINE', text: 'Online' }
   ];
 
-  constructor(private paymentService: PaymentService) {}
+  constructor(
+    private paymentService: PaymentService,
+    private notify: NotificationService
+  ) { }
 
   ngOnInit(): void {
     this.loadPayments();
@@ -58,7 +61,7 @@ export class PaymentComponent implements OnInit {
         this.isLoading = false;
       },
       error: () => {
-        Swal.fire('Error', 'Failed to load payments', 'error');
+        this.notify.error('Failed to load payments');
         this.isLoading = false;
       }
     });
@@ -72,7 +75,7 @@ export class PaymentComponent implements OnInit {
         this.isLoading = false;
       },
       error: () => {
-        Swal.fire('Error', 'Search failed', 'error');
+        this.notify.error('Search failed');
         this.isLoading = false;
       }
     });
@@ -97,19 +100,19 @@ export class PaymentComponent implements OnInit {
 
   private validateForm(): boolean {
     if (!this.formData.orderId?.toString().trim()) {
-      Swal.fire('Validation', 'Order ID is required', 'warning');
+      this.notify.warning('Order ID is required');
       return false;
     }
     if (this.formData.totalAmount === null || this.formData.totalAmount === undefined || this.formData.totalAmount < 0) {
-      Swal.fire('Validation', 'Valid total amount is required', 'warning');
+      this.notify.warning('Valid total amount is required');
       return false;
     }
     if (!this.formData.paymentMethod) {
-      Swal.fire('Validation', 'Please select a payment method', 'warning');
+      this.notify.warning('Please select a payment method');
       return false;
     }
     if (!this.formData.paymentStatus) {
-      Swal.fire('Validation', 'Please select a payment status', 'warning');
+      this.notify.warning('Please select a payment status');
       return false;
     }
     return true;
@@ -125,41 +128,34 @@ export class PaymentComponent implements OnInit {
 
     obs.subscribe({
       next: () => {
-        Swal.fire('Success', `Payment ${this.isEdit ? 'updated' : 'saved'} successfully!`, 'success');
+        this.notify.success(`Payment ${this.isEdit ? 'updated' : 'saved'} successfully!`, 'Success');
         this.isSaving = false;
         this.hideModal();
         this.formData = new Payment();
         this.loadPayments();
       },
       error: () => {
-        Swal.fire('Error', 'Failed to save payment', 'error');
+        this.notify.error('Failed to save payment');
         this.isSaving = false;
       }
     });
   }
 
-  onDelete(id: any): void {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: 'This payment will be deleted!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete!',
-      cancelButtonText: 'Cancel'
-    }).then(result => {
-      if (result.isConfirmed) {
-        this.isLoading = true;
-        this.paymentService.deletePayment(id).subscribe({
-          next: () => {
-            Swal.fire('Deleted!', 'Payment deleted.', 'success');
-            this.loadPayments();
-          },
-          error: () => {
-            Swal.fire('Error', 'Failed to delete', 'error');
-            this.isLoading = false;
-          }
-        });
+  async onDelete(id: any) {
+    const confirmed = await this.notify.confirmDelete('this payment');
+    if (!confirmed) {
+      return;
+    }
+
+    this.isLoading = true;
+    this.paymentService.deletePayment(id).subscribe({
+      next: () => {
+        this.notify.success('Payment deleted.');
+        this.loadPayments();
+      },
+      error: () => {
+        this.notify.error('Failed to delete');
+        this.isLoading = false;
       }
     });
   }

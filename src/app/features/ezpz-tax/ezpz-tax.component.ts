@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgxPaginationModule } from 'ngx-pagination';
-import Swal from 'sweetalert2';
 
 import { AdminUser, EzpzTax } from '../../shared/models/model-classes.model';
 import { EzpzTaxService } from '../../shared/services/ezpz-tax.service';
+import { NotificationService } from '../../shared/services/notification.service';
 
 @Component({
   selector: 'app-ezpz-tax',
@@ -31,12 +31,15 @@ export class EzpzTaxComponent implements OnInit {
   list: EzpzTax[] = [];
   item: EzpzTax = this.getEmpty();
   viewItem: EzpzTax = this.getEmpty();
-  
 
-  constructor(private service: EzpzTaxService) {}
+
+  constructor(
+    private service: EzpzTaxService,
+    private notify: NotificationService
+  ) { }
 
   ngOnInit(): void {
-    
+
     this.load();
   }
 
@@ -61,7 +64,7 @@ export class EzpzTaxComponent implements OnInit {
       },
       error: (err) => {
         console.error(err);
-        Swal.fire('Error', 'Failed to load tax records', 'error');
+        this.notify.error('Failed to load tax records');
         this.isLoading = false;
       }
     });
@@ -113,30 +116,30 @@ export class EzpzTaxComponent implements OnInit {
 
   save(): void {
     if (!this.item.name?.trim()) {
-      Swal.fire('Validation', 'Tax name is required', 'warning');
+      this.notify.warning('Tax name is required');
       return;
     }
     if (this.item.tax == null || this.item.tax < 0) {
-      Swal.fire('Validation', 'Valid tax rate is required', 'warning');
+      this.notify.warning('Valid tax rate is required');
       return;
     }
     if (!this.item.taxType?.trim()) {
-      Swal.fire('Validation', 'Tax type is required', 'warning');
+      this.notify.warning('Tax type is required');
       return;
     }
 
     this.isSaving = true;
     const loggedInUser: AdminUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
-    this.item.updatedBy = loggedInUser?.loginId; 
+    this.item.updatedBy = loggedInUser?.loginId;
 
     this.service.save(this.item).subscribe({
       next: () => {
-        Swal.fire('Success', 'Tax saved successfully', 'success');
+        this.notify.success('Tax saved successfully', 'Success');
         this.onSaveComplete();
       },
       error: (err) => {
         console.error(err);
-        Swal.fire('Error', 'Failed to save tax', 'error');
+        this.notify.error('Failed to save tax');
         this.isSaving = false;
       }
     });
@@ -149,31 +152,25 @@ export class EzpzTaxComponent implements OnInit {
     this.load();
   }
 
-  onDelete(id: number): void {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: 'This tax record will be permanently deleted.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, keep it'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.isLoading = true;
-        this.service.delete(id).subscribe({
-          next: () => {
-            Swal.fire('Deleted!', 'Tax has been deleted.', 'success');
-            this.load();
-            if (this.editMode && this.item.taxId === id) {
-              this.goToList();
-            }
-          },
-          error: (err) => {
-            console.error(err);
-            Swal.fire('Error', 'Delete failed', 'error');
-            this.isLoading = false;
-          }
-        });
+  async onDelete(id: number) {
+    const confirmed = await this.notify.confirmDelete('this tax record');
+    if (!confirmed) {
+      return;
+    }
+
+    this.isLoading = true;
+    this.service.delete(id).subscribe({
+      next: () => {
+        this.notify.success('Tax has been deleted.');
+        this.load();
+        if (this.editMode && this.item.taxId === id) {
+          this.goToList();
+        }
+      },
+      error: (err) => {
+        console.error(err);
+        this.notify.error('Delete failed');
+        this.isLoading = false;
       }
     });
   }

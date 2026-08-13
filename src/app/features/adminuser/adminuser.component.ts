@@ -3,7 +3,7 @@ import { AdminUser } from '../../shared/models/model-classes.model';
 import { AdminUserService } from '../../shared/services/admin-user.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import Swal from 'sweetalert2';
+import { NotificationService } from '../../shared/services/notification.service';
 
 @Component({
   selector: 'app-adminuser',
@@ -51,7 +51,10 @@ export class AdminUserComponent implements OnInit {
     this.activeRow = null;
   }
 
-  constructor(private adminUserService: AdminUserService) { }
+  constructor(
+    private adminUserService: AdminUserService,
+    private notify: NotificationService
+  ) { }
 
   ngOnInit(): void {
     this.loadCurrentUser();
@@ -100,7 +103,7 @@ export class AdminUserComponent implements OnInit {
       },
       error: (err: any) => {
         console.error('Error loading admin users:', err);
-        Swal.fire('Error', 'Failed to load admin users. Please try again.', 'error');
+        this.notify.error('Failed to load admin users. Please try again.');
         this.spinnerDataLoad = false;
       }
     });
@@ -137,28 +140,28 @@ export class AdminUserComponent implements OnInit {
 
       if (!userToSave.firstName?.trim()) {
         saveFlag = false;
-        Swal.fire('Validation Error', 'Please enter First Name', 'warning');
+        this.notify.warning('Please enter First Name');
       } else if (!userToSave.lastName?.trim()) {
         saveFlag = false;
-        Swal.fire('Validation Error', 'Please enter Last Name', 'warning');
+        this.notify.warning('Please enter Last Name');
       } else if (!userToSave.email?.trim()) {
         saveFlag = false;
-        Swal.fire('Validation Error', 'Please enter Email', 'warning');
+        this.notify.warning('Please enter Email');
       } else if (!this.isValidEmail(userToSave.email)) {
         saveFlag = false;
-        Swal.fire('Validation Error', 'Please enter a valid Email address', 'warning');
+        this.notify.warning('Please enter a valid Email address');
       } else if (!userToSave.loginId?.trim()) {
         saveFlag = false;
-        Swal.fire('Validation Error', 'Please enter Login ID', 'warning');
+        this.notify.warning('Please enter Login ID');
       } else if (!userToSave.loginPassword?.trim()) {
         saveFlag = false;
-        Swal.fire('Validation Error', 'Please enter Password', 'warning');
+        this.notify.warning('Please enter Password');
       } else if (userToSave.loginPassword.trim().length < 4) {
         saveFlag = false;
-        Swal.fire('Validation Error', 'Password must be at least 4 characters', 'warning');
+        this.notify.warning('Password must be at least 4 characters');
       } else if (!userToSave.userRole) {
         saveFlag = false;
-        Swal.fire('Validation Error', 'Please select a Role', 'warning');
+        this.notify.warning('Please select a Role');
       }
     } else {
       if (!this.enabledEdit[rowIndex]) return;
@@ -169,29 +172,29 @@ export class AdminUserComponent implements OnInit {
 
       if (!userToSave.firstName?.trim()) {
         saveFlag = false;
-        Swal.fire('Validation Error', 'Please enter First Name', 'warning');
+        this.notify.warning('Please enter First Name');
       } else if (!userToSave.lastName?.trim()) {
         saveFlag = false;
-        Swal.fire('Validation Error', 'Please enter Last Name', 'warning');
+        this.notify.warning('Please enter Last Name');
       } else if (!userToSave.email?.trim()) {
         saveFlag = false;
-        Swal.fire('Validation Error', 'Please enter Email', 'warning');
+        this.notify.warning('Please enter Email');
       } else if (!this.isValidEmail(userToSave.email)) {
         saveFlag = false;
-        Swal.fire('Validation Error', 'Please enter a valid Email address', 'warning');
+        this.notify.warning('Please enter a valid Email address');
       } else if (!userToSave.loginId?.trim()) {
         saveFlag = false;
-        Swal.fire('Validation Error', 'Please enter Login ID', 'warning');
+        this.notify.warning('Please enter Login ID');
       } else if (!userToSave.userRole) {
         saveFlag = false;
-        Swal.fire('Validation Error', 'Please select a Role', 'warning');
+        this.notify.warning('Please select a Role');
       }
 
       if (!userToSave.loginPassword || userToSave.loginPassword.trim() === '') {
         delete userToSave.loginPassword;
       } else if (userToSave.loginPassword.trim().length < 4) {
         saveFlag = false;
-        Swal.fire('Validation Error', 'Password must be at least 4 characters', 'warning');
+        this.notify.warning('Password must be at least 4 characters');
       }
     }
 
@@ -201,7 +204,7 @@ export class AdminUserComponent implements OnInit {
     this.adminUserService.save(userToSave).subscribe({
       next: (response: any) => {
         if (response && response.userId) {
-          Swal.fire('Success', `User ${response.userId} saved successfully!`, 'success');
+          this.notify.success(`User ${response.userId} saved successfully!`, 'Success');
           this.loadAdminUser();
           if (rowIndex === -1) {
             this.addFlag = false;
@@ -211,45 +214,40 @@ export class AdminUserComponent implements OnInit {
             this.activeRow = null;
           }
         } else {
-          Swal.fire('Error', 'Failed to save user. Please try again.', 'error');
+          this.notify.error('Failed to save user. Please try again.');
         }
         this.spinnerDataLoad = false;
       },
       error: (err: any) => {
         console.error('Save failed:', err);
-        Swal.fire('Error', err.error?.message || 'Server error occurred. Please try again.', 'error');
+        this.notify.error(err.error?.message || 'Server error occurred. Please try again.');
         this.spinnerDataLoad = false;
       }
     });
   }
 
-  onDelete(rowIndex: number): void {
+  async onDelete(rowIndex: number) {
     const user = this.adminUserList[rowIndex];
-    Swal.fire({
-      title: 'Are you sure?',
-      text: `Delete user "${user.firstName} ${user.lastName}"?`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, keep it'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.spinnerDataLoad = true;
-        this.adminUserService.delete(user.userId!).subscribe({
-          next: () => {
-            this.loadAdminUser();
-            if (this.page > this.totalPages) {
-              this.page = this.totalPages;
-            }
-            Swal.fire('Deleted!', 'User deleted successfully.', 'success');
-            this.spinnerDataLoad = false;
-          },
-          error: (err: any) => {
-            console.error('Delete failed:', err);
-            Swal.fire('Error', 'Failed to delete user. Please try again.', 'error');
-            this.spinnerDataLoad = false;
-          }
-        });
+    const confirmed = await this.notify.confirmDelete(`user "${user.firstName} ${user.lastName}"`);
+
+    if (!confirmed) {
+      return;
+    }
+
+    this.spinnerDataLoad = true;
+    this.adminUserService.delete(user.userId!).subscribe({
+      next: () => {
+        this.loadAdminUser();
+        if (this.page > this.totalPages) {
+          this.page = this.totalPages;
+        }
+        this.notify.success('User deleted successfully.');
+        this.spinnerDataLoad = false;
+      },
+      error: (err: any) => {
+        console.error('Delete failed:', err);
+        this.notify.error('Failed to delete user. Please try again.');
+        this.spinnerDataLoad = false;
       }
     });
   }
