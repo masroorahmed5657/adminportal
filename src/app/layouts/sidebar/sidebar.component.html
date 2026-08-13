@@ -46,6 +46,44 @@
 
             </div>
 
+            <!-- ================= ORDER ================= -->
+            <div class="admin-sidebar__section">
+
+                <a class="admin-sidebar__link admin-sidebar__parent" (click)="toggleSection('orders')">
+
+                    <!-- ORDERS ICON -->
+                    <i class="ri-inbox-2-fill me-2"></i>
+
+                    <span>Orders</span>
+
+                    <!-- ARROW ICON -->
+                    <i class="ri-arrow-down-s-line ms-auto" [class.rotated]="activeMenu === 'orders'">
+                    </i>
+
+                </a>
+
+                <div class="admin-sidebar__submenu" *ngIf="activeMenu === 'orders'">
+
+                    <a routerLink="/layout/orders" routerLinkActive="active"
+                        class="admin-sidebar__link admin-sidebar__sublink">
+                        <i class="ri-shopping-bag-3-fill me-2"></i>
+                        <span>Orders</span>
+                    </a>
+
+                    <a routerLink="/layout/orderdetail" routerLinkActive="active"
+                        class="admin-sidebar__link admin-sidebar__sublink">
+                        <i class="ri-grid-fill me-2"></i>
+                        <span>Order Details</span>
+                    </a>
+                    <a routerLink="/layout/orders-payment" routerLinkActive="active"
+                        class="admin-sidebar__link admin-sidebar__sublink">
+                        <i class="ri-grid-fill me-2"></i>
+                        <span>Order Payment</span>
+                    </a>
+
+                </div>
+
+            </div>
 
             <!-- ================= INVENTORY ================= -->
             <div class="admin-sidebar__section">

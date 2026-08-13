@@ -1,0 +1,238 @@
+<div class="container-fluid py-5">
+    <div class="row justify-content-center">
+
+        <div class="col-12 col-md-10 mt-4">
+            <div class="card shadow-lg border-info" id="excel-table">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 text-white">
+                        <fa-icon [icon]="faClipboardList"></fa-icon>
+                        {{ projectName }}
+
+
+                    </h5>
+                    <span class="fw-bold fs-5">Status: {{orders.orderStatus}}</span>
+                    <span class="fw-bold fs-5">Order#: {{ orders.orderNum ?? orders.orderId }}</span>
+                </div>
+
+                <div class="card-body">
+                    <!-- Customer + Order Summary -->
+                    <!-- <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-2">Customer</h6>
+                            <p class="mb-1 fs-5">{{ customer.firstName }} {{ customer.lastName }}</p>
+                            <p class="mb-1 fs-5">Address: <span>{{customer.address}}</span> , <span>{{ customer.city
+                                    }}</span> <span>{{
+                                    customer.postalCode }}</span>,
+                                <span>{{ getStateName(customer.stateProvince) }}</span>,
+                                <span>{{ getCountryName(customer.country) }}</span>
+                            </p>
+                            <p class="mb-0"><b>Email:</b> {{ customer.email }} <br> <b>Phone:</b> {{ customer.phone1 }}
+                            </p>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-2">Order Summary</h6>
+                            <ul class="list-group">
+                                <li class="list-group-item d-flex justify-content-between"><b>Date:</b> {{
+                                    orders.createDate | date:
+                                    'shortDate' }}</li>
+                                <li class="list-group-item d-flex justify-content-between"><b>SubTotal:</b> ${{ total }}
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between"><b>Shipping:</b>
+                                    ${{ (orders.shippingHandling).toFixed(2) }}</li>
+                                <li class="list-group-item d-flex justify-content-between"><b>Taxes:</b> ${{
+                                    (orders.tax).toFixed(2) }}
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between fw-bold"><b>Total:</b>
+                                    ${{ getTotalPrice(orders.grandTotal) }}</li>
+                            </ul>
+                        </div>
+                    </div> -->
+
+                    <div class="row mb-4">
+
+                        <div class="col-md-6">
+
+                            <h6 class="fw-bold mb-1">Customer</h6>
+                            <p class="mb-3" style="font-size: 16px;">{{ customer.firstName }} {{ customer.lastName }}
+                            </p>
+
+                            <h6 class="fw-bold mb-1">Address</h6>
+                            <p class="mb-3" style="font-size: 16px;">{{ customer.address }} , {{customer.city}} ,
+                                {{customer.postalCode}} ,
+                            </p>
+
+                            <!-- <span>{{ getStateName(customer.stateProvince) }}</span> -->
+
+                            <h6 class="fw-bold mb-1 mt-2">Email</h6>
+                            <p class="mb-3" style="font-size: 16px;">{{ customer.email }}</p>
+
+                            <h6 class="fw-bold mb-1 mt-2">Phone</h6>
+                            <p class="mb-1" style="font-size: 16px;">{{ customer.phone1 }}</p>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <h6 class="fw-bold mb-2">Order Summary</h6>
+                            <ul class="list-group">
+                                <li class="list-group-item d-flex justify-content-between"><b>Date:</b> {{
+                                    orders.createDate | date:
+                                    'shortDate' }}</li>
+                                <li class="list-group-item d-flex justify-content-between"><b>SubTotal:</b> ${{ total }}
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between"><b>Shipping:</b>
+                                    ${{ (orders.shippingHandling).toFixed(2) }}</li>
+                                <li class="list-group-item d-flex justify-content-between"><b>Taxes:</b> ${{
+                                    (orders.tax).toFixed(2) }}
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between fw-bold"><b>Total:</b>
+                                    ${{ getTotalPrice(orders.grandTotal) }}</li>
+                            </ul>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Order Items -->
+                    <div class="table-responsive d-none d-md-block">
+                        <table class="table table-bordered align-middle">
+                            <thead class="table-info text-center">
+                                <tr>
+                                    <th>SNo.</th>
+                                    <th>Items</th>
+                                    <th>Image</th>
+                                    <th>SKU</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th colspan="2" class="hide-on-print">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let items of ordersItemsList; index as i">
+                                    <td class="text-center">{{ i + 1 }}</td>
+                                    <td>{{ items.productName }} <span *ngIf="items.notes">({{ items.notes }})</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <img class="img-thumbnail"
+                                            src="data:{{items.imageMimeType}};base64,{{items.productImage}}"
+                                            style="width:50px;height:50px;" alt="image">
+                                    </td>
+                                    <td>{{ items.sku }}</td>
+                                    <td>{{ items.quantity }}</td>
+                                    <td>${{ items.unitPrice }}</td>
+                                    <td class="hide-on-print">
+                                        <button class="btn btn-dark btn-sm w-75"
+                                            (click)="onUpdateStatus(orders,items.orderItemId,'CLOSED')">Close</button>
+                                    </td>
+                                    <td class="hide-on-print">
+                                        <button class="btn btn-danger btn-sm w-75"
+                                            (click)="onUpdateStatus(orders,items.orderItemId,'CANCEL')">Cancel</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- MOBILE CARDS -->
+                    <div class="d-md-none">
+                        <div class="card shadow-sm mb-3" *ngFor="let items of ordersItemsList; index as i">
+
+                            <div class="card-body p-3">
+
+                                <!-- Header -->
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <strong>#{{ i + 1 }}</strong>
+                                    <span class="badge bg-info">{{ items.sku }}</span>
+                                </div>
+
+                                <!-- Item Info -->
+                                <div class="d-flex gap-3 align-items-start mb-2">
+                                    <img class="img-thumbnail"
+                                        [src]="'data:' + items.imageMimeType + ';base64,' + items.productImage"
+                                        style="width:60px;height:60px;" alt="image">
+
+                                    <div>
+                                        <div class="fw-semibold">
+                                            {{ items.productName }}
+                                        </div>
+                                        <small class="text-muted" *ngIf="items.notes">
+                                            ({{ items.notes }})
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <!-- Details -->
+                                <div class="row text-center small mb-3">
+                                    <div class="col-6">
+                                        <div class="text-muted">Quantity</div>
+                                        <div class="fw-bold">{{ items.quantity }}</div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="text-muted">Price</div>
+                                        <div class="fw-bold">${{ items.unitPrice }}</div>
+                                    </div>
+                                </div>
+
+                                <!-- Actions -->
+                                <div class="d-flex gap-2 hide-on-print">
+                                    <button class="btn btn-dark btn-sm flex-fill"
+                                        (click)="onUpdateStatus(orders, items.orderItemId, 'CLOSED')">
+                                        Close
+                                    </button>
+
+                                    <button class="btn btn-danger btn-sm flex-fill"
+                                        (click)="onUpdateStatus(orders, items.orderItemId, 'CANCEL')">
+                                        Cancel
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+                    <!-- Action Buttons -->
+
+                    <div class="row justify-content-center text-center mt-4 hide-on-print g-3 px-2">
+
+                        <div class="col-12 col-md-3">
+                            <button class="btn btn-success w-75 py-2"
+                                (click)="printThermal(orders, customer, ordersItemsList)">
+                                Thermal Print
+                            </button>
+                        </div>
+
+                        <div class="col-12 col-md-3">
+                            <button class="btn btn-primary w-75 py-2" (click)="print()">
+                                Print Doc
+                            </button>
+                        </div>
+
+                        <div class="col-12 col-md-3">
+                            <button class="btn btn-info w-75 py-2" (click)="updatecart($event)">
+                                Update Cart
+                            </button>
+                        </div>
+
+                        <div class="col-12 col-md-3">
+                            <button class="btn btn-secondary w-75 py-2" (click)="backToList()">
+                                Back to List
+                            </button>
+                        </div>
+
+                    </div>
+
+
+
+                </div>
+
+                <!-- <div class="card-footer text-center hide-on-print">
+          <app-footer></app-footer>
+        </div> -->
+            </div>
+        </div>
+    </div>
+</div>

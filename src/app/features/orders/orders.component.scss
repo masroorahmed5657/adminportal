@@ -1,0 +1,66 @@
+.btn-check:checked + .btn-outline-dark {
+  background-color: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
+@media (min-width: 992px) {
+  #departmentSelected {
+    min-width: 180px;
+  }
+}
+.card-title{
+background-color: green; color:white; border-style: double;
+}
+.kds-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kds-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+}
+
+.order-items {
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .card-header {
+    font-size: 1.2rem;
+  }
+}
+.order-timer {
+  font-size: 1.3rem;
+  font-weight: bold;
+  padding: 6px 12px;
+  border-radius: 12px;
+  min-width: 80px;
+  text-align: center;
+}
+
+.timer-normal {
+  background: #e9f7ef;
+  color: #0f5132;
+}
+
+.timer-warning {
+  background: #dc3545;
+  color: #fff;
+}
+
+/* BLINKING EFFECT */
+.blink {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+@media (min-width: 1200px) {
+  .order-timer {
+    font-size: 1.8rem;
+  }
+}

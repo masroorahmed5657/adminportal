@@ -64,6 +64,9 @@ import { BarcodeComponent } from './features/products/barcode/barcode.component'
 import { WarehouseComponent } from './features/warehouse/warehouse.component';
 import { DepartmentEmployeeComponent } from './features/departmentemployee/departmentemployee.component';
 import { SalaryComponent } from './features/salary/salary.component';
+import { OrdersPaymentComponent } from './features/orders-payment/orders-payment.component';
+import { OrderdetailComponent } from './features/orderdetail/orderdetail.component';
+import { OrdersComponent } from './features/orders/orders.component';
 
 export const routes: Routes = [
     {
@@ -317,7 +320,19 @@ export const routes: Routes = [
             { 
                 path: 'salary', 
                 component: SalaryComponent 
-            }
+            },
+             {
+                path: 'orderdetail',
+                component: OrderdetailComponent,  canActivate:[AuthGuard, ]
+            },
+            {
+                path: 'orders',
+                component: OrdersComponent, canActivate:[AuthGuard, ]
+            },
+            {
+                path: 'orders-payment',
+                component: OrdersPaymentComponent, canActivate:[AuthGuard, ]
+            },
         ]
     }
 ];
