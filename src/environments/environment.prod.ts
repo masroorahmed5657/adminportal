@@ -2,7 +2,7 @@ export const environment = {
   production: true,
   sessionTimeout: 60,
   enableLog: true,
-  versionNumber: '05.08.2026 00073',
+  versionNumber: '10.08.2026 00074',
 
   appEnv: 'PRD'  ,  
   pageSize:25,   
