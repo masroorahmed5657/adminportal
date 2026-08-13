@@ -1,6 +1,5 @@
-<!-- ============================================================
-     DEPARTMENT — LIST VIEW
-     ============================================================ -->
+
+
 <div class="shopify-main-container" *ngIf="!showAddFlag">
 
   <!-- Search row -->
@@ -108,8 +107,7 @@
                 <span class="shopify-field-label--sm">ID: {{ dept.deptId }}</span>
               </div>
             </div>
-            <span class="shopify-badge"
-              [ngClass]="dept.activeFlag ? 'shopify-badge--success' : 'shopify-badge--muted'">
+            <span class="shopify-badge" [ngClass]="dept.activeFlag ? 'shopify-badge--success' : 'shopify-badge--muted'">
               {{ dept.activeFlag ? 'Active' : 'Inactive' }}
             </span>
           </div>

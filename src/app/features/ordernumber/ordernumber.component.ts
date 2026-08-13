@@ -5,9 +5,6 @@ import Swal from 'sweetalert2';
 import { Orders, CodeDropDown, OrderNumber } from '../../shared/models/model-classes.model';
 import { OrderNumberService } from '../../shared/services/ordernumber.service';
 
-
-declare var bootstrap: any;
-
 @Component({
   selector: 'app-order-number',
   standalone: true,
@@ -21,8 +18,8 @@ export class OrderNumberComponent implements OnInit {
   formData: OrderNumber = new OrderNumber();
   selectedOrder: OrderNumber | null = null;
   isEdit = false;
-  modal: any;
-  viewModal: any;
+  showModal = false;
+  showViewModal = false;
 
   search: any = { orderNumber: '', orderType: '' };
 
@@ -34,7 +31,7 @@ export class OrderNumberComponent implements OnInit {
     { id: 'DELIVERY', text: 'Delivery' }
   ];
 
-  constructor(private orderService: OrderNumberService) {}
+  constructor(private orderService: OrderNumberService) { }
 
   ngOnInit(): void {
     this.loadOrders();
@@ -62,22 +59,30 @@ export class OrderNumberComponent implements OnInit {
   openAddModal(): void {
     this.isEdit = false;
     this.formData = new OrderNumber();
-    this.showModal();
+    this.showModal = true;
   }
 
   onView(o: OrderNumber): void {
     this.selectedOrder = o;
-    const el = document.getElementById('orderViewModal');
-    if (el) { this.viewModal = new bootstrap.Modal(el); this.viewModal.show(); }
+    this.showViewModal = true;
+  }
+
+  closeViewModal(): void {
+    this.showViewModal = false;
   }
 
   onEdit(o: OrderNumber): void {
     this.isEdit = true;
     this.formData = { ...o };
-    this.showModal();
+    this.showModal = true;
   }
-activeRow: number | null = null; // highlight ke liye
-enabledEdit: any[] = [];
+
+  closeModal(): void {
+    this.showModal = false;
+  }
+
+  activeRow: number | null = null; // highlight ke liye
+  enabledEdit: any[] = [];
   // Maps the index of a row *within the current page* back to its
   // absolute index inside brandList — needed because startEdit/onSave/onDelete
   // all operate on the full-list index.
@@ -85,26 +90,20 @@ enabledEdit: any[] = [];
     return (this.page - 1) * this.pageSize + i;
   }
 
-    /* ===== Pagination (Shopify-style Previous / Next) ===== */
+  /* ===== Pagination (Shopify-style Previous / Next) ===== */
   page: number = 1;
   pageSize: number = 5; // same page size PrimeNG paginator used before
 
-
   onSave(): void {
-    // const obs = this.isEdit
-    //   ? this.orderService.updateOrder(this.formData)
-    //   : this.orderService.saveOrder(this.formData);
-    //this.orderList[this.rowIndex(this.orderList.indexOf(this.formData))] = this.formData; // Update the orderList with the new data
-
-    const orderNumInput = document.getElementById('orderNum-' + 0) as HTMLInputElement;  
-
-this.formData.orderNum = orderNumInput.value; // Update the orderNum in formData
-this.formData.orderNumPk = this.orderList[0]?.orderNumPk; // Ensure orderNumPk is set correctly
+    // The order number input is bound directly via [(ngModel)]="orderList[0].orderNum",
+    // so orderList[0] already reflects the latest edited value.
+    this.formData.orderNum = this.orderList[0]?.orderNum;
+    this.formData.orderNumPk = this.orderList[0]?.orderNumPk;
 
     this.orderService.saveOrder(this.formData).subscribe({
       next: () => {
         Swal.fire('Success', `Order ${this.isEdit ? 'updated' : 'saved'} successfully!`, 'success');
-        this.hideModal();
+        this.closeModal();
         this.loadOrders();
       },
       error: () => Swal.fire('Error', 'Failed to save order', 'error')
@@ -127,14 +126,5 @@ this.formData.orderNumPk = this.orderList[0]?.orderNumPk; // Ensure orderNumPk i
         });
       }
     });
-  }
-
-  showModal(): void {
-    const el = document.getElementById('orderModal');
-    if (el) { this.modal = new bootstrap.Modal(el); this.modal.show(); }
-  }
-
-  hideModal(): void {
-    if (this.modal) this.modal.hide();
   }
 }

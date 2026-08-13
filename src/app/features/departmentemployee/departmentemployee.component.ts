@@ -6,8 +6,6 @@ import { DepartmentEmployee, Departments, Employees } from '../../shared/models/
 import { forkJoin } from 'rxjs';
 import { DepartmentEmployeeService } from '../../shared/services/departmentemployee.service';
 
-declare var bootstrap: any;
-
 @Component({
   selector: 'app-department-employee',
   standalone: true,
@@ -23,10 +21,10 @@ export class DepartmentEmployeeComponent implements OnInit {
   employeeList: Employees[] = [];
   formData: DepartmentEmployee = new DepartmentEmployee();
   isEdit = false;
-  modal: any;
+  showModal = false;
   filterDeptId: any = '';
 
-  constructor(private service: DepartmentEmployeeService) {}
+  constructor(private service: DepartmentEmployeeService) { }
 
   ngOnInit(): void {
     forkJoin({
@@ -70,13 +68,17 @@ export class DepartmentEmployeeComponent implements OnInit {
   openAddModal(): void {
     this.isEdit = false;
     this.formData = new DepartmentEmployee();
-    this.showModal();
+    this.showModal = true;
   }
 
   onEdit(de: DepartmentEmployee): void {
     this.isEdit = true;
     this.formData = { ...de };
-    this.showModal();
+    this.showModal = true;
+  }
+
+  closeModal(): void {
+    this.showModal = false;
   }
 
   onSave(): void {
@@ -91,7 +93,7 @@ export class DepartmentEmployeeComponent implements OnInit {
     obs.subscribe({
       next: () => {
         Swal.fire('Success', `Employee ${this.isEdit ? 'updated' : 'assigned'} successfully!`, 'success');
-        this.hideModal();
+        this.closeModal();
         this.loadData();
       },
       error: () => Swal.fire('Error', 'Failed to save', 'error')
@@ -119,16 +121,7 @@ export class DepartmentEmployeeComponent implements OnInit {
   loadData(): void {
     this.service.getAllDeptEmployees().subscribe({
       next: (data) => { this.deptEmpList = data; this.onFilterChange(); },
-      error: () => {}
+      error: () => { }
     });
-  }
-
-  showModal(): void {
-    const el = document.getElementById('deptEmpModal');
-    if (el) { this.modal = new bootstrap.Modal(el); this.modal.show(); }
-  }
-
-  hideModal(): void {
-    if (this.modal) this.modal.hide();
   }
 }

@@ -1,1 +1,496 @@
-@import "../../shared/shopify-theme.scss"
+@import "../../shared/shopify-theme.scss";
+
+/* ============================================================
+   CUSTOMER PAGE
+   ============================================================ */
+
+:host {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ============================================================
+   MAIN PAGE SPACING
+   ============================================================ */
+
+:host>* {
+    box-sizing: border-box;
+}
+
+/* Give the whole component breathing room */
+:host {
+    padding: 32px 7.5% 40px;
+}
+
+/* ============================================================
+   SEARCH + ADD CUSTOMER
+   ============================================================ */
+
+.shopify-search-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    width: 100%;
+    margin-bottom: 18px;
+}
+
+.shopify-search-row>div:first-child {
+    flex: 1;
+    min-width: 0;
+}
+
+.shopify-search-row>div:last-child {
+    flex: 0 0 auto;
+}
+
+/* Search label */
+.shopify-field-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* Search input */
+.shopify-input-group {
+    width: 100%;
+}
+
+.shopify-search-row .shopify-input {
+    width: 100%;
+    height: 40px;
+    font-size: 13px;
+}
+
+/* ============================================================
+   ADD CUSTOMER BUTTON
+   ============================================================ */
+
+.shopify-search-row .btn-shopify {
+    height: 40px !important;
+    min-height: 40px !important;
+    padding: 0 16px !important;
+    font-size: 13px !important;
+    font-weight: 600;
+    white-space: nowrap;
+    border-radius: 7px;
+}
+
+.shopify-search-row .btn-shopify i {
+    font-size: 12px;
+    margin-right: 5px;
+}
+
+/* ============================================================
+   CUSTOMER TABLE
+   ============================================================ */
+
+.shopify-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid #e1e3e5;
+    border-radius: 7px;
+    background: #fff;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.shopify-table {
+    width: 100%;
+    margin: 0;
+    border-collapse: collapse;
+    table-layout: auto;
+}
+
+.shopify-table th {
+    height: 46px;
+    padding: 0 14px;
+    background: #f6f7f8;
+    border-bottom: 1px solid #e1e3e5;
+    color: #5c5f62;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    text-align: left;
+}
+
+.shopify-table td {
+    height: 46px;
+    padding: 0 14px;
+    border-bottom: 1px solid #e6e6e6;
+    color: #202223;
+    font-size: 13px;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.shopify-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.shopify-table tbody tr:hover {
+    background: #fafafa;
+}
+
+/* ============================================================
+   MANAGE / ACTION BUTTONS
+   ============================================================ */
+
+.shopify-table__actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.shopify-table__actions .btn-shopify {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    min-height: 30px !important;
+    padding: 0 !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+}
+
+.shopify-table__actions .btn-shopify i {
+    font-size: 12px;
+    margin: 0;
+}
+
+/* ============================================================
+   PAGINATION
+   ============================================================ */
+
+.shopify-pagination {
+    width: 100%;
+    min-height: 54px;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 12px 16px !important;
+    box-sizing: border-box;
+    text-align: center !important;
+}
+
+/*
+   ngx-pagination generates its own ul.
+   Force the entire pagination control to the center.
+*/
+.shopify-pagination pagination-controls {
+    display: flex !important;
+    width: 100% !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+.shopify-pagination ::ng-deep .ngx-pagination {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    list-style: none !important;
+    text-align: center !important;
+}
+
+.shopify-pagination ::ng-deep .ngx-pagination li {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.shopify-pagination ::ng-deep .ngx-pagination a,
+.shopify-pagination ::ng-deep .ngx-pagination button,
+.shopify-pagination ::ng-deep .ngx-pagination .current {
+    min-width: 30px !important;
+    height: 30px !important;
+    padding: 0 9px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid #dfe3e8 !important;
+    border-radius: 6px !important;
+    background: #fff !important;
+    color: #202223 !important;
+    font-size: 12px !important;
+    text-decoration: none !important;
+    box-sizing: border-box !important;
+}
+
+.shopify-pagination ::ng-deep .ngx-pagination .current {
+    background: #202223 !important;
+    border-color: #202223 !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+}
+
+.shopify-pagination ::ng-deep .ngx-pagination a:hover {
+    background: #f6f6f7 !important;
+    color: #202223 !important;
+}
+
+.shopify-pagination ::ng-deep .ngx-pagination .disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+}
+
+/* ============================================================
+   EMPTY STATE
+   ============================================================ */
+
+.shopify-empty {
+    width: 100%;
+    padding: 50px 20px;
+    text-align: center;
+    border: 1px solid #e1e3e5;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.shopify-empty h5 {
+    margin-bottom: 6px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.shopify-empty p {
+    margin: 0;
+    color: #6d7175;
+    font-size: 13px;
+}
+
+/* ============================================================
+   LOADING
+   ============================================================ */
+
+.shopify-loading {
+    padding: 50px 20px;
+    text-align: center;
+}
+
+.shopify-loading p {
+    margin-top: 10px;
+    color: #6d7175;
+    font-size: 13px;
+}
+
+/* ============================================================
+   MOBILE CARD
+   ============================================================ */
+
+.shopify-mobile-list {
+    display: none;
+}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+
+.shopify-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 1040;
+}
+
+.shopify-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.shopify-modal__dialog {
+    width: 100%;
+    max-width: 900px;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.18);
+}
+
+.shopify-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px;
+    border-bottom: 1px solid #e1e3e5;
+}
+
+.shopify-modal__title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.shopify-modal__body {
+    padding: 22px;
+}
+
+.shopify-modal__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 16px 22px;
+    border-top: 1px solid #e1e3e5;
+}
+
+/* ============================================================
+   RESPONSIVE — TABLET
+   ============================================================ */
+
+@media (max-width: 1100px) {
+
+    :host {
+        padding: 28px 5% 36px;
+    }
+
+    .shopify-table {
+        min-width: 900px;
+    }
+
+    .shopify-table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* ============================================================
+   RESPONSIVE — MOBILE
+   ============================================================ */
+
+@media (max-width: 768px) {
+
+    :host {
+        padding: 20px 16px 30px;
+    }
+
+    .shopify-search-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .shopify-search-row>div:last-child {
+        width: 100%;
+    }
+
+    .shopify-search-row .btn-shopify {
+        width: auto !important;
+    }
+
+    /* Hide desktop table */
+    .shopify-table-wrap {
+        display: none;
+    }
+
+    /* Show mobile cards */
+    .shopify-mobile-list {
+        display: block;
+    }
+
+    .shopify-mobile-card {
+        padding: 16px;
+        margin-bottom: 10px;
+        border: 1px solid #e1e3e5;
+        border-radius: 8px;
+        background: #fff;
+    }
+
+    .shopify-mobile-card__row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+    .shopify-mobile-card__field {
+        margin-bottom: 14px;
+        line-height: 1.7;
+    }
+
+    .shopify-mobile-card__actions {
+        display: flex;
+        gap: 7px;
+        flex-wrap: wrap;
+    }
+
+    .shopify-mobile-card__actions .btn-shopify {
+        flex: 1;
+        min-width: 80px;
+    }
+
+    .shopify-pagination {
+        padding: 12px 0 !important;
+    }
+
+    .shopify-pagination ::ng-deep .ngx-pagination {
+        flex-wrap: wrap !important;
+    }
+
+    .shopify-modal {
+        padding: 10px;
+    }
+
+    .shopify-modal__dialog {
+        max-height: calc(100vh - 20px);
+    }
+
+    .shopify-modal__body {
+        padding: 16px;
+    }
+
+    .shopify-modal__header {
+        padding: 14px 16px;
+    }
+
+    .shopify-modal__footer {
+        padding: 14px 16px;
+        flex-wrap: wrap;
+    }
+}
+
+/* ============================================================
+   SMALL MOBILE
+   ============================================================ */
+
+@media (max-width: 480px) {
+
+    :host {
+        padding: 16px 12px 24px;
+    }
+
+    .shopify-search-row .btn-shopify {
+        width: 100% !important;
+    }
+
+    .shopify-mobile-card__actions {
+        flex-direction: column;
+    }
+
+    .shopify-mobile-card__actions .btn-shopify {
+        width: 100%;
+    }
+
+    .shopify-pagination ::ng-deep .ngx-pagination a,
+    .shopify-pagination ::ng-deep .ngx-pagination button,
+    .shopify-pagination ::ng-deep .ngx-pagination .current {
+        min-width: 28px !important;
+        height: 28px !important;
+        font-size: 11px !important;
+    }
+}

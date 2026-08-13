@@ -41,10 +41,10 @@ export const environment = {
   logoName: 'assets/images/logos/logo.png',
   background: 'assets/images/background/admin_portal_background.jpg',
 
-  // apiUrl: 'http://localhost:8080/DEMO_API/',
-     apiUrl: 'https://cp.techmaci.com:8443/DEMO_API/',
+  apiUrl: 'http://localhost:8080/JOLLIEBEE_API/',
+    //  apiUrl: 'https://cp.techmaci.com:8443/DEMO_API/',
   //  apiUrl: 'https://cp.techmaci.com:8443/RESTAURANT_API/',
-  //  apiUrl: 'https://cp.techmaci.com:8443/FASHION01_API/',
+  // apiUrl: 'https://cp.techmaci.com:8443/FASHION01_API/',
   // apiUrl: 'http://localhost:8080/FASHION01_API/',
    //apiUrl: 'https://cp.techmaci.com:8443/FASHION_API/',
 
