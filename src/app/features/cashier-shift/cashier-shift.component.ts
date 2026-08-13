@@ -4,12 +4,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { CashierShiftService } from '../../shared/services/cashier-shift.service';
-import Swal from "sweetalert2";
-
+import { NotificationService } from '../../shared/services/notification.service';
 
 @Component({
   selector: 'app-cashier-shift',
-    imports: [CommonModule, FormsModule, NgxPaginationModule],
+  imports: [CommonModule, FormsModule, NgxPaginationModule],
   templateUrl: './cashier-shift.component.html',
   styleUrl: './cashier-shift.component.scss'
 })
@@ -21,17 +20,16 @@ export class CashierShiftComponent {
   searchText: string = '';
 
   constructor(
-    private service: CashierShiftService
+    private service: CashierShiftService,
+    private notify: NotificationService
   ) {
     //this.loadSampleData();
-    
-
   }
 
   ngOnInit() {
-  
-  this.loadShifts();
-    
+
+    this.loadShifts();
+
   }
 
   loadShifts() {
@@ -45,7 +43,7 @@ export class CashierShiftComponent {
         console.error('Error fetching shifts:', error);
       }
     );
-  } 
+  }
 
 
 
@@ -73,77 +71,39 @@ export class CashierShiftComponent {
             ...updatedShift
           };
         }
-        alert('Shift Updated Successfully');
+        this.notify.success('Shift Updated Successfully');
         this.resetForm();
       },
       (error) => {
         console.error('Error updating shift:', error);
-        alert('Failed to update shift');
+        this.notify.error('Failed to update shift');
       }
     );
-
-
-
-    // const index = this.shiftsList.findIndex(
-    //   x => x.shiftId == this.shift.shiftId
-    // );
-
-    // if (index != -1) {
-
-    //   this.shiftsList[index] = {
-    //     ...this.shift
-    //   };
-
-    //   alert('Shift Updated Successfully');
-
-    //   this.resetForm();
-    // }
   }
 
-  deleteShift(item: CashierShift) {
+  async deleteShift(item: CashierShift) {
 
-    // if (confirm('Are you sure you want to delete this shift?')) {
+    const confirmed = await this.notify.confirmDelete('Shift');
+    if (!confirmed) {
+      this.notify.info('Your Shift is safe');
+      return;
+    }
 
-    //   this.shiftsList = this.shiftsList.filter(
-    //     x => x.shiftId != item.shiftId
-    //   );
-    // }
-
- Swal.fire({
-      title: `Are you sure want to delete Shift?`,
-      text: 'You cannot recover this Shift!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, keep it'
-    }).then((response: any) => {
-      if (response.isConfirmed) {
-        // Call delete API
-        this.service.delete(item.shiftId).subscribe(
-          () => {
-
-                // this.enabledEdit = [];
-                // this.activeRow = null
-
-            // Remove shift from the list
-            this.shiftsList = this.shiftsList.filter(
-              x => x.shiftId != item.shiftId
-            );
-
-            // Trigger Angular change detection by assigning a new array
-            //this.shiftsList = [...this.shiftsList];
-
-            Swal.fire('Deleted!', 'Shift has been deleted.', 'success');
-          },
-          (error) => {
-            console.error('Error deleting shift:', error);
-            Swal.fire('Error', 'Failed to delete shift', 'error');
-          }
+    // Call delete API
+    this.service.delete(item.shiftId).subscribe(
+      () => {
+        // Remove shift from the list
+        this.shiftsList = this.shiftsList.filter(
+          x => x.shiftId != item.shiftId
         );
-      } else if (response.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire('Cancelled', 'Your Shift is safe', 'info');
+
+        this.notify.success('Shift has been deleted.');
+      },
+      (error) => {
+        console.error('Error deleting shift:', error);
+        this.notify.error('Failed to delete shift');
       }
-    });
+    );
 
   }
 

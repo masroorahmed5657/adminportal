@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import Swal from 'sweetalert2';
 
 import { Employees } from '../../shared/models/model-classes.model';
 import { EmployeesService } from '../../shared/services/employees.service';
+import { NotificationService } from '../../shared/services/notification.service';
 
 @Component({
   selector: 'app-employees',
@@ -31,7 +31,10 @@ export class EmployeesComponent implements OnInit {
   employee: Employees = this.getEmptyEmployee();
   viewEmployee: Employees = this.getEmptyEmployee();
 
-  constructor(private empService: EmployeesService) {}
+  constructor(
+    private empService: EmployeesService,
+    private notify: NotificationService
+  ) {}
 
   ngOnInit(): void {
     this.loadEmployees();
@@ -62,7 +65,7 @@ export class EmployeesComponent implements OnInit {
       },
       error: (err) => {
         console.error(err);
-        Swal.fire('Error', 'Failed to load employees', 'error');
+        this.notify.error('Failed to load employees');
         this.isLoading = false;
       }
     });
@@ -133,23 +136,23 @@ export class EmployeesComponent implements OnInit {
   // Save
   save(): void {
     if (!this.employee.firstName?.trim()) {
-      Swal.fire('Validation', 'First name is required', 'warning');
+      this.notify.warning('First name is required');
       return;
     }
     if (!this.employee.lastName?.trim()) {
-      Swal.fire('Validation', 'Last name is required', 'warning');
+      this.notify.warning('Last name is required');
       return;
     }
 
     this.isSaving = true;
     this.empService.save(this.employee).subscribe({
       next: () => {
-        Swal.fire('Success', 'Employee saved successfully', 'success');
+        this.notify.success('Employee saved successfully', 'Success');
         this.onSaveComplete();
       },
       error: (err) => {
         console.error(err);
-        Swal.fire('Error', 'Failed to save employee', 'error');
+        this.notify.error('Failed to save employee');
         this.isSaving = false;
       }
     });
@@ -163,31 +166,25 @@ export class EmployeesComponent implements OnInit {
   }
 
   // Delete
-  onDelete(empId: number): void {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: 'This employee will be permanently deleted.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, keep it'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.isLoading = true;
-        this.empService.delete(empId).subscribe({
-          next: () => {
-            Swal.fire('Deleted!', 'Employee has been deleted.', 'success');
-            this.loadEmployees();
-            if (this.editMode && this.employee.empId === empId) {
-              this.goToList();
-            }
-          },
-          error: (err) => {
-            console.error(err);
-            Swal.fire('Error', 'Delete failed', 'error');
-            this.isLoading = false;
-          }
-        });
+  async onDelete(empId: number) {
+    const confirmed = await this.notify.confirmDelete('this employee');
+    if (!confirmed) {
+      return;
+    }
+
+    this.isLoading = true;
+    this.empService.delete(empId).subscribe({
+      next: () => {
+        this.notify.success('Employee has been deleted.');
+        this.loadEmployees();
+        if (this.editMode && this.employee.empId === empId) {
+          this.goToList();
+        }
+      },
+      error: (err) => {
+        console.error(err);
+        this.notify.error('Delete failed');
+        this.isLoading = false;
       }
     });
   }

@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import Swal from 'sweetalert2';
 import { DepartmentsService } from '../../shared/services/departments.service';
 import { AdminUser, Departments } from '../../shared/models/model-classes.model';
+import { NotificationService } from '../../shared/services/notification.service';
 
 @Component({
   selector: 'app-departments',
@@ -50,7 +50,10 @@ export class DepartmentsComponent implements OnInit {
     this.page = p;
   }
 
-  constructor(private deptService: DepartmentsService) { }
+  constructor(
+    private deptService: DepartmentsService,
+    private notify: NotificationService
+  ) { }
 
   ngOnInit(): void {
     this.loadDepartments();
@@ -79,7 +82,7 @@ export class DepartmentsComponent implements OnInit {
       },
       error: (err) => {
         console.error(err);
-        Swal.fire('Error', 'Failed to load departments', 'error');
+        this.notify.error('Failed to load departments');
         this.isLoading = false;
       }
     });
@@ -147,18 +150,17 @@ export class DepartmentsComponent implements OnInit {
 
   save(): void {
     if (!this.department.deptName?.trim()) {
-      Swal.fire('Validation', 'Department name is required', 'warning');
+      this.notify.warning('Department name is required');
       return;
     }
     if (!this.department.printerName?.trim()) {
-      Swal.fire('Validation', 'Printer name is required', 'warning');
+      this.notify.warning('Printer name is required');
       return;
     }
 
     if (!this.validateData()) {
       return;
     }
-
 
     const loggedInUser: AdminUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
     this.isSaving = true;
@@ -175,22 +177,22 @@ export class DepartmentsComponent implements OnInit {
         if (this.selectedFile) {
           this.deptService.upload(this.selectedFile, saved.deptId).subscribe({
             next: () => {
-              Swal.fire('Success', 'Department saved with image', 'success');
+              this.notify.success('Department saved with image');
               this.onSaveComplete();
             },
             error: () => {
-              Swal.fire('Warning', 'Department saved but image upload failed', 'warning');
+              this.notify.warning('Department saved but image upload failed');
               this.onSaveComplete();
             }
           });
         } else {
-          Swal.fire('Success', 'Department saved successfully', 'success');
+          this.notify.success('Department saved successfully');
           this.onSaveComplete();
         }
       },
       error: (err) => {
         console.error(err);
-        Swal.fire('Error', 'Failed to save department', 'error');
+        this.notify.error('Failed to save department');
         this.isSaving = false;
       }
     });
@@ -204,128 +206,88 @@ export class DepartmentsComponent implements OnInit {
     this.loadDepartments();
   }
 
-  onDelete(deptId: number): void {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: 'You will not be able to recover this department!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, keep it'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.isLoading = true;
-        this.deptService.delete(deptId).subscribe({
-          next: () => {
-            Swal.fire('Deleted!', 'Department has been deleted.', 'success');
-            this.loadDepartments();
-            if (this.editMode && this.department.deptId === deptId) {
-              this.goToList();
-            }
-          },
-          error: (err) => {
-            console.error(err);
-            Swal.fire('Error', 'Delete failed', 'error');
-            this.isLoading = false;
-          }
-        });
+  async onDelete(deptId: number): Promise<void> {
+    const confirmed = await this.notify.confirmDelete('this department');
+    if (!confirmed) {
+      this.notify.info('Your department is safe');
+      return;
+    }
+
+    this.isLoading = true;
+    this.deptService.delete(deptId).subscribe({
+      next: () => {
+        this.notify.success('Department has been deleted.');
+        this.loadDepartments();
+        if (this.editMode && this.department.deptId === deptId) {
+          this.goToList();
+        }
+      },
+      error: (err) => {
+        console.error(err);
+        this.notify.error('Delete failed');
+        this.isLoading = false;
       }
     });
   }
 
-  deleteImage(deptId: number): void {
-    Swal.fire({
-      title: 'Remove image?',
-      text: 'This action cannot be undone.',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, remove'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.deptService.deleteImage(deptId).subscribe({
-          next: () => {
-            Swal.fire('Removed', 'Image removed successfully', 'success');
-            this.loadDepartments();
-            if (this.editMode && this.department.deptId === deptId) {
-              this.department.finalImage = '';
-            }
-          },
-          error: () => Swal.fire('Error', 'Failed to remove image', 'error')
-        });
-      }
+  async deleteImage(deptId: number): Promise<void> {
+    const confirmed = await this.notify.confirm(
+      'This action cannot be undone.',
+      'Remove image?'
+    );
+    if (!confirmed) return;
+
+    this.deptService.deleteImage(deptId).subscribe({
+      next: () => {
+        this.notify.success('Image removed successfully');
+        this.loadDepartments();
+        if (this.editMode && this.department.deptId === deptId) {
+          this.department.finalImage = '';
+        }
+      },
+      error: () => this.notify.error('Failed to remove image')
     });
   }
   /* ******************************************************** */
   /* ****************************************************************** */
   validateData() {
-    let bRet = true;
-
     //Check for duplicate department name
     const duplicate = this.departmentsList.find(
       x => x.deptName?.toLowerCase() === this.department.deptName?.toLowerCase()
     );
     if (duplicate) {
-      Swal.fire({
-        title: 'Department Name already exists',
-        text: 'Please choose a different department name.',
-        icon: 'warning'
-      });
+      this.notify.warning('Please choose a different department name.', 'Department Name already exists');
       return false;
     }
 
     //Check for emptry department name
     if (!this.department.deptName || this.department.deptName.trim() === '') {
-      Swal.fire({
-        title: 'Department Name Required',
-        text: 'Please enter a department name.',
-        icon: 'warning'
-      });
+      this.notify.warning('Please enter a department name.', 'Department Name Required');
       return false;
     }
     //Check for Alphabetic department name
-    //const alphabeticRegex = /^[A-Za-z\s]+$/;
     const alphabeticRegex = /^[A-Za-z][A-Za-z0-9\s]*$/;
     if (!alphabeticRegex.test(this.department.deptName)) {
-      Swal.fire({
-        title: 'Invalid Department Name',
-        text: 'Department name should contain only alpha numeric characters.',
-        icon: 'warning'
-      });
+      this.notify.warning('Department name should contain only alpha numeric characters.', 'Invalid Department Name');
       return false;
     }
     //check for leading ad trailing spaces
     if (this.department.deptName !== this.department.deptName.trim()) {
-      Swal.fire({
-        title: 'Invalid Department Name',
-        text: 'Department name should not have leading or trailing spaces.',
-        icon: 'warning'
-      });
+      this.notify.warning('Department name should not have leading or trailing spaces.', 'Invalid Department Name');
       return false;
     }
     //Check for special characters in department name
     const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
     if (specialCharRegex.test(this.department.deptName)) {
-      Swal.fire({
-        title: 'Invalid Department Name',
-        text: 'Department name should not contain special characters.',
-        icon: 'warning'
-      });
+      this.notify.warning('Department name should not contain special characters.', 'Invalid Department Name');
       return false;
     }
     //Check for department name length
     if (this.department.deptName.length > 50) {
-      Swal.fire({
-        title: 'Invalid Department Name',
-        text: 'Department name should not exceed 50 characters.',
-        icon: 'warning'
-      });
+      this.notify.warning('Department name should not exceed 50 characters.', 'Invalid Department Name');
       return false;
     }
-    else {
-      return true;
-    }
-
+    return true;
   }
-
 
 }
