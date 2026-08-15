@@ -9,15 +9,10 @@ import { faPlusSquare, faRemove, faRupeeSign, faDollar, faCar, faHome, faSave, f
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CommonModule } from '@angular/common';
-import { NgxPaginationModule } from 'ngx-pagination';
-//import { NgbCarouselModule } from '@ng-bootstrap/ng-bootstrap';
-
-
-
 
 @Component({
   selector: 'app-orders-payment',
-  imports: [FormsModule, FontAwesomeModule, CommonModule, NgxPaginationModule], //NgbCarouselModule],
+  imports: [FormsModule, FontAwesomeModule, CommonModule],
   templateUrl: './orders-payment.component.html',
   styleUrl: './orders-payment.component.scss'
 })
@@ -48,6 +43,23 @@ export class OrdersPaymentComponent implements OnInit {
 
   faDollar = faDollar;
 
+  /* ===== Pagination (Shopify-style Previous / Next) ===== */
+  pageSize: number = 25; // same as itemsPerPage before
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.orderViewList.length / this.pageSize));
+  }
+
+  get pagedOrderList(): OrderCustomerPayment[] {
+    const start = (this.p - 1) * this.pageSize;
+    return this.orderViewList.slice(start, start + this.pageSize);
+  }
+
+  goToPage(pg: number) {
+    if (pg < 1 || pg > this.totalPages) return;
+    this.p = pg;
+  }
+
   constructor(
     private orderService: OrderService,
     private checkoutService: CheckoutService,
@@ -60,12 +72,13 @@ export class OrdersPaymentComponent implements OnInit {
   }
   /* ********************************************************************* */
   getOrderdata(orderStatus: string, orderType: string) {
+    this.spinnerDataLoad = true; // 👈 loader start
+
     let orderSearch: OrderSearch = new OrderSearch();
     orderSearch.status = orderStatus;
     orderSearch.orderType = orderType;
-    orderSearch.createdDateStart = this.startDate; //this.searchForm.get('dateFrom')?.value;
-    orderSearch.createdDateEnd = this.endDate;    //this.searchForm.get('dateTo')?.value;
-    //orderSearch.orderType = this.selectedOrderType;
+    orderSearch.createdDateStart = this.startDate;
+    orderSearch.createdDateEnd = this.endDate;
 
     if (environment.currency === 'USD') {
       this.faDollar = faDollar;
@@ -74,43 +87,50 @@ export class OrdersPaymentComponent implements OnInit {
       this.faDollar = faRupeeSign;
     }
 
-
     //Reset list
     if (this.orderList !== null) this.orderList.length = 0;
     if (this.orderViewList !== null) this.orderViewList.length = 0;
 
     orderSearch.createdDateStart = this.startDate;
     orderSearch.createdDateEnd = this.endDate;
-    orderSearch.orderType='POS';
+    orderSearch.orderType = 'POS';
     if (this.orderList != null) { this.orderList.length = 0; }
-    this.orderService.findPaymentsOrderByDate(orderSearch).subscribe((data: OrderPaymentResponse) => {
-      if (data !== undefined) {
-        this.errorsFlag = false;
-        this.orderList = data.orderList;
 
-        if (this.orderList !== null || this.orderList != undefined) {
-          for (let i = 0; i < this.orderList.length; i++) {
-            this.orderViewList.push(this.orderList[i]);
+    this.orderService.findPaymentsOrderByDate(orderSearch).subscribe({
+      next: (data: OrderPaymentResponse) => {
+        if (data !== undefined) {
+          this.errorsFlag = false;
+          this.orderList = data.orderList;
+
+          if (this.orderList !== null || this.orderList != undefined) {
+            for (let i = 0; i < this.orderList.length; i++) {
+              this.orderViewList.push(this.orderList[i]);
+            }
+            this.orderViewList.reverse();
+            this.p = 1; // 👈 reset to first page on fresh load
+            this.spinnerDataLoad = false;
           }
-          //this.orderViewList.sort();
-          this.orderViewList.reverse();
-          this.spinnerDataLoad = false;
-        }
 
-        this.checkoutService.getPaymentList().subscribe((data: Payment[]) => {
-          if (data !== undefined || data !== null) {
-            this.paymentFlag = false;
-            this.paymentList = data;
+          this.checkoutService.getPaymentList().subscribe((data: Payment[]) => {
+            if (data !== undefined || data !== null) {
+              this.paymentFlag = false;
+              this.paymentList = data;
 
-            if (this.paymentList !== null || this.paymentList != undefined) {
-              for (let i = 0; i < this.paymentList.length; i++) {
-                this.paymentListnew.push(this.paymentList[i]);
-
-
+              if (this.paymentList !== null || this.paymentList != undefined) {
+                for (let i = 0; i < this.paymentList.length; i++) {
+                  this.paymentListnew.push(this.paymentList[i]);
+                }
               }
             }
-          }
-        });
+          });
+        }
+        else {
+          this.spinnerDataLoad = false;
+        }
+      },
+      error: (err) => {
+        console.error(err);
+        this.spinnerDataLoad = false;
       }
     });
 
@@ -142,13 +162,12 @@ export class OrdersPaymentComponent implements OnInit {
 
   // Add a method to check if payment is completed
   isPaymentCompleted(orderId: any): string {
-    if (  this.getPaymentStatus(orderId) === 'COMPLETE') {
+    if (this.getPaymentStatus(orderId) === 'COMPLETE') {
       return 'paid';
     }
     else {
       return 'notpaid';
     }
-
   }
 
 }

@@ -19,14 +19,13 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import Swal from "sweetalert2";
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { NgxPaginationModule } from 'ngx-pagination';
 import { SearchPipe } from '../pipes/search-pipe.pipe';
 import { NgxPrintModule } from 'ngx-print';
 import { interval, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-orders',
-  imports: [FormsModule, CommonModule, FontAwesomeModule, NgxPaginationModule, SearchPipe, NgxPrintModule],
+  imports: [FormsModule, CommonModule, FontAwesomeModule, SearchPipe, NgxPrintModule],
   providers: [DatePipe],
   templateUrl: './orders.component.html',
   styleUrl: './orders.component.scss'
@@ -41,15 +40,12 @@ export class OrdersComponent implements OnInit {
   faDollar = faDollar;
   faSearch = faSearch;
   faBook = faBook;
-
+  viewMode: 'kitchen' | 'list' = 'kitchen';
+  orderSourceType: 'ONLINE' | 'POS' = 'POS';
 
   currentCurrency = 'USD';
 
   orderViewList: OrdersMenuView[] = [];
-  //orderViewList: OrdersCustomerWrapper[] = [];
-  //orderItemWrapperList: OrderItemProductWrapper[] = [];
-  //orderItemWrapperViewList: OrderItemProductWrapper[] = [];
-  //orderFinalViewList: OrdersCustItemProdCatWrapper[] = [];
 
   orderStatus: string[] = ['NEW', 'PRINTED', 'CLOSED', 'REJECTED'];
   ordersItemsList: OrdersItems[] = [];
@@ -58,7 +54,7 @@ export class OrdersComponent implements OnInit {
   qurbaniResponse: CategoryQty[] = [];
   currentUser: any;
 
-  selectedOrderType= 'PICKUP' ;
+  selectedOrderType = 'PICKUP';
   orders: any[] = [];
 
   qurbaniModel: Qurbani = new Qurbani();
@@ -93,14 +89,10 @@ export class OrdersComponent implements OnInit {
   provinceList: StateProvince[] = [];
   productList: ProductView[] = [];
 
-  //cache: any;
-
   total: any = 0;
   quantity = 0;
 
-  // fromDate:any=this.datepipe.transform(new Date(),"yyyy-MM-dd");
   fromDate: any;
-  // toDate:any=this.datepipe.transform(new Date(),"yyyy-MM-dd");
   toDate: any;
   currentOrderStatus: string = 'NEW';
   projectName = environment.appName;
@@ -112,6 +104,44 @@ export class OrdersComponent implements OnInit {
 
   WARNING_MINUTES = 15;   // turn red
   CRITICAL_MINUTES = 20; // optional escalation
+
+  /* ===== Pagination (Shopify-style Previous / Next) ===== */
+  pageSize: number = 20; // same as itemsPerPage before
+
+  private searchPipeInstance = new SearchPipe();
+
+  get filteredOrders(): any[] {
+    if (!this.terms) return this.orderViewList;
+    return this.searchPipeInstance.transform(this.orderViewList, this.terms);
+  }
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredOrders.length / this.pageSize));
+  }
+
+  get pagedOrderList(): any[] {
+    const start = (this.p - 1) * this.pageSize;
+    return this.filteredOrders.slice(start, start + this.pageSize);
+  }
+
+ setViewMode(mode: 'kitchen' | 'list') {
+  this.viewMode = mode;
+  this.p = 1;
+}
+
+
+onSourceChange(source: 'ONLINE' | 'POS') {
+  this.orderSourceType = source;
+  this.p = 1;
+  // Agar backend ONLINE/POS ke hisaab se alag data deta hai to yahan reload call karein:
+  // this.getOrderdata(this.currentOrderStatus, this.orderSourceType);
+}
+
+
+  goToPage(pg: number) {
+    if (pg < 1 || pg > this.totalPages) return;
+    this.p = pg;
+  }
 
   constructor(private orderService: OrderService,
     private router: Router,
@@ -126,11 +156,8 @@ export class OrdersComponent implements OnInit {
   /* ********************************************************************* */
   ngOnInit(): void {
 
-
     this.fromDate = this.datepipe.transform(new Date(), "yyyy-MM-dd");
 
-
-    //this.loadOrders();
     this.spinnerDataLoad = true;
 
     this.timerSub = interval(1000).subscribe(() => {
@@ -138,19 +165,13 @@ export class OrdersComponent implements OnInit {
     });
 
     setTimeout(function () {
-
       let t1 = parent.window.localStorage['reload'];
       window.location.reload();
-
     }, 120000);
 
-
-    //delay(30000).arguments( window.location.reload());
     this.searchType = 1;
     let t1 = this.searchType;
 
-
-    //Default Category and department. First check if any
     this.startDate = this.cache.get('startDate');
     this.endDate = this.cache.get('endDate');
 
@@ -161,7 +182,6 @@ export class OrdersComponent implements OnInit {
     }
 
     this.deptService.getDepList().subscribe((data: Departments[]) => {
-      //this.deptList=data ;
       if (data != null || data != undefined) {
         for (let i = 0; i < data.length; i++) {
           if (data[i].activeFlag) {
@@ -170,7 +190,6 @@ export class OrdersComponent implements OnInit {
         }
       }
 
-      //Get Category List
       this.categoryService.getCategoryList().subscribe((data: Category[]) => {
         this.categoryList = data;
         this.categoryList.sort();
@@ -178,18 +197,9 @@ export class OrdersComponent implements OnInit {
         this.spinnerDataLoad = false;
       });
 
-
-
     });
 
-
-    //RESET
-    //this.orderList.length = 0;
     this.orderViewList.length = 0;
-    //this.orderItemWrapperList.length = 0;
-    //this.orderItemWrapperViewList.length = 0;
-
-
 
     let dept = this.cache.get('selectedDepartment');
     if (dept === null || dept === 'undefined') {
@@ -200,8 +210,7 @@ export class OrdersComponent implements OnInit {
       this.cache.set('selectedDepartment', this.selectedDepartment);
     }
 
-    this.getOrderdata(this.currentOrderStatus, this.selectedOrderType);//, this.fromDate, this.toDate);//NEW
-
+    this.getOrderdata(this.currentOrderStatus, this.selectedOrderType);
 
   }//ngOnInit()
   /* ********************************************************************************* */
@@ -228,56 +237,33 @@ export class OrdersComponent implements OnInit {
 
 
     this.orderService.getTodaysOrders(orderSearch).subscribe({
-      next: (data: OrderMenuResponse) => 
-        {
+      next: (data: OrderMenuResponse) => {
         this.errorsFlag = false;
         this.orderViewList = data.orderMenuList;
-        if (this.orderViewList!==null){
+        if (this.orderViewList !== null) {
 
-        
-        //this.orderItemWrapperList = data?.orderItems ?? [];
+          if (this.orderViewList.length) {
+            this.orderViewList = [...this.orderViewList].reverse();
+            this.p = 1; // 👈 reset to first page on fresh data
 
-        if (this.orderViewList.length) {
-          this.orderViewList = [...this.orderViewList].reverse();
-          //this.orderItemWrapperViewList = [...this.orderItemWrapperList].sort();
+            if (oldOrderCount < newOrderCount) {
+              this.playAudio();
+            }
 
-
-          ////////////////////////////////////////////////////////////////////
-          //Code added on Jan 20, 2026, AHMEDM
-          /*export class OrdersView{
-            agentName: any;
-            customerName: any;
-            orderNumber: any;
-            orderId:any;
-            tableId:any;
-            time:any;
-            createdDate:any;
-            pickupDinein:any;
-            menuList:MenuOrder[]=[];
-          }*/
-
-
-
-
-
-          if (oldOrderCount < newOrderCount) {
-            this.playAudio();
           }
 
+          this.spinnerDataLoad = false; // 👈 loader stop
         }
-
-        this.spinnerDataLoad = false; // 👈 loader stop
-      }
-      else{
-        this.orderViewList = [];
-        this.spinnerDataLoad = false; // 👈 loader stop
-      }
+        else {
+          this.orderViewList = [];
+          this.spinnerDataLoad = false; // 👈 loader stop
+        }
       },
       error: (err) => {
         console.error(err);
         this.spinnerDataLoad = false; // 👈 loader stop on error
       }
-    
+
     });
   }
 
@@ -329,11 +315,9 @@ export class OrdersComponent implements OnInit {
         if (this.categoryList[i].category != null || this.categoryList[i].category != undefined) {
           category = this.categoryList[i].category;
         }
-
         break;
       }
     }
-
     return category;
   }
   /* ********************************************************************* */
@@ -341,57 +325,18 @@ export class OrdersComponent implements OnInit {
 
   }
   /* ********************************************************************* */
-  // getOrderItems(orderId: any): OrdersItemsView[] {
-  //   let ordersItemsViewList: OrdersItemsView[] = [];
-
-  //   //Make new Item List only for this given orderId
-  //   for (let i = 0; i < this.orderItemWrapperViewList.length; i++) {
-  //     if (orderId === this.orderItemWrapperViewList[i].ordersItems?.orderId) {
-  //       if (this.selectedDepartment === 'ALL') {
-  //         let orderItems = new OrdersItemsView();
-  //         orderItems = this.orderItemDecorator(this.orderItemWrapperViewList[i].ordersItems, this.orderItemWrapperViewList[i].products);
-  //         orderItems.categoryName = this.orderItemWrapperViewList[i].category?.category;
-  //         ordersItemsViewList.push(orderItems);
-
-  //       }//ALL
-  //       else {
-  //         if (this.selectedDepartment === this.orderItemWrapperViewList[i].category?.category) {
-  //           let orderItems = new OrdersItemsView();
-  //           orderItems = this.orderItemDecorator(this.orderItemWrapperViewList[i].ordersItems, this.orderItemWrapperViewList[i].products);
-  //           orderItems.categoryName = this.orderItemWrapperViewList[i].category?.category;
-  //           ordersItemsViewList.push(orderItems);
-
-  //         }
-
-  //       }
-
-  //     }
-  //   }
-  //   //console.log(ordersItemsViewList)
-  //   return ordersItemsViewList;
-
-  // }
-
-  /* ********************************************************************* */
   statusChange(status: any) {
-
     //alert(status);
-
   }
 
   /* ********************************************************************* */
   onSearch() {
-
     if (this.selectedOrderType === 'ONLINE') {
       this.getOrderdata(this.currentOrderStatus, this.selectedOrderType);
     }
     else if (this.selectedOrderType === 'POS') {
       this.getOrderdata(this.currentOrderStatus, this.selectedOrderType);
-
     }
-
-
-
   }
   /* ********************************************************************* */
   onCancel() {
@@ -424,7 +369,6 @@ export class OrdersComponent implements OnInit {
   }
   /* ********************************************************************* */
   productDetail(order: any, orderItemProductList: OrderItemProductWrapper[]) {
-    // alert("data is find"+order);
     let myOrder: Orders = order.orders;
     let myCustomer: Customer = order.customer;
 
@@ -433,13 +377,7 @@ export class OrdersComponent implements OnInit {
     for (let i = 0; i < orderItemProductList.length; i++) {
 
       if (orderItemProductList[i].ordersItems?.orderId === myOrder.orderId) {
-
-        //let category: Category = orderItemProductList[i].category;
-        //let product: Product = orderItemProductList[i].products;
-        //let orderItem: OrdersItems[] = orderItemProductList[i].ordersItems;
-
         let ordersItemsView: OrdersItemsView = this.orderItemDecorator(orderItemProductList[i].ordersItems, orderItemProductList[i].products);
-
         items.push(ordersItemsView);
       }
 
@@ -455,38 +393,28 @@ export class OrdersComponent implements OnInit {
   /* ******************************************************************************** */
 
   categoryChange() {
-
     let category = this.selectedDepartment;
     if (this.selectedDepartment !== 'ALL') {
       this.cache.set('selectedDepartment', this.selectedDepartment);
-
-      //this.getOrderdata(this.orderStatus[this.searchType], this.selectedOrderType);//, this.fromDate, this.toDate);//NEW
-      //this.getOrderdata(this.orderStatus[1]);//, this.fromDate, this.toDate);//PRINTED
-      // window.location.reload();
     }
     else {
       this.cache.set('selectedDepartment', this.selectedDepartment);
     }
-
   }
 
   /* ********************************************************************************* */
 
   onUpdateStatus(order: any, itemId: any, status: any) {
-
     let item: OrdersItems = new OrdersItems();
     item.itemStatus = status;
     item.orderId = order.orders.orderId;
     item.orderItemId = itemId;
-
-
 
     this.orderService.updateItemStatus(item).subscribe((data: any) => {
       let returnData = data;
       if (returnData === 1) {
         window.location.reload();
       }
-
     });
   }
   /* ********************************************************************************* */
@@ -501,48 +429,6 @@ export class OrdersComponent implements OnInit {
     return retCode;
   }
 
-  /* ********************************************************************************* */
-
-  // autoPrint(orderList: any) {
-
-  //   let bFound = false; //used for any item for selected department
-
-  //   for (let i = 0; i < orderList.length; i++) {
-  //     bFound = false;
-  //     let order = orderList[i];
-  //     if (order.orders?.orderStatus === 'NEW') {
-
-  //       let itemsForDept: OrdersItemsView[] = [];
-  //       let items: OrdersItemsView[] = this.getOrderItems(order.orders?.orderId);
-
-  //       if (items.length > 0) {
-  //         for (let j = 0; j < items.length; j++) {
-  //           let item = items[j];
-  //           if (item.itemStatus === 'NEW' && item.categoryName === this.selectedDepartment) {
-  //             this.onUpdateStatus(order, item.orderItemId, 'PRINTED');
-  //             bFound = true;
-
-  //             itemsForDept.push(item);
-  //           }
-  //           else if (item.itemStatus === 'NEW' && this.selectedDepartment === 'ALL') {
-  //             //this.onUpdateStatus(order, item.orderItemId, 'PRINTED');
-  //             //bFound=true;
-  //             //itemsForDept.push(item);
-  //             //NO PRINT IN ALL
-  //           }
-  //         }
-  //         if (bFound) {
-  //           let kk = 0;
-  //           this.printThermalAuto(order, order.customer, itemsForDept);
-  //           //this.print(order, itemsForDept);
-  //         }
-
-  //       }
-  //     }
-  //   }
-
-  // }
-
   /* *********************************************************************************** */
   formatPhoneNumber(phoneNumberString: string) {
     var cleaned = ('' + phoneNumberString).replace(/\D/g, '');
@@ -555,7 +441,6 @@ export class OrdersComponent implements OnInit {
   /* *********************************************************************************** */
   formatTime(datetimeStr: string) {
     let ret = '';
-    //datetimeStr = 2023-05-29 16:23
 
     if (datetimeStr === null || datetimeStr === undefined) {
       return '';
@@ -563,10 +448,10 @@ export class OrdersComponent implements OnInit {
 
     let dtArray = datetimeStr.split(' ');
 
-    let dateOnly = dtArray[0]; //2023-05-29
-    let timeStr = dtArray[1]; //16:23
-    let s1 = timeStr.substring(0, 2);//Hrs
-    let s2 = timeStr.substring(3);//Minute
+    let dateOnly = dtArray[0];
+    let timeStr = dtArray[1];
+    let s1 = timeStr.substring(0, 2);
+    let s2 = timeStr.substring(3);
     let s1Number = Number(s1);
     let AMPM = 'AM';
 
@@ -585,25 +470,15 @@ export class OrdersComponent implements OnInit {
   }
   /* ******************************************* */
   getTotalPrice(totalPrice: any) {
-
     return Number(totalPrice).toFixed(2);
-
   }
   /* ******************************************* */
   onSearchType(val: any) {
     this.searchType = val;
     this.currentOrderStatus = this.orderStatus[val - 1];
-
-    //refresh the list
-    // this.orderViewList.length=0;
-    // this.getOrderdata(this.orderStatus[val-1], this.selectedOrderType);//, this.fromDate, this.toDate);//NEW
-
   }
   /* ******************************************************** */
   getCss(): string {
-
-    //font-family: 'monospace sans-serif';
-
     let myCss = `
     {
       font-size: 6px;
@@ -621,7 +496,6 @@ export class OrdersComponent implements OnInit {
       }
   }`;
 
-
     return myCss;
   }
 
@@ -629,11 +503,7 @@ export class OrdersComponent implements OnInit {
   /* *********************************************************************************** */
   print(order: any, items: any): void {
 
-    /* Must open Chrome in KIOSK mode */
-    /* "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" --kiosk-printing */
-
     let popupWin;
-    //let printContents:HTMLElement = (document.getElementById('print-section-0').innerHTML) as HTMLElement ;
     popupWin = window.open('', '_blank');
     if (popupWin != null || popupWin != undefined) {
 
@@ -643,7 +513,6 @@ export class OrdersComponent implements OnInit {
         + order.customer?.stateProvince + ',' + order.customer?.postalCode;
 
       let myCss = this.getCss();
-
 
       let myHead = `
     <head>
@@ -730,11 +599,6 @@ export class OrdersComponent implements OnInit {
   //Calling from Manual Print Button
   printThermal(order: any, customer: any, orderItemProductList: any): void {
 
-
-    /* Must open Chrome in KIOSK mode */
-    /* "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" --kiosk-printing */
-
-    ////////////////////////////////////////////////////////////
     let myOrder: Orders = order.orders;
     let myCustomer: Customer = order.customer;
     let items: OrdersItemsView[] = [];
@@ -742,20 +606,13 @@ export class OrdersComponent implements OnInit {
     for (let i = 0; i < orderItemProductList.length; i++) {
 
       if (orderItemProductList[i].ordersItems?.orderId === myOrder.orderId) {
-
-        //let category: Category = orderItemProductList[i].category;
-        //let product: Product = orderItemProductList[i].products;
-        //let orderItem: OrdersItems[] = orderItemProductList[i].ordersItems;
-
         let ordersItemsView: OrdersItemsView = this.orderItemDecorator(orderItemProductList[i].ordersItems, orderItemProductList[i].products);
-
         items.push(ordersItemsView);
       }
 
     }//for loop
 
     let popupWin;
-    //let printContents:HTMLElement = (document.getElementById('print-section-0').innerHTML) as HTMLElement ;
     popupWin = window.open('', '_blank');
     if (popupWin != null || popupWin != undefined) {
 
@@ -765,7 +622,6 @@ export class OrdersComponent implements OnInit {
         + customer?.stateProvince + ',' + customer?.postalCode;
 
       let myCss = this.getCss();
-
 
       let myHead = `
     <head>
@@ -778,14 +634,12 @@ export class OrdersComponent implements OnInit {
     <title>` + this.projectName + `</title>
     </head>    `;
 
-      //<b> PICKUP:  ` +  order.orders?.pickupTime    + `</b><br>
       let myHtml = ` <html> ` + myHead;
 
       let phoneNumber = this.formatPhoneNumber(customer?.phone1);
       let formatDate = this.formatTime(myOrder.createDate);
       let today: Date = new Date();
 
-      //let myBodyOrder = `<body >
       let myBodyOrder = `<body onload="window.print();window.close();">
 
 
@@ -835,7 +689,6 @@ export class OrdersComponent implements OnInit {
           abbreviatedName = abbreviatedName + ' ' + currentItem.weight + ' lb ';
         }//if MEAT
         else {
-
           abbreviatedName = currentItem.productName + ' Qty= ' + currentItem.quantity;
         }
 
@@ -866,26 +719,16 @@ export class OrdersComponent implements OnInit {
 
       popupWin.document.write(myFinalHtml);
 
-      // popupWin.document.close();
-
     }//end if
 
 
   }//print()
 
 
-
-
-
-
   /* *********************************************************************************** */
   printThermalAuto(order: any, customer: any, items: any): void {
 
-    /* Must open Chrome in KIOSK mode */
-    /* "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" --kiosk-printing */
-
     let popupWin;
-    //let printContents:HTMLElement = (document.getElementById('print-section-0').innerHTML) as HTMLElement ;
     popupWin = window.open('', '_blank');
     if (popupWin != null || popupWin != undefined) {
 
@@ -895,7 +738,6 @@ export class OrdersComponent implements OnInit {
         + customer?.stateProvince + ',' + customer?.postalCode;
 
       let myCss = this.getCss();
-
 
       let myHead = `
     <head>
@@ -907,15 +749,11 @@ export class OrdersComponent implements OnInit {
     <title>` + this.projectName + `</title>
     </head>    `;
 
-      // <p style="text-align: left;align-content: center; font-size: x-large;">
-      //<b> PICKUP:  ` +  order.orders?.pickupTime    + `</b><br>
-      //</p>
       let myHtml = ` <html> ` + myHead;
 
       let phoneNumber = this.formatPhoneNumber(customer?.phone1);
       let formatDate = this.formatTime(order.orders?.createDate);
 
-      //let myBodyOrder = `<body >
       let myBodyOrder = `<body onload="window.print();window.close();">
 
     <div style=" width: 100%;font-weight: bold;">
@@ -963,7 +801,6 @@ export class OrdersComponent implements OnInit {
           abbreviatedName = abbreviatedName + ' ' + currentItem.weight + ' lb ';
         }//if MEAT
         else {
-
           abbreviatedName = currentItem.productName + ' -- ' + currentItem.quantity;
         }
 
@@ -999,7 +836,6 @@ export class OrdersComponent implements OnInit {
       popupWin.document.write(myFinalHtml);
       popupWin.document.close();
 
-
     }//end if
 
 
@@ -1029,7 +865,6 @@ export class OrdersComponent implements OnInit {
       }
     });
   }
-  //closeSingleOrders
   /* ******************************************************* */
   closeSingleOrders(orderId: any) {
 
@@ -1042,7 +877,6 @@ export class OrdersComponent implements OnInit {
     });
 
   }
-
 
 
   /* ****************************************************** */
@@ -1060,25 +894,11 @@ export class OrdersComponent implements OnInit {
         console.log("Result: " + result.value);
         this.orderService.resetOrderNum(result.value).subscribe((data: number) => {
           orderNumber = data;
-
         });;
       }
     });
 
-
   }
-  // openPDF(orders:any, DATA: any): void {
-  //   //let DATA: any = document.getElementById('excel-table');
-  //     html2canvas(DATA).then((canvas) => {
-  //     let fileWidth = 208;
-  //     let fileHeight = (canvas.height * fileWidth) / canvas.width;
-  //     const FILEURI = canvas.toDataURL('image/png');
-  //     let PDF = new jsPDF('p', 'mm', 'a4');
-  //     let position = 0;
-  //     PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight);
-  //     PDF.save('Order' ? orders.orderNum : orders.orderId );
-  //   });
-  // }
 
   openPDF(orders: any, DATA: any): void {
     html2canvas(DATA).then((canvas) => {
@@ -1088,11 +908,9 @@ export class OrdersComponent implements OnInit {
       let PDF = new jsPDF('p', 'mm', 'a4');
       let position = 0;
       PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight);
-      // ✅ File name check
       PDF.save(orders.orderNum || orders.orderId);
     });
   }
-
 
 
   /* **************************************************** */
@@ -1102,9 +920,6 @@ export class OrdersComponent implements OnInit {
     for (let i = 0; i < this.orderViewList.length; i++) {
       myHtml = this.orderDetailHtml(this.orderViewList[i]);
       this.openPDF(this.orderViewList[i], myHtml);
-
-
-
     }
 
   }
@@ -1134,19 +949,14 @@ export class OrdersComponent implements OnInit {
 </div>
 `;
 
-
     return html;
-
 
   }
 
   /* *********************************************************** */
   nameChanged(event: any) {
-    //console.log("modelchanged " + event);
     this.quantity = event
-
     return event;
-
   }
 
   getCountryName(countryId: any): any {
@@ -1176,9 +986,8 @@ export class OrdersComponent implements OnInit {
     return new Date(dt);
   }
 
-   getElapsedTime(createdDate: string | Date ): string {
+  getElapsedTime(createdDate: string | Date): string {
 
-    //const normalizedDate = this.parseCustomDate(createdDate);
     const start = new Date(createdDate).getTime();
     const curTime = this.now.getTime();
     const diff = Math.floor((this.now.getTime() - start) / 1000);
@@ -1190,9 +999,8 @@ export class OrdersComponent implements OnInit {
   }
 
   getTimerClass(createdDate: string | Date) {
-    //const normalizedDate = this.parseCustomDate(createdDate);
     const start = new Date(createdDate).getTime();
-    
+
     const diffMins = (this.now.getTime() - start) / 60000;
 
     return {
@@ -1201,25 +1009,78 @@ export class OrdersComponent implements OnInit {
     };
   }
 
-   ngOnDestroy() {
+  ngOnDestroy() {
     this.timerSub?.unsubscribe();
   }
 
-parseCustomDate(value: string): Date {
+  /* ******************************************************************************** */
+/* ******************************************************************************** */
+/* ******************************************************************************** */
+goToDetail(order: any) {
 
-  const localDate = new Date(value.replace(' ', 'T'));
+  console.log('RAW ORDER FROM KITCHEN LIST:', order);
+  console.log('RAW MENU LIST:', order.menuList);
 
-  const myDateStr = localDate.toDateString();
+  let mappedOrders: any = {
+    orderId: order.orderId,
+    orderNum: order.orderNumber ?? order.orderId,
+    orderStatus: order.orderStatus,
+    createDate: order.createdDate,
+    tax: 0,
+    shippingHandling: 0,
+    grandTotal: 0
+  };
 
-  const [datePart, timePart, meridianRaw] = value.split(' ');
-  const [hour, minute] = timePart.split(':').map(Number);
-  const meridian = meridianRaw.toLowerCase();
+  let mappedItems: any[] = (order.menuList || []).map((item: any) => ({
+    orderId: order.orderId,
+    orderItemId: item.orderItemId ?? item.orderItemid ?? null,
+    productId: item.productId ?? item.productid ?? null,
+    productName: item.itemName ?? item.productName ?? '',
+    quantity: item.quantity ?? 0,
+    // Try every likely field name for price straight from the kitchen payload
+    unitPrice: item.unitPrice ?? item.price ?? item.sellingPrice ?? item.itemPrice ?? 0,
+    attributes: item.attributes,
+    notes: item.notes,
+    sku: item.sku ?? '',
+    imageMimeType: item.imageMimeType ?? '',
+    productImage: item.productImage ?? ''
+  }));
 
-  let h = hour;
-  if (meridian === 'p.m.' && hour < 12) h += 12;
-  if (meridian === 'a.m.' && hour === 12) h = 0;
+  let mappedCustomer: any = {
+    firstName: order.agentName ?? '',
+    lastName: '',
+    address: '',
+    city: '',
+    postalCode: '',
+    email: '',
+    phone1: ''
+  };
 
-  return new Date(`${datePart}T${h.toString().padStart(2, '0')}:${minute}`);
+  this.cache.setList('orders', mappedOrders);
+  this.cache.setList('ordersItem', mappedItems);
+  this.cache.setList('customer', mappedCustomer);
+  this.cache.set('selectedDepartment', this.selectedDepartment);
+  this.router.navigate(['/layout/orderdetail']);
 }
+
+
+
+
+  parseCustomDate(value: string): Date {
+
+    const localDate = new Date(value.replace(' ', 'T'));
+
+    const myDateStr = localDate.toDateString();
+
+    const [datePart, timePart, meridianRaw] = value.split(' ');
+    const [hour, minute] = timePart.split(':').map(Number);
+    const meridian = meridianRaw.toLowerCase();
+
+    let h = hour;
+    if (meridian === 'p.m.' && hour < 12) h += 12;
+    if (meridian === 'a.m.' && hour === 12) h = 0;
+
+    return new Date(`${datePart}T${h.toString().padStart(2, '0')}:${minute}`);
+  }
 
 }
