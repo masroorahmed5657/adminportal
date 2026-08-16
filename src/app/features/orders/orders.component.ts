@@ -103,7 +103,7 @@ export class OrdersComponent implements OnInit {
   timerSub!: Subscription;
 
   WARNING_MINUTES = 15;   // turn red
-  CRITICAL_MINUTES = 20; // optional escalation
+  CRITICAL_MINUTES = 20; // turn dark red + blink
 
   /* ===== Pagination (Shopify-style Previous / Next) ===== */
   pageSize: number = 20; // same as itemsPerPage before
@@ -124,18 +124,18 @@ export class OrdersComponent implements OnInit {
     return this.filteredOrders.slice(start, start + this.pageSize);
   }
 
- setViewMode(mode: 'kitchen' | 'list') {
-  this.viewMode = mode;
-  this.p = 1;
-}
+  setViewMode(mode: 'kitchen' | 'list') {
+    this.viewMode = mode;
+    this.p = 1;
+  }
 
 
-onSourceChange(source: 'ONLINE' | 'POS') {
-  this.orderSourceType = source;
-  this.p = 1;
-  // Agar backend ONLINE/POS ke hisaab se alag data deta hai to yahan reload call karein:
-  // this.getOrderdata(this.currentOrderStatus, this.orderSourceType);
-}
+  onSourceChange(source: 'ONLINE' | 'POS') {
+    this.orderSourceType = source;
+    this.p = 1;
+    // Agar backend ONLINE/POS ke hisaab se alag data deta hai to yahan reload call karein:
+    // this.getOrderdata(this.currentOrderStatus, this.orderSourceType);
+  }
 
 
   goToPage(pg: number) {
@@ -986,12 +986,28 @@ onSourceChange(source: 'ONLINE' | 'POS') {
     return new Date(dt);
   }
 
+  /* ===== Robust date handling for the kitchen timer ===== */
+  private toDateSafe(value: string | Date): Date {
+    if (value instanceof Date) return value;
+    if (!value) return new Date(NaN);
+
+    // Try native parsing first (handles ISO strings fine)
+    const direct = new Date(value);
+    if (!isNaN(direct.getTime())) return direct;
+
+    // Fall back to the custom "MM/dd/yyyy h:mm a.m./p.m." parser below
+    try {
+      return this.parseCustomDate(value);
+    } catch {
+      return new Date(NaN);
+    }
+  }
+
   getElapsedTime(createdDate: string | Date): string {
+    const start = this.toDateSafe(createdDate).getTime();
+    if (isNaN(start)) return '0:00';
 
-    const start = new Date(createdDate).getTime();
-    const curTime = this.now.getTime();
-    const diff = Math.floor((this.now.getTime() - start) / 1000);
-
+    const diff = Math.max(0, Math.floor((this.now.getTime() - start) / 1000));
     const mins = Math.floor(diff / 60);
     const secs = diff % 60;
 
@@ -999,13 +1015,13 @@ onSourceChange(source: 'ONLINE' | 'POS') {
   }
 
   getTimerClass(createdDate: string | Date) {
-    const start = new Date(createdDate).getTime();
-
-    const diffMins = (this.now.getTime() - start) / 60000;
+    const start = this.toDateSafe(createdDate).getTime();
+    const diffMins = isNaN(start) ? 0 : (this.now.getTime() - start) / 60000;
 
     return {
       'timer-normal': diffMins < this.WARNING_MINUTES,
-      'timer-warning blink': diffMins >= this.WARNING_MINUTES
+      'timer-warning': diffMins >= this.WARNING_MINUTES && diffMins < this.CRITICAL_MINUTES,
+      'timer-critical blink': diffMins >= this.CRITICAL_MINUTES
     };
   }
 
@@ -1014,54 +1030,56 @@ onSourceChange(source: 'ONLINE' | 'POS') {
   }
 
   /* ******************************************************************************** */
-/* ******************************************************************************** */
-/* ******************************************************************************** */
-goToDetail(order: any) {
+  /* ******************************************************************************** */
+  /* ******************************************************************************** */
+  goToDetail(order: any) {
 
-  console.log('RAW ORDER FROM KITCHEN LIST:', order);
-  console.log('RAW MENU LIST:', order.menuList);
+    console.log('RAW ORDER FROM KITCHEN LIST:', order);
+    console.log('RAW MENU LIST:', order.menuList);
 
-  let mappedOrders: any = {
-    orderId: order.orderId,
-    orderNum: order.orderNumber ?? order.orderId,
-    orderStatus: order.orderStatus,
-    createDate: order.createdDate,
-    tax: 0,
-    shippingHandling: 0,
-    grandTotal: 0
-  };
+    let mappedOrders: any = {
+      orderId: order.orderId,
+      orderNum: order.orderNumber ?? order.orderId,
+      orderStatus: order.orderStatus,
+      createDate: order.createdDate,
+      tax: 0,
+      shippingHandling: 0,
+      grandTotal: 0
+    };
 
-  let mappedItems: any[] = (order.menuList || []).map((item: any) => ({
-    orderId: order.orderId,
-    orderItemId: item.orderItemId ?? item.orderItemid ?? null,
-    productId: item.productId ?? item.productid ?? null,
-    productName: item.itemName ?? item.productName ?? '',
-    quantity: item.quantity ?? 0,
-    // Try every likely field name for price straight from the kitchen payload
-    unitPrice: item.unitPrice ?? item.price ?? item.sellingPrice ?? item.itemPrice ?? 0,
-    attributes: item.attributes,
-    notes: item.notes,
-    sku: item.sku ?? '',
-    imageMimeType: item.imageMimeType ?? '',
-    productImage: item.productImage ?? ''
-  }));
+    let mappedItems: any[] = (order.menuList || []).map((item: any) => ({
+      orderId: order.orderId,
+      orderItemId: item.orderItemId ?? item.orderItemid ?? null,
+      // The kitchen payload identifies the product via "itemId", not
+      // "productId"/"productid" — confirmed from the raw payload.
+      productId: item.productId ?? item.productid ?? item.itemId ?? null,
+      productName: item.itemName ?? item.productName ?? '',
+      quantity: item.quantity ?? 0,
+      // Try every likely field name for price straight from the kitchen payload
+      unitPrice: item.unitPrice ?? item.price ?? item.sellingPrice ?? item.itemPrice ?? 0,
+      attributes: item.attributes,
+      notes: item.notes,
+      sku: item.sku ?? '',
+      imageMimeType: item.imageMimeType ?? '',
+      productImage: item.productImage ?? ''
+    }));
 
-  let mappedCustomer: any = {
-    firstName: order.agentName ?? '',
-    lastName: '',
-    address: '',
-    city: '',
-    postalCode: '',
-    email: '',
-    phone1: ''
-  };
+    let mappedCustomer: any = {
+      firstName: order.agentName ?? '',
+      lastName: '',
+      address: '',
+      city: '',
+      postalCode: '',
+      email: '',
+      phone1: ''
+    };
 
-  this.cache.setList('orders', mappedOrders);
-  this.cache.setList('ordersItem', mappedItems);
-  this.cache.setList('customer', mappedCustomer);
-  this.cache.set('selectedDepartment', this.selectedDepartment);
-  this.router.navigate(['/layout/orderdetail']);
-}
+    this.cache.setList('orders', mappedOrders);
+    this.cache.setList('ordersItem', mappedItems);
+    this.cache.setList('customer', mappedCustomer);
+    this.cache.set('selectedDepartment', this.selectedDepartment);
+    this.router.navigate(['/layout/orderdetail']);
+  }
 
 
 

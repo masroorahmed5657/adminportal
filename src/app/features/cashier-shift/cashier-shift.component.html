@@ -8,20 +8,26 @@
       <label class="shopify-field-label" for="searchText">Search Shift</label>
       <div class="shopify-input-group">
         <span class="shopify-input-group__prefix"><i class="bi bi-search"></i></span>
-        <input type="text" class="shopify-input" id="searchText" placeholder="Search Shift..." [(ngModel)]="searchText">
+        <input type="text" class="shopify-input" id="searchText" placeholder="Search Shift..."
+          [(ngModel)]="searchText" (input)="onSearchChange()">
       </div>
+    </div>
+    <div class="d-flex align-items-end">
+      <button class="btn-shopify btn-shopify--success" (click)="openAddForm()" *ngIf="!showForm">
+        <i class="bi bi-plus-circle"></i> Add Shift
+      </button>
     </div>
   </div>
 
   <div class="row g-3">
 
-    <!-- EDIT FORM -->
-    <div class="col-12 col-lg-3">
+    <!-- EDIT FORM (hidden by default — opened via "Add Shift" or the row's Edit button) -->
+    <div class="col-12 col-lg-3" *ngIf="showForm">
 
       <div class="shopify-card">
 
         <div class="shopify-card__header">
-          Edit Shift
+          {{ shift.shiftId ? 'Edit Shift' : 'Add Shift' }}
         </div>
 
         <div class="shopify-card__body">
@@ -83,6 +89,12 @@
             </button>
           </div>
 
+          <div class="shopify-actions-row mt-2">
+            <button class="btn-shopify btn-shopify--outline flex-fill" (click)="closeForm()">
+              <i class="bi bi-arrow-left"></i> Back to List
+            </button>
+          </div>
+
         </div>
 
       </div>
@@ -90,7 +102,7 @@
     </div>
 
     <!-- LIST SECTION -->
-    <div class="col-12 col-lg-9">
+    <div [ngClass]="showForm ? 'col-12 col-lg-9' : 'col-12'">
 
       <div class="shopify-card">
 
@@ -117,7 +129,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let item of filteredShifts(); let i = index">
+                <tr *ngFor="let item of filteredShifts() | paginate:{itemsPerPage:pageSize,currentPage:p}; let i = index">
                   <td>{{ i + 1 }}</td>
                   <td>{{ item.userId }}</td>
                   <td>{{ item.deviceId }}</td>
@@ -146,11 +158,15 @@
                 </tr>
               </tbody>
             </table>
+            <div class="shopify-pagination">
+              <pagination-controls (pageChange)="p = $event" [responsive]="false"></pagination-controls>
+            </div>
           </div>
 
           <!-- MOBILE VIEW -->
           <div class="shopify-mobile-list">
-            <div class="shopify-mobile-card" *ngFor="let item of filteredShifts(); let i = index">
+            <div class="shopify-mobile-card"
+              *ngFor="let item of filteredShifts() | paginate:{itemsPerPage:pageSize,currentPage:p}; let i = index">
 
               <div class="shopify-mobile-card__row">
                 <h6 class="fw-bold mb-0">User #{{ item.userId }}</h6>
@@ -189,6 +205,9 @@
                   <i class="bi bi-trash"></i> Delete
                 </button>
               </div>
+            </div>
+            <div class="shopify-pagination">
+              <pagination-controls (pageChange)="p = $event" [responsive]="false"></pagination-controls>
             </div>
           </div>
 

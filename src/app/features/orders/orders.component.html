@@ -85,8 +85,8 @@
               <i class="bi bi-x-circle"></i> Close All Orders
             </button>
 
-            <button class="btn-shopify btn-shopify--outline btn-shopify--icon" title="Toggle view"
-              *ngIf="orderViewList" (click)="isListView = !isListView">
+            <button class="btn-shopify btn-shopify--outline btn-shopify--icon" title="Toggle view" *ngIf="orderViewList"
+              (click)="isListView = !isListView">
               <i *ngIf="!isListView" class="bi bi-list-ul"></i>
               <i *ngIf="isListView" class="bi bi-grid-3x3-gap"></i>
             </button>
@@ -120,58 +120,62 @@
           <div class="shopify-card shopify-order-card" *ngFor="let order of pagedOrderList; index as i"
             (click)="goToDetail(order)" style="cursor: pointer;">
 
-            <!-- Timer badge -->
+            <!-- Timer badge (deliberately overlaps the card's top edge — kept outside the clipped inner wrapper) -->
             <div class="shopify-order-timer" [ngClass]="getTimerClass(order.createdDate)">
               ⏱ {{ getElapsedTime(order.createdDate) }}
             </div>
 
-            <!-- Header -->
-            <div class="shopify-card__header shopify-order-card__header">
-              <span class="shopify-order-card__number">#{{ order.orderNumber ?? order.orderId }}</span>
-              <span class="shopify-badge" [ngClass]="{
-                  'shopify-badge--warning': order.orderStatus === 'NEW',
-                  'shopify-badge--info': order.orderStatus === 'COOKING',
-                  'shopify-badge--success': order.orderStatus === 'READY'
-                }">
-                {{ order.orderStatus }}
-              </span>
-            </div>
+            <div class="shopify-order-card__inner">
 
-            <!-- Body -->
-            <div class="shopify-card__body">
-
-              <!-- Meta -->
-              <div class="shopify-order-card__meta">
-                <span><i class="bi bi-person"></i> {{ order.agentName }}</span>
-                <span><i class="bi bi-clock"></i> {{ order.time }}</span>
-                <span class="fw-bold">{{ order.pickupDinein }}</span>
+              <!-- Header -->
+              <div class="shopify-card__header shopify-order-card__header">
+                <span class="shopify-order-card__number">#{{ order.orderNumber ?? order.orderId }}</span>
+                <span class="shopify-badge" [ngClass]="{
+                    'shopify-badge--warning': order.orderStatus === 'NEW',
+                    'shopify-badge--info': order.orderStatus === 'PRINTED',
+                    'shopify-badge--success': order.orderStatus === 'CLOSED'
+                  }">
+                  {{ order.orderStatus }}
+                </span>
               </div>
 
-              <hr>
+              <!-- Body -->
+              <div class="shopify-card__body">
 
-              <!-- Items -->
-              <div class="shopify-order-items">
-                <div class="shopify-order-item" *ngFor="let item of order.menuList">
-                  <div class="shopify-order-item__main">
-                    {{ item.quantity }} × {{ item.itemName }}
-                    <div *ngIf="item.notes" class="shopify-order-item__notes">
-                      📝 {{ item.notes }}
+                <!-- Meta -->
+                <div class="shopify-order-card__meta">
+                  <span><i class="bi bi-person"></i> {{ order.agentName }}</span>
+                  <span><i class="bi bi-clock"></i> {{ order.time }}</span>
+                  <span class="fw-bold">{{ order.pickupDinein }}</span>
+                </div>
+
+                <hr>
+
+                <!-- Items -->
+                <div class="shopify-order-items">
+                  <div class="shopify-order-item" *ngFor="let item of order.menuList">
+                    <div class="shopify-order-item__main">
+                      {{ item.quantity }} × {{ item.itemName }}
+                      <div *ngIf="item.notes" class="shopify-order-item__notes">
+                        📝 {{ item.notes }}
+                      </div>
+                    </div>
+                    <div *ngIf="item.attributes" class="shopify-badge shopify-badge--muted">
+                      {{ item.attributes }}
                     </div>
                   </div>
-                  <div *ngIf="item.attributes" class="shopify-badge shopify-badge--muted">
-                    {{ item.attributes }}
-                  </div>
                 </div>
+
               </div>
 
-            </div>
+              <!-- Footer -->
+              <div class="shopify-order-card__footer">
+                <button class="btn-shopify btn-shopify--success w-100"
+                  (click)="closeSingleOrders(order.orderId); $event.stopPropagation()">
+                  <i class="bi bi-check-lg"></i> Complete Order
+                </button>
+              </div>
 
-            <!-- Footer -->
-            <div class="shopify-order-card__footer">
-              <button class="btn-shopify btn-shopify--success w-100"
-                (click)="closeSingleOrders(order.orderId); $event.stopPropagation()">
-                <i class="bi bi-check-lg"></i> Complete Order
-              </button>
             </div>
 
           </div>

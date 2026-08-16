@@ -93,7 +93,10 @@
         </tbody>
       </table>
       <div class="shopify-pagination">
-        <pagination-controls (pageChange)="p = $event"></pagination-controls>
+        <!-- [responsive]="false" keeps the page-number buttons always visible
+             instead of ngx-pagination swapping in its own unstyled "current/total"
+             chip, which was the source of the inconsistent styling. -->
+        <pagination-controls (pageChange)="p = $event" [responsive]="false"></pagination-controls>
       </div>
     </div>
 
@@ -129,7 +132,7 @@
         </div>
       </div>
       <div class="shopify-pagination">
-        <pagination-controls (pageChange)="p = $event"></pagination-controls>
+        <pagination-controls (pageChange)="p = $event" [responsive]="false"></pagination-controls>
       </div>
     </div>
 

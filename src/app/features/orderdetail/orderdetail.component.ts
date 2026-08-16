@@ -79,20 +79,13 @@ export class OrderdetailComponent implements OnInit {
 
     console.log(this.customer.address, "customer");
 
+    // Guard against a hardcoded/zeroed order object (e.g. coming from the
+    // kitchen board, which doesn't track tax/shipping) instead of trusting it blindly.
+    this.orders.tax = Number(this.orders?.tax) || 0;
+    this.orders.shippingHandling = Number(this.orders?.shippingHandling) || 0;
+
     this.getProductImage();
-    this.ordersItemsList?.forEach((orderItem: any) => {
-      this.total = this.total + (orderItem.quantity * orderItem.unitPrice);
-      let t2 = Number(this.total).toFixed(2);
-      let t1 = 1;
-
-      //let product = this.getProduct(orderItem.productId);
-      //this.productList.push(product);
-
-    });
-
-    this.total = Number(this.total).toFixed(2);
-
-
+    this.recomputeTotals();
 
     this.countryList = this.cache.getList('countryList');
     if (!this.countryList) {
@@ -201,118 +194,6 @@ export class OrderdetailComponent implements OnInit {
     this.cache.setList('customer', null);
     this.router.navigate(["/layout/orders"]);
   }
-
-  /* *********************************************************************************** */
-  // printThermal(order: any, customer: any, items: any): void {
-
-  //   /* Must open Chrome in KIOSK mode */
-  //   /* "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" --kiosk-printing */
-
-  //   let popupWin;
-  //   //let printContents:HTMLElement = (document.getElementById('print-section-0').innerHTML) as HTMLElement ;
-  //   popupWin = window.open('', '_blank');
-  //   if (popupWin != null || popupWin != undefined) {
-
-  //     popupWin.document.open();
-
-  //     let orderAddress = customer?.address + ',' + customer?.city + ','
-  //       + customer?.stateProvince + ',' + customer?.postalCode;
-
-  //     let myCss = this.getCss();
-
-
-  //     let myHead = `
-  //   <head>
-  //   <meta charset="UTF-8">
-  //   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  //   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  //   <title style="text-center:align-content: center;">EZPZFashion Receipt</title>
-  //   </head>    `;
-
-
-  //     let myHtml = ` <html> ` + myHead;
-  //     //let myBodyOrder = `<body >
-  //     let myBodyOrder = `<body onload="window.print();window.close();">
-
-
-  //   <div style=" width: 100%;font-weight: bold;">
-  //       <p >
-  //         <b style="margin-left:1.5%;font-size:18px">EZPZFashion Receipt</b>
-  //       </p>
-  //       <p style="text-align: left;align-content: left;font-size:8px;font-size:15px">
-  //            Customer &nbsp;:&nbsp;` + customer?.firstName + `&nbsp; ` + customer?.lastName +
-  //       `<br> Email &nbsp;:&nbsp;` + customer?.email +
-  //       `<br> Phone &nbsp;:&nbsp;` + customer?.phone1 +
-  //       '<br> Date &nbsp;:&nbsp;' + new Date(order?.createDate).toLocaleDateString() +
-
-
-
-  //       `<br>___________________________` +
-  //       `<p style="font-size:15px;margin-top:-5px;"> Order#: <b>` + order?.orderNum + ` </p></b>` +
-  //       `</p>
-
-  //       <table style="border-top: 1px solid black;border-bottom: 1px solid black; border-collapse: collapse; width: 100%;margin-top:-60px;font-size:8px;max-width:200px;">
-  //           <thead>
-  //               <tr style="font-size:15px">
-  //                   <td ><b>Product Name</b><hr></td>
-  //                   <td ><b>Qty</b><hr></td>
-  //                   <td ><b>Price</b><hr></td>
-
-  //               </tr>
-  //           </thead>
-  //           <tbody style="font-size:8px">`;
-
-
-  //     let myItems = ``;
-  //     let total = 0;
-  //     let shippingHandling = Orders;
-  //     let tax = Orders;
-  //     let grandTotal = Orders;
-
-
-
-  //     for (let i = 0; i < items.length; i++) {
-
-  //       total = total + items[i].unitPrice;
-
-
-  //       myItems = myItems + ` <tr>
-  //                         <td>  <b>` + items[i].productName + ` </b><hr></td>
-  //                         <td > <b>` + items[i].quantity + `</b><hr></td>
-  //                         <td>  <b> $ ` + items[i].unitPrice + `</b><hr></td>
-
-  //                       </tr>`
-  //     }
-
-  //     let myTotal = this.total;
-  //     let myTax = this.orders.tax.toFixed(2);
-  //     let myShipping = this.orders.shippingHandling.toFixed(2);
-  //     let myGrandTotal = this.getTotalPrice(this.orders.grandTotal);
-
-  //     let myBottonHtml =
-  //       `<tr><td colspan="1"><b>SubTotal: </b></td><td colspan="1" style="text-align: left;"><b>$ ` + myTotal + `</b> </td> <br></tr>
-  //       <tr><td colspan="1"><b>Shipping: </b></td><td colspan="1" style="text-align: left;"><b>$ ` + myShipping + `</b> </td> <br></tr>
-  //       <tr><td colspan="1"><b>Taxes: </b></td><td colspan="1" style="text-align: left;"><b>$ ` + myTax + `</b> </td> <br></tr>
-  //       <tr><td colspan="1"><b>Total: </b></td><td colspan="1" style="text-align: left;"><b>$ ` + myGrandTotal + `</b> </td></tr>
-  //       </tbody>
-  //       </table>
-  //       <p style="margin-left:0.5%;">Thanks for your purchase!</p>
-  //   </div>
-  // </body>
-  // </html>`
-  //       ;
-
-  //     let myFinalHtml = myHtml + myBodyOrder + myItems + myBottonHtml;
-
-  //     popupWin.document.write(myFinalHtml);
-
-  //     // popupWin.document.close();
-
-  //   }//end if
-
-
-  // }//print()
-  /* ******************************************************** */
 
 
 printThermal(order: any, customer: any, items: any): void {
@@ -494,6 +375,26 @@ img {
 
   }
 
+  /* ******************************************* */
+  // Single source of truth for SubTotal / Total — called on load, and again
+  // once getProductImage() backfills any missing per-item price, so the UI
+  // never shows a stale $0.00 amount.
+  recomputeTotals() {
+    let subtotal = 0;
+    this.ordersItemsList?.forEach((item: any) => {
+      subtotal += (Number(item.quantity) || 0) * (Number(item.unitPrice) || 0);
+    });
+
+    this.total = Number(subtotal.toFixed(2));
+
+    const tax = Number(this.orders?.tax) || 0;
+    const shipping = Number(this.orders?.shippingHandling) || 0;
+
+    this.orders.tax = tax;
+    this.orders.shippingHandling = shipping;
+    this.orders.grandTotal = Number((subtotal + tax + shipping).toFixed(2));
+  }
+
   getCountryName(countryId: any): any {
     let countryName: any = '';
     countryId = Number(countryId);
@@ -517,54 +418,39 @@ img {
     }
     return stateName;
   }
-  /* ************************************************* */
-  // getProduct(productId: any): ProductView {
-
-  //   let productData: ProductView = new Product();
-
-  //   this.productService.getProductsById(productId).subscribe((result) => {
-
-  //     productData = result;//one record
-  //     return productData;
-  //   });
-
-
-  //   return productData;
-
-  // }
 
   /* ************************************************* */
   getProductImage() {
-
 
     for (let i = 0; i < this.ordersItemsList.length; i++) {
       let productData: ProductView = new ProductView();
 
       let productId = this.ordersItemsList[i].productId;
-      this.productService.getProductsById(productId).subscribe((result) => {
+      this.productService.getProductsById(productId).subscribe((result: any) => {
 
-        productData = result;//one record
+        productData = result; //one record
         this.ordersItemsList[i].imageMimeType = productData.imageMimeType;
         this.ordersItemsList[i].productImage = productData.productImage;
         this.ordersItemsList[i].sku = productData.sku;
 
+        // The kitchen ticket payload doesn't carry a real price (it's a
+        // cooking ticket, not a receipt), so backfill it here from the
+        // actual product record instead of leaving it at 0.
+        if (!this.ordersItemsList[i].unitPrice) {
+          this.ordersItemsList[i].unitPrice =
+            (productData as any).unitPrice
+            ?? (productData as any).price
+            ?? (productData as any).sellingPrice
+            ?? (productData as any).itemPrice
+            ?? 0;
+        }
+
+        this.recomputeTotals();
       });
 
     }
 
   }
-  // openPDF(): void {
-  //   let DATA: any = document.getElementById('excel-table');
-  //   html2canvas(DATA).then((canvas) => {
-  //     let fileWidth = 208;
-  //     let fileHeight = (canvas.height * fileWidth) / canvas.width;
-  //     const FILEURI = canvas.toDataURL('image/png');
-  //     let PDF = new jsPDF('p', 'mm', 'a4');
-  //     let position = 0;
-  //     PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight);
-  //     PDF.save('Order' ? this.orders.orderNum : this.orders.orderId);
-  //   });
-  // }
 
   openPDF(orders: any, DATA: any): void {
     html2canvas(DATA).then((canvas) => {
@@ -602,4 +488,3 @@ img {
 
 
 }
-

@@ -37,6 +37,7 @@
     "leaflet": "^1.9.4",
     "ng-apexcharts": "^1.17.1",
     "ngx-pagination": "^6.0.3",
+    "ngx-print": "^3.2.0",
     "primeng": "^17.18.15",
     "rxjs": "~7.8.0",
     "simplebar-angular": "^3.3.2",

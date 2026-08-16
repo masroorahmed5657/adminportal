@@ -19,6 +19,19 @@ export class CashierShiftComponent {
 
   searchText: string = '';
 
+  // Controls whether the Add/Edit form panel is visible. Hidden by default —
+  // opened via the "Add Shift" button or by clicking Edit on a row.
+  showForm: boolean = false;
+
+  /* ===== Pagination ===== */
+  p: number = 1;
+  pageSize: number = 10;
+
+  get totalPages(): number {
+    const len = this.filteredShifts().length;
+    return Math.max(1, Math.ceil(len / this.pageSize));
+  }
+
   constructor(
     private service: CashierShiftService,
     private notify: NotificationService
@@ -38,6 +51,7 @@ export class CashierShiftComponent {
     this.service.getList().subscribe(
       (data: CashierShift[]) => {
         this.shiftsList = data;
+        this.p = 1;
       },
       (error) => {
         console.error('Error fetching shifts:', error);
@@ -45,14 +59,33 @@ export class CashierShiftComponent {
     );
   }
 
+  onSearchChange() {
+    this.p = 1;
+  }
 
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.p = page;
+  }
 
+  /* ***** Add / Edit form toggling ***** */
+
+  openAddForm() {
+    this.resetForm();
+    this.showForm = true;
+  }
 
   editShift(item: CashierShift) {
 
     this.shift = {
       ...item
     };
+    this.showForm = true;
+  }
+
+  closeForm() {
+    this.showForm = false;
+    this.resetForm();
   }
 
   updateShift() {
@@ -72,6 +105,7 @@ export class CashierShiftComponent {
           };
         }
         this.notify.success('Shift Updated Successfully');
+        this.showForm = false;
         this.resetForm();
       },
       (error) => {
@@ -96,6 +130,11 @@ export class CashierShiftComponent {
         this.shiftsList = this.shiftsList.filter(
           x => x.shiftId != item.shiftId
         );
+
+        // If the last record on the last page was deleted, move back one page.
+        if (this.p > this.totalPages) {
+          this.p = this.totalPages;
+        }
 
         this.notify.success('Shift has been deleted.');
       },
