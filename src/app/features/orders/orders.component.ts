@@ -110,6 +110,12 @@ export class OrdersComponent implements OnInit {
 
   private searchPipeInstance = new SearchPipe();
 
+  // FIX: replaces the old hardcoded oldOrderCount/newOrderCount (which were
+  // always 1 < 2, so the "new order" sound played on every single refresh).
+  // We now remember which order IDs we've already seen and only chime when
+  // a genuinely new ID shows up in the latest fetch.
+  private knownOrderIds = new Set<any>();
+
   get filteredOrders(): any[] {
     if (!this.terms) return this.orderViewList;
     return this.searchPipeInstance.transform(this.orderViewList, this.terms);
@@ -202,7 +208,9 @@ export class OrdersComponent implements OnInit {
     this.orderViewList.length = 0;
 
     let dept = this.cache.get('selectedDepartment');
-    if (dept === null || dept === 'undefined') {
+    // FIX: was comparing dept to the *string* 'undefined', which never
+    // matches a real `undefined` value, so this reset silently failed.
+    if (dept === null || dept === undefined || dept === 'undefined') {
       this.selectedDepartment = 'ALL';
     }
     else {
@@ -232,10 +240,6 @@ export class OrdersComponent implements OnInit {
     orderSearch.custId = null;
     orderSearch.productId = null;
 
-    let oldOrderCount = 1;
-    let newOrderCount = 2;
-
-
     this.orderService.getTodaysOrders(orderSearch).subscribe({
       next: (data: OrderMenuResponse) => {
         this.errorsFlag = false;
@@ -246,10 +250,18 @@ export class OrdersComponent implements OnInit {
             this.orderViewList = [...this.orderViewList].reverse();
             this.p = 1; // 👈 reset to first page on fresh data
 
-            if (oldOrderCount < newOrderCount) {
+            // FIX: real "is there a new order" check instead of the old
+            // hardcoded oldOrderCount < newOrderCount (always true).
+            const currentIds = this.orderViewList.map((o: any) => o.orderId ?? o.orderNumber);
+            const hasNewOrder = currentIds.some((id: any) => !this.knownOrderIds.has(id));
+
+            // Don't chime on the very first load (knownOrderIds is empty then) —
+            // only when a genuinely new order appears after the initial fetch.
+            if (hasNewOrder && this.knownOrderIds.size > 0) {
               this.playAudio();
             }
 
+            this.knownOrderIds = new Set(currentIds);
           }
 
           this.spinnerDataLoad = false; // 👈 loader stop
@@ -556,7 +568,9 @@ export class OrdersComponent implements OnInit {
       let total = 0;
       for (let i = 0; i < items.length; i++) {
 
-        total = total + items[i].unitPrice;
+        // FIX: was `total + items[i].unitPrice`, ignoring quantity, so any
+        // item with quantity > 1 printed a total lower than the real amount.
+        total = total + (Number(items[i].unitPrice) || 0) * (Number(items[i].quantity) || 1);
         myItems = myItems +
           ` <tr style="text-align: left; font-size: x-large;font-family: 'calibri';">
                   <td >
@@ -670,7 +684,8 @@ export class OrdersComponent implements OnInit {
       let total = 0;
       for (let i = 0; i < items.length; i++) {
         let currentItem = items[i];
-        total = total + currentItem.unitPrice;
+        // FIX: same quantity bug as print() above.
+        total = total + (Number(currentItem.unitPrice) || 0) * (Number(currentItem.quantity) || 1);
 
         let abbreviatedName = '';
         if (currentItem.categoryName === 'MEAT') {
@@ -782,7 +797,8 @@ export class OrdersComponent implements OnInit {
       let total = 0;
       for (let i = 0; i < items.length; i++) {
         let currentItem = items[i];
-        total = total + currentItem.unitPrice;
+        // FIX: same quantity bug as print() above.
+        total = total + (Number(currentItem.unitPrice) || 0) * (Number(currentItem.quantity) || 1);
 
         let abbreviatedName = '';
         if (currentItem.categoryName === 'MEAT') {
@@ -900,8 +916,11 @@ export class OrdersComponent implements OnInit {
 
   }
 
-  openPDF(orders: any, DATA: any): void {
-    html2canvas(DATA).then((canvas) => {
+  // FIX: now returns a Promise so exportPDF() can await each PDF before
+  // starting the next one (previously all PDFs were generated in parallel
+  // and could overwrite/mix up each other's canvas data).
+  openPDF(orders: any, DATA: any): Promise<void> {
+    return html2canvas(DATA).then((canvas) => {
       let fileWidth = 208;
       let fileHeight = (canvas.height * fileWidth) / canvas.width;
       const FILEURI = canvas.toDataURL('image/png');
@@ -914,12 +933,16 @@ export class OrdersComponent implements OnInit {
 
 
   /* **************************************************** */
-  exportPDF() {
+  async exportPDF() {
 
     let myHtml = '';
+    // FIX: was firing all openPDF() calls back-to-back without waiting for
+    // the async html2canvas().then(...) inside each one to finish, which
+    // could produce PDFs with mismatched/overlapping data. Now awaited
+    // sequentially, one order at a time.
     for (let i = 0; i < this.orderViewList.length; i++) {
       myHtml = this.orderDetailHtml(this.orderViewList[i]);
-      this.openPDF(this.orderViewList[i], myHtml);
+      await this.openPDF(this.orderViewList[i], myHtml);
     }
 
   }
@@ -1055,14 +1078,35 @@ export class OrdersComponent implements OnInit {
       productId: item.productId ?? item.productid ?? item.itemId ?? null,
       productName: item.itemName ?? item.productName ?? '',
       quantity: item.quantity ?? 0,
-      // Try every likely field name for price straight from the kitchen payload
-      unitPrice: item.unitPrice ?? item.price ?? item.sellingPrice ?? item.itemPrice ?? 0,
+      // FIX for the $300 kitchen-vs-admin price mismatch:
+      // Try every likely field name for price straight from the kitchen payload.
+      // Added a few more common variants (orderItemPrice/totalPrice/amount).
+      // If NONE of these match, unitPrice falls through to 0, which makes
+      // orderdetail.component.ts silently replace it with the product's
+      // CURRENT catalog price instead of the price actually charged on this
+      // order — that's exactly how 3900 (order price) became 4200 (catalog
+      // price) in Order #24.
+      unitPrice: item.unitPrice ?? item.price ?? item.sellingPrice ?? item.itemPrice
+        ?? item.orderItemPrice ?? item.totalPrice ?? item.amount ?? 0,
       attributes: item.attributes,
       notes: item.notes,
       sku: item.sku ?? '',
       imageMimeType: item.imageMimeType ?? '',
       productImage: item.productImage ?? ''
     }));
+
+    // FIX: if a price still comes out 0 after all the fallbacks above, warn
+    // loudly in the console with the raw item, so whoever's debugging can
+    // immediately see the real field name to add above — instead of the
+    // wrong price silently flowing through to Order Detail.
+    mappedItems.forEach((mapped: any, idx: number) => {
+      if (!mapped.unitPrice) {
+        console.warn(
+          'Kitchen item has no matching price field — Order Detail will fall back to the CURRENT catalog price for this item, which can be wrong. Raw item:',
+          (order.menuList || [])[idx]
+        );
+      }
+    });
 
     let mappedCustomer: any = {
       firstName: order.agentName ?? '',

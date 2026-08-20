@@ -436,9 +436,20 @@ img {
         // The kitchen ticket payload doesn't carry a real price (it's a
         // cooking ticket, not a receipt), so backfill it here from the
         // actual product record instead of leaving it at 0.
+        //
+        // FIX (2026-08-19): POS's own price logic — see getPrice() in
+        // pos-cards.component.ts — always prefers salePrice over unitPrice
+        // when a sale price exists:
+        //   price = product.salePrice ? product.salePrice : product.unitPrice
+        // This backfill was checking unitPrice FIRST and never looked at
+        // salePrice at all, so any item sold at a discount (e.g. sold for
+        // $3900 via salePrice, while catalog unitPrice is $4200) would show
+        // the full undiscounted catalog price here instead of what was
+        // actually charged. salePrice is now checked first to match POS.
         if (!this.ordersItemsList[i].unitPrice) {
           this.ordersItemsList[i].unitPrice =
-            (productData as any).unitPrice
+            (productData as any).salePrice
+            ?? (productData as any).unitPrice
             ?? (productData as any).price
             ?? (productData as any).sellingPrice
             ?? (productData as any).itemPrice
