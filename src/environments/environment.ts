@@ -2,7 +2,7 @@ export const environment = {
   production: false,
   sessionTimeout: 60,
   enableLog: true,
-  versionNumber: '10.08.2026 00074',
+  versionNumber: '16.08.2026 00075',
   pageSize: 25,
 
   appEnv: 'LCL',
