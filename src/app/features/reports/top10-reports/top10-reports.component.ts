@@ -174,34 +174,51 @@ export class Top10ReportsComponent implements OnInit {
 
   ngOnInit(): void {
 
-    let reportName = this.route.snapshot.paramMap.get('name');
+  let reportName = this.route.snapshot.paramMap.get('name');
 
-    if (reportName === 'top10Product') {
-      this.top10ProductFlag = true;
-      this.top10CategoryFlag = false;
-      this.top10BrandsFlag = false;
-      this.chart1Options = null as any;
-      this.chartPieOptions = null as any;
-      this.loadData();
-    }
-    else if (reportName === 'top10Category') {
-      this.top10ProductFlag = false;
-      this.top10CategoryFlag = true;
-      this.top10BrandsFlag = false;
-      this.chart1Options = null as any;
-      this.chartPieOptions = null as any;
-      this.loadData();
-    }
-    else if (reportName === 'top10Brands') {
-      this.top10ProductFlag = false;
-      this.top10CategoryFlag = false;
-      this.top10BrandsFlag = true;
-      this.chart1Options = null as any;
-      this.chartPieOptions = null as any;
-      this.loadData();
-    }
+  // Default date range: last 30 days
+  const today = new Date();
+  const past = new Date();
+  past.setDate(today.getDate() - 30);
+  this.endDate = this.formatDate(today);
+  this.startDate = this.formatDate(past);
 
+  if (reportName === 'top10Product') {
+    this.top10ProductFlag = true;
+    this.top10CategoryFlag = false;
+    this.top10BrandsFlag = false;
+    this.chart1Options = null as any;
+    this.chartPieOptions = null as any;
+    this.loadData();
+    this.reportWithDate();
   }
+  else if (reportName === 'top10Category') {
+    this.top10ProductFlag = false;
+    this.top10CategoryFlag = true;
+    this.top10BrandsFlag = false;
+    this.chart1Options = null as any;
+    this.chartPieOptions = null as any;
+    this.loadData();
+    this.reportWithDate();
+  }
+  else if (reportName === 'top10Brands') {
+    this.top10ProductFlag = false;
+    this.top10CategoryFlag = false;
+    this.top10BrandsFlag = true;
+    this.chart1Options = null as any;
+    this.chartPieOptions = null as any;
+    this.loadData();
+    this.reportWithDate();
+  }
+
+}
+
+formatDate(date: Date): string {
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
 
   loadData() {
     let reportName = this.route.snapshot.paramMap.get('name');
