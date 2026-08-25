@@ -88,11 +88,20 @@ export class ProfitLossComponent implements OnInit {
 
 
   ngOnInit(): void {
-
-
-
+    const today = new Date();
+    const past = new Date();
+    past.setDate(today.getDate() - 30);
+    this.endDate = this.formatDate(today);
+    this.startDate = this.formatDate(past);
+    this.getOrderdata(this.currentOrderStatus, this.selectedOrderType);
   }
 
+  formatDate(date: Date): string {
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    return yyyy + '-' + mm + '-' + dd;
+  }
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();

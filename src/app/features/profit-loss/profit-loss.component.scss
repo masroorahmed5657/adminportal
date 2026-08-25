@@ -20,4 +20,38 @@
 //   background-color: #f2f2f2;
 // }
 
-@import "../../shared/shopify-theme.scss"
+@import "../../shared/shopify-theme.scss";
+
+.shopify-card__body {
+  padding-bottom: 16px;
+}
+
+.shopify-table td,
+.shopify-table th {
+  padding: 12px 16px;
+  text-align: left;
+}
+
+.shopify-table__totals {
+  border-top: 2px solid #e5e5e5;
+}
+
+.shopify-table__totals:first-of-type td {
+  padding-top: 20px;
+}
+
+.shopify-table__totals:last-child td {
+  padding-bottom: 20px;
+}
+
+.shopify-table__totals td:last-child {
+  text-align: left;
+}
+
+.shopify-mobile-card--totals {
+  margin-top: 12px;
+  margin-bottom: 20px;
+  padding-top: 12px;
+  padding-bottom: 8px;
+  border-top: 2px solid #e5e5e5;
+}

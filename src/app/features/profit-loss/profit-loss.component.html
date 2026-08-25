@@ -52,38 +52,29 @@
                 <tr>
                   <th>Date</th>
                   <th>Sales</th>
-                  <th>Purchases</th>
-                  <th>Expense</th>
-                  <th>Amount</th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngFor="let order of pagedOrderList; let i = index;">
-                  <td>{{ order.orders?.createDate | date:'dd-mm-yyyy' }}</td>
+                  <td>{{ order.orders?.createDate | date:'dd-MM-yyyy' }}</td>
                   <td>{{ order.orders?.grandTotal | number:'1.0-0' }}</td>
-                  <td>{{ purchaseOrderList[rowIndex(i)].total || 0 | number:'1.0-0' }}</td>
-                  <td>{{ expenseList[rowIndex(i)].amount || 0 | number:'1.0-0' }}</td>
-                  <td>
-                    {{ order.orders?.grandTotal - (purchaseOrderList[rowIndex(i)].total || 0) -
-                    (expenseList[rowIndex(i)].amount || 0) | number:'1.0-0' }}
-                  </td>
                 </tr>
               </tbody>
               <tfoot>
                 <tr class="shopify-table__totals">
-                  <td colspan="4">Total Sales</td>
+                  <td>Total Sales</td>
                   <td>{{ totalSales | number:'1.0-0' }}</td>
                 </tr>
                 <tr class="shopify-table__totals">
-                  <td colspan="4">Total Purchases</td>
+                  <td>Total Purchases</td>
                   <td>{{ totalPurchases | number:'1.0-0' }}</td>
                 </tr>
                 <tr class="shopify-table__totals">
-                  <td colspan="4">Total Expense</td>
+                  <td>Total Expense</td>
                   <td>{{ totalExpense | number:'1.0-0' }}</td>
                 </tr>
                 <tr class="shopify-table__totals shopify-table__totals--success">
-                  <td colspan="4"><b>Grand Total</b></td>
+                  <td><b>Grand Total</b></td>
                   <td><b>{{ netIncome | number:'1.0-0' }}</b></td>
                 </tr>
               </tfoot>
@@ -95,26 +86,11 @@
             <div class="shopify-mobile-card" *ngFor="let order of pagedOrderList; let i = index;">
               <div class="shopify-mobile-card__row">
                 <span class="shopify-field-label--sm">Date</span>
-                <span>{{ order.orders?.createDate | date:'dd-mm-yyyy' }}</span>
+                <span>{{ order.orders?.createDate | date:'dd-MM-yyyy' }}</span>
               </div>
               <div class="shopify-mobile-card__row">
                 <span class="shopify-field-label--sm">Sales</span>
                 <span>{{ order.orders?.grandTotal | number:'1.0-0' }}</span>
-              </div>
-              <div class="shopify-mobile-card__row">
-                <span class="shopify-field-label--sm">Purchases</span>
-                <span>{{ purchaseOrderList[rowIndex(i)].total || 0 | number:'1.0-0' }}</span>
-              </div>
-              <div class="shopify-mobile-card__row">
-                <span class="shopify-field-label--sm">Expense</span>
-                <span>{{ expenseList[rowIndex(i)].amount || 0 | number:'1.0-0' }}</span>
-              </div>
-              <div class="shopify-mobile-card__row">
-                <span class="shopify-field-label--sm">Amount</span>
-                <span>
-                  {{ order.orders?.grandTotal - (purchaseOrderList[rowIndex(i)].total || 0) -
-                  (expenseList[rowIndex(i)].amount || 0) | number:'1.0-0' }}
-                </span>
               </div>
             </div>
 

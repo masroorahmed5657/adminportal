@@ -1,0 +1,55 @@
+<div class="shopify-main-container">
+  <h2 class="shopify-page-title">Stock Report</h2>
+
+  <div class="shopify-card mb-4">
+    <div class="shopify-card__header">Filter</div>
+    <div class="shopify-card__body">
+      <div class="shopify-search-row shopify-search-row--wrap">
+        <div>
+          <label class="shopify-field-label" for="stock-start-date">Start Date</label>
+          <input id="stock-start-date" class="shopify-input" type="date" [(ngModel)]="startDate">
+        </div>
+        <div>
+          <label class="shopify-field-label" for="stock-end-date">End Date</label>
+          <input id="stock-end-date" class="shopify-input" type="date" [(ngModel)]="endDate">
+        </div>
+      </div>
+
+      <div class="shopify-actions-row mb-0">
+        <button class="btn-shopify btn-shopify--outline" type="button" (click)="showBackendRequirement()">
+          <i class="bi bi-info-circle"></i> Check report availability
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="shopify-card stock-report__notice">
+    <div class="shopify-card__header">Stock Movement Report</div>
+    <div class="shopify-card__body stock-report__body">
+      <div class="stock-report__icon" aria-hidden="true"><i class="bi bi-arrow-left-right"></i></div>
+      <h5>Stock movement data is not available yet</h5>
+      <p>
+        This page is ready for the stock movement report, but the current backend does not provide the required
+        date-range data. No API call or placeholder rows have been added.
+      </p>
+    </div>
+  </div>
+
+  <div class="shopify-card mt-4 stock-report__schema" *ngIf="showRequirement">
+    <div class="shopify-card__header">Required backend report data</div>
+    <div class="shopify-card__body">
+      <p class="stock-report__requirement-copy">
+        For {{ startDate }} to {{ endDate }}, the backend must return one movement summary per product, with optional
+        category, product, and warehouse filtering.
+      </p>
+      <div class="stock-report__columns">
+        <span><i class="bi bi-box"></i> Product and SKU</span>
+        <span><i class="bi bi-archive"></i> Opening stock</span>
+        <span><i class="bi bi-box-arrow-in-down"></i> Received stock</span>
+        <span><i class="bi bi-sliders"></i> Adjustments</span>
+        <span><i class="bi bi-arrow-repeat"></i> Sales and returns</span>
+        <span><i class="bi bi-box-seam"></i> Closing stock</span>
+      </div>
+    </div>
+  </div>
+</div>

@@ -29,7 +29,9 @@ import { ReceiveProductComponent } from './features/receive-product/receive-prod
 import { CatreportsComponent } from './features/reports/catreports/catreports.component';
 import { CommissionReportComponent } from './features/reports/commission-report/commission-report.component';
 import DailySaleReportComponent from './features/reports/daily-sale-report/daily-sale-report.component';
+import { InventoryReportComponent } from './features/reports/inventory-report/inventory-report.component';
 import { ReportsComponent } from './features/reports/reports.component';
+import { StockReportComponent } from './features/reports/stock-report/stock-report.component';
 import { Top10ReportsComponent } from './features/reports/top10-reports/top10-reports.component';
 import { StoreHoursComponent } from './features/store-hours/store-hours.component';
 import { SupplierComponent } from './features/supplier/supplier.component';
@@ -67,6 +69,7 @@ import { SalaryComponent } from './features/salary/salary.component';
 import { OrdersPaymentComponent } from './features/orders-payment/orders-payment.component';
 import { OrderdetailComponent } from './features/orderdetail/orderdetail.component';
 import { OrdersComponent } from './features/orders/orders.component';
+
 
 export const routes: Routes = [
     {
@@ -228,6 +231,14 @@ export const routes: Routes = [
             {
                 path: 'reports',
                 component: ReportsComponent
+            },
+            {
+                path: 'inventory-report',
+                component: InventoryReportComponent
+            },
+            {
+                path: 'stock-report',
+                component: StockReportComponent
             },
             {
                 path: 'catreports',
