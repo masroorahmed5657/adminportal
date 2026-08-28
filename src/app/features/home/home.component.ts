@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { OrderSaleReport, TotalCountSale, Product, AdminUserRoles, OrderSaleReportResponse } from '../../shared/models/model-classes.model';
 import { CacheService } from '../../shared/services/cache.service';
@@ -13,11 +13,12 @@ import { faSignOut, faBook, faCog } from '@fortawesome/free-solid-svg-icons';
 import { HeaderComponent } from "../../layouts/header/header.component";
 import { CommonModule } from '@angular/common';
 
+
 declare var ApexCharts: any;
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
