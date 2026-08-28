@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Errors } from '../errors/errors'
-import { OrderPaymentResponse, OrderResponse, Orders, OrderSaveResponse, OrderSearch, OrdersItems, OrdersWrapper, Payment, QurbaniResponse } from '../models/model-classes.model';
+import { OrderMenuResponse, OrderPaymentResponse, OrderResponse, Orders, OrderSaveResponse, OrderSearch, OrdersItems, OrdersWrapper, Payment, QurbaniResponse } from '../models/model-classes.model';
 import { catchError, Observable } from 'rxjs';
 import { HttpMethodService } from '../helper/http-method.service';
 
@@ -35,6 +35,14 @@ export class OrderService {
 
 
   /* ************************************************************* */
+
+  getTodaysOrders(orderSearch: OrderSearch): Observable<OrderMenuResponse> {
+
+    return this.http.post<OrderMenuResponse>('orders/findOrdersToday', orderSearch)
+    //return this.http.post<OrderResponse>('orders/ordersDetails', orderSearch)
+
+  }
+
 
   getOrders(orderSearch: OrderSearch): Observable<OrderResponse> {
 
@@ -102,6 +110,15 @@ export class OrderService {
     return this.http.get<any>(`orders/close/` + currentStatus + '/' + targetStatus)
 
   }
+
+    /* ************************************************************* */
+
+  closeSingleOrders(orderId: any): Observable<any> {
+
+    return this.http.get<any>(`orders/closeSingleOrder/` + orderId);
+
+  }
+
   /* ************************************************************* */
 
   resetOrderNum(startNumber: any): Observable<any> {

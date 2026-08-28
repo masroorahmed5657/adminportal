@@ -1,0 +1,76 @@
+/* ==========================================================================
+   NOTIFICATION THEME
+   Yeh file NotificationService (success/error/warning/confirmDelete) ke
+   saare popups/toasts ko good-looking banati hai.
+
+   ⚠️ SETUP (ek baar karna hai):
+   Apni global "src/styles.scss" file ke sabse aakhir mein yeh line add karo:
+
+       @import 'app/shared/notification-theme';
+
+   ========================================================================== */
+
+.app-toast-popup {
+  border-radius: 12px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+  padding: 0.85rem 1.1rem !important;
+  font-family: inherit !important;
+}
+
+.app-confirm-popup {
+  border-radius: 16px !important;
+  padding: 1.5rem !important;
+  font-family: inherit !important;
+}
+
+.app-confirm-popup .swal2-title {
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+}
+
+.app-confirm-popup .swal2-html-container {
+  font-size: 0.95rem !important;
+  color: #6b7280 !important;
+}
+
+.app-btn-danger {
+  background-color: #e11d48 !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 0.55rem 1.4rem !important;
+  font-weight: 600 !important;
+  margin: 0 0.35rem !important;
+  transition: background-color 0.15s ease-in-out;
+}
+.app-btn-danger:hover {
+  background-color: #be123c !important;
+}
+
+.app-btn-primary {
+  background-color: #2563eb !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 0.55rem 1.4rem !important;
+  font-weight: 600 !important;
+  margin: 0 0.35rem !important;
+  transition: background-color 0.15s ease-in-out;
+}
+.app-btn-primary:hover {
+  background-color: #1d4ed8 !important;
+}
+
+.app-btn-cancel {
+  background-color: #f3f4f6 !important;
+  color: #374151 !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  padding: 0.55rem 1.4rem !important;
+  font-weight: 600 !important;
+  margin: 0 0.35rem !important;
+  transition: background-color 0.15s ease-in-out;
+}
+.app-btn-cancel:hover {
+  background-color: #e5e7eb !important;
+}

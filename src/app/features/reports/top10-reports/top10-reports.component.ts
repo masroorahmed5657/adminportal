@@ -49,8 +49,8 @@ export type ChartOptions = {
 
 @Component({
   selector: 'app-top10-reports',
-  imports: [NgApexchartsModule, FormsModule,CommonModule,RouterModule],
-  providers:[DatePipe],
+  imports: [NgApexchartsModule, FormsModule, CommonModule, RouterModule],
+  providers: [DatePipe],
   templateUrl: './top10-reports.component.html',
   styleUrl: './top10-reports.component.scss'
 })
@@ -68,13 +68,31 @@ export class Top10ReportsComponent implements OnInit {
   saleReportList: OrderSaleReport[] = [];
   sortOrder: 'asc' | 'desc' = 'asc'; //
 
+  /* ===== Pagination (Shopify-style Previous / Next) ===== */
+  page: number = 1;
+  pageSize: number = 10;
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.saleReportList.length / this.pageSize));
+  }
+
+  get pagedSaleReportList(): OrderSaleReport[] {
+    const start = (this.page - 1) * this.pageSize;
+    return this.saleReportList.slice(start, start + this.pageSize);
+  }
+
+  goToPage(p: number) {
+    if (p < 1 || p > this.totalPages) return;
+    this.page = p;
+  }
+
 
   @ViewChild("chart")
   public chartPaymentCountOptions: Partial<ChartOptions> | any;
 
   chart!: ChartComponent;
-    public chart1Options: Partial<ChartOptions> | any;
-    public chartPieOptions: Partial<ChartOptions> | any;
+  public chart1Options: Partial<ChartOptions> | any;
+  public chartPieOptions: Partial<ChartOptions> | any;
 
 
   series: ApexAxisChartSeries = [];
@@ -87,16 +105,16 @@ export class Top10ReportsComponent implements OnInit {
     private datepipe: DatePipe,
     private reportService: ReportsService,
     private router: Router,
-    private utilities: UtilitiesService) { 
-      this.router.events.subscribe(event => {
-    if (event instanceof NavigationEnd) {
-      this.loadData();  // your API or refresh logic
-    }
-  });
+    private utilities: UtilitiesService) {
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.loadData();  // your API or refresh logic
+      }
+    });
 
 
 
-    }
+  }
 
 
   title = 'angular-app';
@@ -112,16 +130,16 @@ export class Top10ReportsComponent implements OnInit {
       let position = 0;
       PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight);
 
-      let fileNamePdf='Report.pdf';
-    if (this.top10ProductFlag) {
-      fileNamePdf = 'TopProductsSale.pdf';  
-    }
-    else if (this.top10CategoryFlag) {
-      fileNamePdf = 'TopCategorySale.pdf';  
-    }
-    else if (this.top10BrandsFlag) {
-      fileNamePdf = 'TopBrandsSale.pdf';  
-    }
+      let fileNamePdf = 'Report.pdf';
+      if (this.top10ProductFlag) {
+        fileNamePdf = 'TopProductsSale.pdf';
+      }
+      else if (this.top10CategoryFlag) {
+        fileNamePdf = 'TopCategorySale.pdf';
+      }
+      else if (this.top10BrandsFlag) {
+        fileNamePdf = 'TopBrandsSale.pdf';
+      }
 
 
       PDF.save(fileNamePdf);
@@ -140,13 +158,13 @@ export class Top10ReportsComponent implements OnInit {
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
 
     if (this.top10ProductFlag) {
-      this.fileName = 'TopProductsSale.xlsx';  
+      this.fileName = 'TopProductsSale.xlsx';
     }
     else if (this.top10CategoryFlag) {
-      this.fileName = 'TopCategorySale.xlsx';  
+      this.fileName = 'TopCategorySale.xlsx';
     }
     else if (this.top10BrandsFlag) {
-      this.fileName = 'TopBrandsSale.xlsx';  
+      this.fileName = 'TopBrandsSale.xlsx';
     }
 
     /* save to file */
@@ -156,39 +174,57 @@ export class Top10ReportsComponent implements OnInit {
 
   ngOnInit(): void {
 
-    let reportName = this.route.snapshot.paramMap.get('name');
+  let reportName = this.route.snapshot.paramMap.get('name');
 
-    if (reportName === 'top10Product') {
-      this.top10ProductFlag = true;
-      this.top10CategoryFlag = false;
-      this.top10BrandsFlag = false;
-      this.chart1Options = null as any;
-      this.chartPieOptions = null as any;
-      this.loadData();
-    }
-    else if (reportName === 'top10Category') {
-      this.top10ProductFlag = false;
-      this.top10CategoryFlag = true;
-      this.top10BrandsFlag = false;
-      this.chart1Options = null as any;
-      this.chartPieOptions = null as any;
-      this.loadData();
-    }
-    else if (reportName === 'top10Brands') {
-      this.top10ProductFlag = false;
-      this.top10CategoryFlag = false;
-      this.top10BrandsFlag = true;
-      this.chart1Options = null as any;
-      this.chartPieOptions = null as any;
-      this.loadData();
-    }
+  // Default date range: last 30 days
+  const today = new Date();
+  const past = new Date();
+  past.setDate(today.getDate() - 30);
+  this.endDate = this.formatDate(today);
+  this.startDate = this.formatDate(past);
 
+  if (reportName === 'top10Product') {
+    this.top10ProductFlag = true;
+    this.top10CategoryFlag = false;
+    this.top10BrandsFlag = false;
+    this.chart1Options = null as any;
+    this.chartPieOptions = null as any;
+    this.loadData();
+    this.reportWithDate();
+  }
+  else if (reportName === 'top10Category') {
+    this.top10ProductFlag = false;
+    this.top10CategoryFlag = true;
+    this.top10BrandsFlag = false;
+    this.chart1Options = null as any;
+    this.chartPieOptions = null as any;
+    this.loadData();
+    this.reportWithDate();
+  }
+  else if (reportName === 'top10Brands') {
+    this.top10ProductFlag = false;
+    this.top10CategoryFlag = false;
+    this.top10BrandsFlag = true;
+    this.chart1Options = null as any;
+    this.chartPieOptions = null as any;
+    this.loadData();
+    this.reportWithDate();
   }
 
-  loadData(){
+}
+
+formatDate(date: Date): string {
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+  loadData() {
     let reportName = this.route.snapshot.paramMap.get('name');
     //Reset
-    this.saleReportList.length=0;
+    this.saleReportList.length = 0;
+    this.page = 1;
     this.blankChartProduct();
 
     if (reportName === 'top10Product') {
@@ -233,6 +269,7 @@ export class Top10ReportsComponent implements OnInit {
     if (this.top10ProductFlag) {
       this.reportService.getTopProductsWithDateRange(reportRequest).subscribe((data: OrderSaleReport[]) => {
         this.saleReportList = data;
+        this.page = 1;
         this.makeChartProduct();
         this.makePieChartProduct();
 
@@ -242,6 +279,7 @@ export class Top10ReportsComponent implements OnInit {
     else if (this.top10CategoryFlag) {
       this.reportService.getTopCategoryWithDateRange(reportRequest).subscribe((data: OrderSaleReport[]) => {
         this.saleReportList = data;
+        this.page = 1;
         this.makeChartCategory();
         this.makePieChartCategory();
 
@@ -251,6 +289,7 @@ export class Top10ReportsComponent implements OnInit {
     else if (this.top10BrandsFlag) {
       this.reportService.getTopBrandsWithDateRange(reportRequest).subscribe((data: OrderSaleReport[]) => {
         this.saleReportList = data;
+        this.page = 1;
         this.makeChartBrands();
         this.makePieChartBrand();
       });
@@ -262,7 +301,7 @@ export class Top10ReportsComponent implements OnInit {
   }
 
   /* ************************************************* */
-  blankChartProduct(){
+  blankChartProduct() {
     let saleArray: never[] = [];
     let x_axis: never[] = [];
 
@@ -400,133 +439,133 @@ export class Top10ReportsComponent implements OnInit {
   }
 
 
-makePieChartProduct() {
-  // Prepare series (values)
-  let saleArray: number[] = [];
-  for (let i = 0; i < this.saleReportList.length; i++) {
-    saleArray.push(Number(this.saleReportList[i].totalSale.toFixed(2)));
+  makePieChartProduct() {
+    // Prepare series (values)
+    let saleArray: number[] = [];
+    for (let i = 0; i < this.saleReportList.length; i++) {
+      saleArray.push(Number(this.saleReportList[i].totalSale.toFixed(2)));
+    }
+
+    // Prepare labels (categories)
+    let myLabels: string[] = [];
+    for (let i = 0; i < this.saleReportList.length; i++) {
+      myLabels.push(this.saleReportList[i].productName);
+    }
+
+    let x_axis = this.saleReportList.map(s => s.productName);
+
+    // Build Pie Chart
+    this.chartPieOptions = {
+      series: saleArray,
+      chart: {
+        type: "pie",
+        height: 350
+      },
+      labels: x_axis,
+      title: {
+        text: "Sale ($) Pie Chart"
+      },
+      dataLabels: {
+        enabled: true,
+        formatter: function (val: any, opts: any) {
+          const label = opts.w.globals.labels[opts.seriesIndex];
+          const value = opts.w.globals.series[opts.seriesIndex];
+          return `${label}: $${value}`;
+        }
+      },
+      legend: {
+        show: true,
+        position: "bottom"
+      }
+    };
   }
 
-  // Prepare labels (categories)
-  let myLabels: string[] = [];
-  for (let i = 0; i < this.saleReportList.length; i++) {
-    myLabels.push(this.saleReportList[i].productName);
+
+
+  makePieChartCategory() {
+    // Prepare series (values)
+    let saleArray: number[] = [];
+    for (let i = 0; i < this.saleReportList.length; i++) {
+      saleArray.push(Number(this.saleReportList[i].totalSale.toFixed(2)));
+    }
+
+    // Prepare labels (categories)
+    let myLabels: string[] = [];
+    for (let i = 0; i < this.saleReportList.length; i++) {
+      myLabels.push(this.saleReportList[i].category);
+    }
+
+    let x_axis = this.saleReportList.map(s => s.category);
+
+    // Build Pie Chart
+    this.chartPieOptions = {
+      series: saleArray,
+      chart: {
+        type: "pie",
+        height: 350
+      },
+      labels: x_axis,
+      title: {
+        text: "Sale ($) Pie Chart"
+      },
+      dataLabels: {
+        enabled: true,
+        formatter: function (val: any, opts: any) {
+          const label = opts.w.globals.labels[opts.seriesIndex];
+          const value = opts.w.globals.series[opts.seriesIndex];
+          return `${label}: $${value}`;
+        }
+      },
+      legend: {
+        show: true,
+        position: "bottom"
+      }
+    };
   }
 
-  let x_axis = this.saleReportList.map(s => s.productName);
-
-  // Build Pie Chart
-  this.chartPieOptions = {
-    series: saleArray ,
-    chart: {
-      type: "pie",
-      height: 350
-    },
-    labels: x_axis,
-    title: {
-      text: "Sale ($) Pie Chart"
-    },
-    dataLabels: {
-    enabled: true,
-    formatter: function (val:any, opts:any) {
-        const label = opts.w.globals.labels[opts.seriesIndex];
-        const value = opts.w.globals.series[opts.seriesIndex];
-        return `${label}: $${value}`;
+  makePieChartBrand() {
+    // Prepare series (values)
+    let saleArray: number[] = [];
+    for (let i = 0; i < this.saleReportList.length; i++) {
+      saleArray.push(Number(this.saleReportList[i].totalSale.toFixed(2)));
     }
-  },
-    legend: {
-      show: true,
-      position: "bottom"
+
+    // Prepare labels (categories)
+    let myLabels: string[] = [];
+    for (let i = 0; i < this.saleReportList.length; i++) {
+      myLabels.push(this.saleReportList[i].brandName);
     }
-  };
-}
 
+    let x_axis = this.saleReportList.map(s => s.brandName);
 
-
-makePieChartCategory() {
-  // Prepare series (values)
-  let saleArray: number[] = [];
-  for (let i = 0; i < this.saleReportList.length; i++) {
-    saleArray.push(Number(this.saleReportList[i].totalSale.toFixed(2)));
+    // Build Pie Chart
+    this.chartPieOptions = {
+      series: saleArray,
+      chart: {
+        type: "pie",
+        height: 350
+      },
+      labels: x_axis,
+      title: {
+        text: "Sale ($) Pie Chart"
+      },
+      dataLabels: {
+        enabled: true,
+        formatter: function (val: any, opts: any) {
+          const label = opts.w.globals.labels[opts.seriesIndex];
+          const value = opts.w.globals.series[opts.seriesIndex];
+          return `${label}: $${value}`;
+        }
+      },
+      legend: {
+        show: true,
+        position: "bottom"
+      }
+    };
   }
 
-  // Prepare labels (categories)
-  let myLabels: string[] = [];
-  for (let i = 0; i < this.saleReportList.length; i++) {
-    myLabels.push(this.saleReportList[i].category);
-  }
 
-  let x_axis = this.saleReportList.map(s => s.category);
-
-  // Build Pie Chart
-  this.chartPieOptions = {
-    series: saleArray ,
-    chart: {
-      type: "pie",
-      height: 350
-    },
-    labels: x_axis,
-    title: {
-      text: "Sale ($) Pie Chart"
-    },
-    dataLabels: {
-    enabled: true,
-    formatter: function (val:any, opts:any) {
-        const label = opts.w.globals.labels[opts.seriesIndex];
-        const value = opts.w.globals.series[opts.seriesIndex];
-        return `${label}: $${value}`;
-    }
-  },
-    legend: {
-      show: true,
-      position: "bottom"
-    }
-  };
-}
-
-makePieChartBrand() {
-  // Prepare series (values)
-  let saleArray: number[] = [];
-  for (let i = 0; i < this.saleReportList.length; i++) {
-    saleArray.push(Number(this.saleReportList[i].totalSale.toFixed(2)));
-  }
-
-  // Prepare labels (categories)
-  let myLabels: string[] = [];
-  for (let i = 0; i < this.saleReportList.length; i++) {
-    myLabels.push(this.saleReportList[i].brandName);
-  }
-
-  let x_axis = this.saleReportList.map(s => s.brandName);
-
-  // Build Pie Chart
-  this.chartPieOptions = {
-    series: saleArray ,
-    chart: {
-      type: "pie",
-      height: 350
-    },
-    labels: x_axis,
-    title: {
-      text: "Sale ($) Pie Chart"
-    },
-    dataLabels: {
-    enabled: true,
-    formatter: function (val:any, opts:any) {
-        const label = opts.w.globals.labels[opts.seriesIndex];
-        const value = opts.w.globals.series[opts.seriesIndex];
-        return `${label}: $${value}`;
-    }
-  },
-    legend: {
-      show: true,
-      position: "bottom"
-    }
-  };
-}
-
-
-    startDateChange() {
+  startDateChange() {
 
   }
 

@@ -16,29 +16,29 @@ import { CommonModule, DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-profit-loss',
-  imports: [FormsModule,CommonModule,DecimalPipe],
+  imports: [FormsModule, CommonModule, DecimalPipe],
   templateUrl: './profit-loss.component.html',
   styleUrl: './profit-loss.component.scss'
 })
-export class ProfitLossComponent implements  OnInit{
+export class ProfitLossComponent implements OnInit {
 
-  orderViewList:OrdersCustomerWrapper[]=[];
-  orderList:OrdersCustomerWrapper[]=[];
-  purchaseOrderList: PurchaseOrder[]=[];
-  purchaseOrderListNew: PurchaseOrder[]=[];
-  paymentFlag=false;
-  paymentList: Payment[]=[];
-  paymentListnew:Payment[]=[];
-  startDate:any=null;
-  endDate:any=null;
-  errorsFlag=false;
+  orderViewList: OrdersCustomerWrapper[] = [];
+  orderList: OrdersCustomerWrapper[] = [];
+  purchaseOrderList: PurchaseOrder[] = [];
+  purchaseOrderListNew: PurchaseOrder[] = [];
+  paymentFlag = false;
+  paymentList: Payment[] = [];
+  paymentListnew: Payment[] = [];
+  startDate: any = null;
+  endDate: any = null;
+  errorsFlag = false;
   spinnerDataLoad = false;
   selectedDepartment: any;
-  categoryList: Category[]=[];
-  Status: string[]=['NEW', 'PRINTED', 'CLOSED', 'REJECTED'];
+  categoryList: Category[] = [];
+  Status: string[] = ['NEW', 'PRINTED', 'CLOSED', 'REJECTED'];
   selectedOrderType: 'ONLINE' | 'POS' = 'ONLINE';
   currentOrderStatus: string = 'NEW';
-  fileName= 'ExcelSheet.xlsx';
+  fileName = 'ExcelSheet.xlsx';
   dataSource: any;
 
 
@@ -49,37 +49,69 @@ export class ProfitLossComponent implements  OnInit{
 
 
   dateRangeSelected: boolean = false;
-  expenseList:Expenses[]=[];
-  expenseListNew:Expenses[]=[];
+  expenseList: Expenses[] = [];
+  expenseListNew: Expenses[] = [];
+
+  /* ===== Pagination (Shopify-style Previous / Next) ===== */
+  page: number = 1;
+  pageSize: number = 10;
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.orderList.length / this.pageSize));
+  }
+
+  get pagedOrderList(): OrdersCustomerWrapper[] {
+    const start = (this.page - 1) * this.pageSize;
+    return this.orderList.slice(start, start + this.pageSize);
+  }
+
+  // Maps the index of a row *within the current page* back to its
+  // absolute index inside orderList/purchaseOrderList/expenseList —
+  // needed because those parallel arrays are indexed by full-list position.
+  rowIndex(i: number): number {
+    return (this.page - 1) * this.pageSize + i;
+  }
+
+  goToPage(p: number) {
+    if (p < 1 || p > this.totalPages) return;
+    this.page = p;
+  }
 
 
-
-  constructor(private orderService:OrderService,
-              private checkoutService: CheckoutService,
-              private cache: CacheService,
-              private router: Router,
-              private poService: PurchaseOrderService,
-              private expenseService:ExpenseService,)
-  {}
+  constructor(private orderService: OrderService,
+    private checkoutService: CheckoutService,
+    private cache: CacheService,
+    private router: Router,
+    private poService: PurchaseOrderService,
+    private expenseService: ExpenseService,)
+  { }
 
 
   ngOnInit(): void {
-
-
-
+    const today = new Date();
+    const past = new Date();
+    past.setDate(today.getDate() - 30);
+    this.endDate = this.formatDate(today);
+    this.startDate = this.formatDate(past);
+    this.getOrderdata(this.currentOrderStatus, this.selectedOrderType);
   }
 
+  formatDate(date: Date): string {
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    return yyyy + '-' + mm + '-' + dd;
+  }
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
 
-  exportToExcel(): void
-  {
+  exportToExcel(): void {
     /* pass here the table id */
     let element = document.getElementById('excel-table');
-    const ws: XLSX.WorkSheet =XLSX.utils.table_to_sheet(element);
+    const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(element);
 
     /* generate workbook and add the worksheet */
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
@@ -104,68 +136,71 @@ export class ProfitLossComponent implements  OnInit{
   }
 
   /* ********************************************************************* */
-getOrderdata(orderStatus: string, orderType:string){
-  let orderSearch: OrderSearch = new OrderSearch();
-  orderSearch.status = orderStatus;
-  orderSearch.orderType=orderType;
-  orderSearch.createdDateStart = this.startDate; //this.searchForm.get('dateFrom')?.value;
-  orderSearch.createdDateEnd = this.endDate;    //this.searchForm.get('dateTo')?.value;
-  if (this.orderList!=null) {this.orderList.length=0;}
+  getOrderdata(orderStatus: string, orderType: string) {
+    let orderSearch: OrderSearch = new OrderSearch();
+    orderSearch.status = orderStatus;
+    orderSearch.orderType = orderType;
+    orderSearch.createdDateStart = this.startDate; //this.searchForm.get('dateFrom')?.value;
+    orderSearch.createdDateEnd = this.endDate;    //this.searchForm.get('dateTo')?.value;
+    if (this.orderList != null) { this.orderList.length = 0; }
 
 
 
-  this.checkoutService.getPaymentList().subscribe((data: Payment[]) => {
-    if (data !== undefined || data !==null) {
-    this.paymentFlag=false;
-    this.paymentList=data;
+    this.checkoutService.getPaymentList().subscribe((data: Payment[]) => {
+      if (data !== undefined || data !== null) {
+        this.paymentFlag = false;
+        this.paymentList = data;
 
-   if (this.paymentList!==null || this.paymentList!=undefined){
-   for (let i=0; i<this.paymentList.length; i++){
-    this.paymentListnew.push(this.paymentList[i]);
-
-
-    }}
- }});
+        if (this.paymentList !== null || this.paymentList != undefined) {
+          for (let i = 0; i < this.paymentList.length; i++) {
+            this.paymentListnew.push(this.paymentList[i]);
 
 
-
-  // this.orderService.getOrders(orderSearch).subscribe((data: OrderResponse) => {
-  //   if (data !== undefined){
-  //     this.errorsFlag=false;
-  //     this.orderList=data.orderCustomer;
-
-  //       if (this.orderList!==null || this.orderList!=undefined){
-  //         for (let i=0; i<this.orderList.length; i++){
-  //           this.orderViewList.push(this.orderList[i])
-
-  //           let completedPaymentOrders = this.orderList.filter(order => this.isPaymentCompleted(order.orders?.orderId));
-  //           this.totalSales = completedPaymentOrders.reduce((sum, order) => sum + (order.orders?.grandTotal || 0), 0);
-  //         }
-  //             this.netIncome = Math.round(this.totalSales - (this.totalPurchases + this.totalExpense));
-  //       }
-  //   }});
-
-  this.orderService.getOrders(orderSearch).subscribe((data: OrderResponse) => {
-    if (data !== undefined){
-      this.errorsFlag = false;
-      this.orderList = data.orderCustomer;
-
-      if (this.orderList!==null || this.orderList!=undefined){
-        for (let i=0; i<this.orderList.length; i++){
-          this.orderViewList.push(this.orderList[i])
-
-          this.totalSales = this.orderList.reduce((sum, orders) => sum + (orders.orders?.grandTotal || 0), 0);
+          }
         }
-      }this.netIncome = Math.round(this.totalSales - (this.totalPurchases + this.totalExpense));
+      }
+    });
 
-    }
-  });
+
+
+    // this.orderService.getOrders(orderSearch).subscribe((data: OrderResponse) => {
+    //   if (data !== undefined){
+    //     this.errorsFlag=false;
+    //     this.orderList=data.orderCustomer;
+
+    //       if (this.orderList!==null || this.orderList!=undefined){
+    //         for (let i=0; i<this.orderList.length; i++){
+    //           this.orderViewList.push(this.orderList[i])
+
+    //           let completedPaymentOrders = this.orderList.filter(order => this.isPaymentCompleted(order.orders?.orderId));
+    //           this.totalSales = completedPaymentOrders.reduce((sum, order) => sum + (order.orders?.grandTotal || 0), 0);
+    //         }
+    //             this.netIncome = Math.round(this.totalSales - (this.totalPurchases + this.totalExpense));
+    //       }
+    //   }});
+
+    this.orderService.getOrders(orderSearch).subscribe((data: OrderResponse) => {
+      if (data !== undefined) {
+        this.errorsFlag = false;
+        this.orderList = data.orderCustomer;
+        this.page = 1; // reset to first page whenever a new search runs
+
+        if (this.orderList !== null || this.orderList != undefined) {
+          for (let i = 0; i < this.orderList.length; i++) {
+            this.orderViewList.push(this.orderList[i])
+
+            this.totalSales = this.orderList.reduce((sum, orders) => sum + (orders.orders?.grandTotal || 0), 0);
+          }
+        } this.netIncome = Math.round(this.totalSales - (this.totalPurchases + this.totalExpense));
+
+      }
+    });
 
     this.poService.getAll().subscribe((data: PurchaseOrder[]) => {
-      this.purchaseOrderList=data;
+      this.purchaseOrderList = data;
 
-      if (this.purchaseOrderList!==null || this.purchaseOrderList!=undefined){
-        for (let i=0; i<this.purchaseOrderList.length; i++){
+      if (this.purchaseOrderList !== null || this.purchaseOrderList != undefined) {
+        for (let i = 0; i < this.purchaseOrderList.length; i++) {
           this.purchaseOrderListNew.push(this.purchaseOrderList[i])
         }
         this.totalPurchases = this.purchaseOrderListNew.reduce((sum, purchase) => sum + (purchase.total || 0), 0);
@@ -204,72 +239,72 @@ getOrderdata(orderStatus: string, orderType:string){
 
 
 
-}
-
-calculateTotals(): void {
-  // Calculate total sales completed payment
-  let completedPaymentOrders = this.orderList.filter(order => this.isPaymentCompleted(order.orders?.orderId));
-  this.totalSales = completedPaymentOrders.reduce((sum, order) => sum + (order.orders?.grandTotal || 0), 0);
-
-  // Get purchase data
-  this.totalPurchases = this.purchaseOrderListNew.reduce((sum, purchase) => sum + (purchase.total || 0), 0);
-
-  // Calculate total expense
-  this.expenseService.getExpenseList().subscribe((data: Expenses[]) => {
-    this.expenseList = data;
-    const startDate = new Date(this.startDate);
-    const endDate = new Date(this.endDate);
-    if (this.expenseList !== null && this.expenseList !== undefined) {
-      for (let i = 0; i < this.expenseList.length; i++) {
-        const expenseDate = new Date(this.expenseList[i].transactionDate)
-        if (expenseDate >= startDate && expenseDate <= endDate) {
-          this.expenseListNew.push(this.expenseList[i]);
-        }
-      }
-      this.totalExpense = this.expenseListNew.reduce((sum, expense) => sum + (expense.amount || 0), 0);
-    }
-
-
-
-    // Calculate net income
-    this.netIncome = Math.round(this.totalSales - (this.totalPurchases + this.totalExpense));
-  });
-}
-
-
-/* ********************************************************************* */
-startDateChange(){
-  this.cache.set('startDate', this.startDate);
-}
-endDateChange(){
-  this.cache.set('endDate', this.endDate);
-}
-/* ********************************************************************* */
-onSearch(){
-
-  if (this.selectedOrderType === 'ONLINE') {
-   this.getOrderdata(this.currentOrderStatus, this.selectedOrderType);
- }
- else if (this.selectedOrderType === 'POS') {
-   this.getOrderdata(this.currentOrderStatus, this.selectedOrderType);
- }
-}
-
-
-
-getPaymentStatus(orderId: any):  { status: any} {
-  const matchingPayment = this.paymentList.find(payment => payment.orderId === orderId);
-  if (matchingPayment) {
-    return { status: matchingPayment.paymentStatus };
-  } else {
-    return { status: 'NOT PAID'};
   }
-}
 
-// Add a method to check if payment is completed
-isPaymentCompleted(orderId: any): boolean {
-  return this.getPaymentStatus(orderId).status === 'Complete';
-}
+  calculateTotals(): void {
+    // Calculate total sales completed payment
+    let completedPaymentOrders = this.orderList.filter(order => this.isPaymentCompleted(order.orders?.orderId));
+    this.totalSales = completedPaymentOrders.reduce((sum, order) => sum + (order.orders?.grandTotal || 0), 0);
+
+    // Get purchase data
+    this.totalPurchases = this.purchaseOrderListNew.reduce((sum, purchase) => sum + (purchase.total || 0), 0);
+
+    // Calculate total expense
+    this.expenseService.getExpenseList().subscribe((data: Expenses[]) => {
+      this.expenseList = data;
+      const startDate = new Date(this.startDate);
+      const endDate = new Date(this.endDate);
+      if (this.expenseList !== null && this.expenseList !== undefined) {
+        for (let i = 0; i < this.expenseList.length; i++) {
+          const expenseDate = new Date(this.expenseList[i].transactionDate)
+          if (expenseDate >= startDate && expenseDate <= endDate) {
+            this.expenseListNew.push(this.expenseList[i]);
+          }
+        }
+        this.totalExpense = this.expenseListNew.reduce((sum, expense) => sum + (expense.amount || 0), 0);
+      }
+
+
+
+      // Calculate net income
+      this.netIncome = Math.round(this.totalSales - (this.totalPurchases + this.totalExpense));
+    });
+  }
+
+
+  /* ********************************************************************* */
+  startDateChange() {
+    this.cache.set('startDate', this.startDate);
+  }
+  endDateChange() {
+    this.cache.set('endDate', this.endDate);
+  }
+  /* ********************************************************************* */
+  onSearch() {
+
+    if (this.selectedOrderType === 'ONLINE') {
+      this.getOrderdata(this.currentOrderStatus, this.selectedOrderType);
+    }
+    else if (this.selectedOrderType === 'POS') {
+      this.getOrderdata(this.currentOrderStatus, this.selectedOrderType);
+    }
+  }
+
+
+
+  getPaymentStatus(orderId: any): { status: any } {
+    const matchingPayment = this.paymentList.find(payment => payment.orderId === orderId);
+    if (matchingPayment) {
+      return { status: matchingPayment.paymentStatus };
+    } else {
+      return { status: 'NOT PAID' };
+    }
+  }
+
+  // Add a method to check if payment is completed
+  isPaymentCompleted(orderId: any): boolean {
+    return this.getPaymentStatus(orderId).status === 'Complete';
+  }
 
   calculateNetIncome(): number {
     return this.totalSales - (this.totalPurchases + this.totalExpense);

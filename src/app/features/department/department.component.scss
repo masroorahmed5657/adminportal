@@ -1,0 +1,20 @@
+// .object-fit-cover {
+//   object-fit: cover;
+// }
+
+// .table {
+//   th, td {
+//     vertical-align: middle;
+//     padding: 0.7rem 0.5rem;
+//   }
+// }
+
+
+/* This component now uses the shared Shopify-style theme.
+   Make sure the shared partial is imported once in your app
+   (e.g. in styles.scss or here) so all shopify-* classes resolve:
+   @import "path/to/shopify-theme";
+*/
+// @import ".../shared/shopify-theme";
+
+@import "../../shared/shopify-theme.scss"

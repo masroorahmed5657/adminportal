@@ -1,19 +1,20 @@
 import { HttpEventType, HttpResponse } from '@angular/common/http';
-import { Component, OnInit,EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { UntypedFormGroup, UntypedFormBuilder, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Observable, delay } from 'rxjs';
 import { Category, Departments, ProductWrapper } from '../../shared/models/model-classes.model';
-import Swal from 'sweetalert2';
 import { faBackward, faDashboard, faPlusSquare, faRemove, faDollar, faCar, faUndo } from '@fortawesome/free-solid-svg-icons';
 import { ProductService } from '../../shared/services/product.service';
 import { DepartmentsService } from '../../shared/services/departments.service';
 import { CategoryService } from '../../shared/services/category.service';
+import { NotificationService } from '../../shared/services/notification.service';
 import { CommonModule, NgClass, NgStyle } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { DialogModule } from 'primeng/dialog';
 import { ProductsService } from '../../shared/services/products.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-category',
@@ -70,18 +71,41 @@ export class CategoryComponent implements OnInit {
 
   spinnerDataLoad: boolean = false;
 
+  /* ===== Pagination (Shopify-style Previous / Next) ===== */
+  page: number = 1;
+  pageSize: number = 5; // match whatever "rows" value the old p-table used
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.categoryList.length / this.pageSize));
+  }
+
+  get pagedCategoryList(): Category[] {
+    const start = (this.page - 1) * this.pageSize;
+    return this.categoryList.slice(start, start + this.pageSize);
+  }
+
+  rowIndex(i: number): number {
+    return (this.page - 1) * this.pageSize + i;
+  }
+
+  goToPage(p: number) {
+    if (p < 1 || p > this.totalPages) return;
+    this.page = p;
+    this.activeRow = null;
+  }
+
   constructor(
     private productService: ProductsService,
     private deptService: DepartmentsService,
     private categoryService: CategoryService,
     private router: Router,
-    private formBuilder: UntypedFormBuilder
+    private formBuilder: UntypedFormBuilder,
+    private notify: NotificationService
   ) { }
 
   ngOnInit(): void {
     this.spinnerDataLoad = true; // 👈 loader start
 
-    // Dept list
     this.deptService.getDepList().subscribe({
       next: (data: Departments[]) => {
         if (data != null || data != undefined) {
@@ -99,23 +123,20 @@ export class CategoryComponent implements OnInit {
       }
     });
 
-    // Category list
     this.getAllCategories();
 
     console.log('categoryList', this.categoryList);
-
   }
 
 
   getAllCategories() {
     this.spinnerDataLoad = true; // 👈 loader start
 
-    // window.location.reload()
     this.categoryService.getCategoryList().subscribe({
       next: (data: Category[]) => {
-        // ✅ hamesha naye wale sabse upar
         this.categoryList = [...data].reverse();
         this.categoryMasterList = [...data].reverse();
+        this.page = 1;
         this.spinnerDataLoad = false; // 👈 loader stop
       },
       error: (err) => {
@@ -125,15 +146,12 @@ export class CategoryComponent implements OnInit {
     });
   }
 
-  activeRow: number | null = null; // highlight ke liye
+  activeRow: number | null = null;
 
   startEdit(row: any) {
-
     this.enabledEdit = []
     this.enabledEdit[row] = true;
-
     this.activeRow = row;
-
   }
 
   showList() {
@@ -142,19 +160,16 @@ export class CategoryComponent implements OnInit {
 
   /************************************************ */
 
-
   onSave(categoryId: any, row: number) {
     let category: Category = new Category();
     let saveFlag = true;
 
-    // Current user
     let user = sessionStorage.getItem('currentUser');
     if (user) {
       this.currentUser = JSON.parse(user);
     }
 
     if (row < 0) {
-      // ADD new category
       const categoryInput = (document.getElementById('category-new') as HTMLInputElement);
       const subCategoryInput = (document.getElementById('subCategory-new') as HTMLInputElement);
 
@@ -163,101 +178,96 @@ export class CategoryComponent implements OnInit {
       category.updatedBy = this.currentUser?.loginId || 'system';
       category.activeFlag = 1;
 
-      // Validation
       if (!category.category) {
         saveFlag = false;
-        Swal.fire('WARNING', 'Please Enter Category', 'warning');
+        this.notify.warning('Please Enter Category');
       }
       if (!category.subCategory) {
         saveFlag = false;
-        Swal.fire('WARNING', 'Please Enter Sub Category', 'warning');
+        this.notify.warning('Please Enter Sub Category');
       }
 
-      // // Duplicate check
-      // if (category.category 
-      //   && category.subCategory && this.categoryList.some(c =>
-      //   (c.category || '').trim() === category.category &&
-      //   (c.subCategory || '').trim() === category.subCategory
-      // )) {
-      //   saveFlag = false;
-      //   Swal.fire('Error', 'Category Already Exists', 'error');
-      // }
+      /* Date: 2026-08-07
+      *  Developer: Masroor Ahmed
+      * Validation for Category and Sub Category
+      */
+      if (!this.validateData(category)) {
+        return;
+      }
 
 
-    } else 
-      {
-      // EDIT existing category
+    } else {
       if (!this.enabledEdit[row]) return;
 
-      category.categoryId = categoryId; //this.categoryList[row].categoryId;
+      category.categoryId = categoryId;
 
       const categoryInput = (document.getElementById('category-' + row) as HTMLInputElement);
       const subCategoryInput = (document.getElementById('subCategory-' + row) as HTMLInputElement);
 
       category.category = categoryInput?.value ? categoryInput.value.trim() : '';
       category.subCategory = subCategoryInput?.value ? subCategoryInput.value.trim() : '';
-      category.popularFlag = ((document.getElementById('popularFlag-' + row) ) as HTMLInputElement)?.checked ;
-      if (category.popularFlag)  {
-        category.popularFlag=1;
+      category.popularFlag = ((document.getElementById('popularFlag-' + row)) as HTMLInputElement)?.checked;
+      if (category.popularFlag) {
+        category.popularFlag = 1;
+      } else {
+        category.popularFlag = 0;
       }
-      else{
-        category.popularFlag=0;
-      }
-
 
       category.updatedBy = this.currentUser?.loginId;
       category.activeFlag = 1;
 
-      // ✅ Preserve old image fields
       category.finalImage = this.categoryList[row].finalImage;
       category.imageType = this.categoryList[row].imageType;
 
       if (!category.category) {
         saveFlag = false;
-        Swal.fire('WARNING', 'Please Enter Category', 'warning');
+        this.notify.warning('Please Enter Category');
       }
       if (!category.subCategory) {
         saveFlag = false;
-        Swal.fire('WARNING', 'Please Enter Sub Category', 'warning');
+        this.notify.warning('Please Enter Sub Category');
       }
 
-      this.enabledEdit[row] = false; // Disable edit after save
+      this.enabledEdit[row] = false;
     }
 
     if (!saveFlag) return;
+    
+          /* Date: 2026-08-07
+      *  Developer: Masroor Ahmed
+      * Validation for Category and Sub Category
+      */
+      if (!this.validateData(category)) {
+        return;
+      }
 
-    // ✅ Call API
+
+
     this.categoryService.saveCategory(category).subscribe(
       (data: Category) => {
         if (data && data.categoryId != null) {
-          Swal.fire('Submit', 'You have saved Category ' + data.categoryId + ' Successfully!', 'success').then(() => {
+          this.notify.success('You have saved Category ' + data.categoryId + ' Successfully!');
 
-            this.enabledEdit[row] = false;
-            this.activeRow = null; // highlight remove
-            this.categorySaved.emit();
+          this.enabledEdit[row] = false;
+          this.activeRow = null;
+          this.categorySaved.emit();
 
-          });
-
-          // Update frontend list without page reload
           if (row < 0) {
-            // ADD case: new category at top
             this.categoryList.unshift(data);
             this.categoryMasterList.unshift(data);
+            this.page = 1;
           } else {
-            // EDIT case: update existing row
             this.categoryList[row] = { ...this.categoryList[row], ...data };
           }
 
           this.addFlag = false;
 
-          // ✅ Image upload (if selected)
           if (this.currentFile) {
             this.categoryService.upload(this.currentFile, data.categoryId).subscribe({
               next: (event: any) => {
                 if (event instanceof HttpResponse) {
                   const updatedCat = event.body;
                   if (updatedCat && updatedCat.finalImage) {
-                    // Update frontend list after image upload
                     const index = this.categoryList.findIndex(c => c.categoryId === updatedCat.categoryId);
                     if (index > -1) {
                       this.categoryList[index].finalImage = updatedCat.finalImage;
@@ -270,19 +280,18 @@ export class CategoryComponent implements OnInit {
               },
               error: (err: any) => {
                 console.error(err);
-                Swal.fire('Error', 'Image upload failed!', 'error');
+                this.notify.error('Image upload failed!');
               }
-              
             });
           }
 
         } else {
-          Swal.fire('Error', 'Error in saving Category', 'error');
+          this.notify.error('Error in saving Category');
         }
       },
       (error) => {
         console.error('Error saving category:', error);
-        Swal.fire('Error', 'API Error while saving category', 'error');
+        this.notify.error('API Error while saving category');
       }
     );
     window.location.reload()
@@ -290,65 +299,52 @@ export class CategoryComponent implements OnInit {
 
 
   /* ************************ */
-showCategoryListFlag=true;//Show Always Back To Brand List Button except when calling from Product
-addCategory() {
-  this.addFlag = true;
-}
+  showCategoryListFlag = true;
+  addCategory() {
+    this.addFlag = true;
+  }
 
   backToList() {
     this.addFlag = false
   }
 
   /********************************************* */
-  onDelete(categoryId: any, index: number ) {
-  
-    let bProductFound = false;
+  async onDelete(categoryId: any, index: number) {
 
-    Swal.fire({
-    title: 'Are you sure you want to delete this Category?',
-    text: 'You cannot recover this Category!',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, delete it!',
-    cancelButtonText: 'No, keep it'
-  }).then((response: any) => {
-    if (response.isConfirmed) {
-
-      //First check if this Category exists in Products, then don't delete and show error msg
-      this.productService.getProductsByCategory(categoryId).subscribe((data: ProductWrapper)=>{
-        let prod1 = data;
-        if (prod1.productList.length>0){
-          bProductFound=true;
-          Swal.fire('WARNING', 'Category can not be deleted as found Product for this Category', 'warning');
-        }
-        else{
-          this.categoryService.deleteCategory(categoryId).subscribe({
-            next: () => {
-              this.enabledEdit = [];
-              this.activeRow = null;
-
-              // ✅ Brands jaisa hi karo
-              this.categoryList.splice(index, 1);
-              this.categoryList = [...this.categoryList]; // force update
-
-              Swal.fire('Deleted!', 'Category has been deleted.', 'success');
-            },
-            error: (err) => {
-              console.error('Error deleting category:', err);
-              Swal.fire('Error', 'Failed to delete Category', 'error');
-            }
-          });
-
-        }
-
-      });
-
-      
-    } else if (response.dismiss === Swal.DismissReason.cancel) {
-      Swal.fire('Cancelled', 'Your Category is safe', 'info');
+    const confirmed = await this.notify.confirmDelete('this category');
+    if (!confirmed) {
+      this.notify.info('Your category is safe');
+      return;
     }
-  });
-}
+
+    this.productService.getProductsByCategory(categoryId).subscribe((data: ProductWrapper) => {
+      let prod1 = data;
+      if (prod1.productList.length > 0) {
+        this.notify.warning('Category can not be deleted as found Product for this Category');
+      }
+      else {
+        this.categoryService.deleteCategory(categoryId).subscribe({
+          next: () => {
+            this.enabledEdit = [];
+            this.activeRow = null;
+
+            this.categoryList.splice(index, 1);
+            this.categoryList = [...this.categoryList];
+
+            if (this.page > this.totalPages) {
+              this.page = this.totalPages;
+            }
+
+            this.notify.success('Category has been deleted.');
+          },
+          error: (err) => {
+            console.error('Error deleting category:', err);
+            this.notify.error('Failed to delete Category');
+          }
+        });
+      }
+    });
+  }
 
 
   /* ********************** IMAGE Methods ******************************* */
@@ -363,7 +359,6 @@ addCategory() {
       myRemoveButton.removeAttribute('hidden');
     }
 
-
     if (this.selectedFiles) {
       const file: File | null = this.selectedFiles.item(0);
 
@@ -371,7 +366,7 @@ addCategory() {
         this.preview = '';
         this.currentFile = file;
         if (file.size > 65000) {
-          Swal.fire('File Too Big', 'Image is too big to upload. Please resize to max 65KB');
+          this.notify.warning('Image is too big to upload. Please resize to max 65KB');
           this.currentFile = '';
           this.message = '';
           this.preview = '';
@@ -394,12 +389,9 @@ addCategory() {
 
   /* ******************************************************************** */
   deleteImage(row: any) {
-
     this.categoryService.deleteImage(this.categoryList[row].categoryId).subscribe((data: any) => {
       window.location.reload();
-    }
-    );
-
+    });
   }
   /* ****************************************************************** */
 
@@ -413,18 +405,13 @@ addCategory() {
   }
   closePopup() {
     this.displayStyle = "none";
-
-
   }
 
   /* ********************************************************************** */
   backToHome() {
-
     this.router.navigate(['home']);
-
   }
 
-  // Sorting
   onSortChange(event: any) {
     let value = event.target.value;
     if (value == 'low_to_high') {
@@ -436,7 +423,6 @@ addCategory() {
     }
   }
 
-  // Pagination
   onPageChange(event: any) {
     this.first = event.first + 1;
     if (this.categoryList.length > 0) {
@@ -448,7 +434,6 @@ addCategory() {
       }
     }
   }
-
 
   viewDetail(id: any) { this.router.navigate(['/invoice/overview', this.categoryList[id]]) }
 
@@ -470,27 +455,26 @@ addCategory() {
 
       return matchesCategory && matchesSubCategory;
     })
+
+    this.page = 1;
   }
 
-/* ****************************************************************** */
-uploadImage(): void {
-  //This upload will work only in EDIT mode. For Add, must do in one transaction
-  this.progress = 0;
+  /* ****************************************************************** */
+  uploadImage(): void {
+    this.progress = 0;
 
-  if (this.selectedFiles) {
-    const file: File | null = this.selectedFiles.item(0);
+    if (this.selectedFiles) {
+      const file: File | null = this.selectedFiles.item(0);
 
-    if (file) {
-      this.currentFile = file;
+      if (file) {
+        this.currentFile = file;
 
-      this.categoryService.upload(this.currentFile, this.categoryList[this.currentRow].categoryId).subscribe({
+        this.categoryService.upload(this.currentFile, this.categoryList[this.currentRow].categoryId).subscribe({
           next: (event: any) => {
             if (event.type === HttpEventType.UploadProgress) {
               this.progress = Math.round((100 * event.loaded) / event.total);
             } else if (event instanceof HttpResponse) {
               this.message = event.body.message;
-              //this.imageInfos = this.uploadService.getFiles(productId);
-
             }
             window.location.reload();
           },
@@ -502,19 +486,17 @@ uploadImage(): void {
               this.message = err.error.message;
             } else {
               this.message = 'Could not upload the image!';
-              Swal.fire('Error', 'Could not upload the image!');
+              this.notify.error('Could not upload the image!');
             }
 
             this.currentFile = undefined;
           },
-      });
+        });
+      }
 
+      this.selectedFiles = undefined;
     }
-
-    this.selectedFiles = undefined;
   }
-
-}//upload Image
 
   /* ***************************************************************************** */
   uploadCategory(event: any) {
@@ -523,12 +505,85 @@ uploadImage(): void {
       this.fileImport = (files[i]);
     }
     this.categoryService.importCategory(this.fileImport).subscribe(() => {
-      Swal.fire('SUCCESS', 'Categories uploaded Successfully', 'success');
+      this.notify.success('Categories uploaded Successfully');
 
       window.location.reload();
     });
+  }
+  /* ****************************************************************** */
+    /* Date: 2026-08-07
+  *  Developer: Masroor Ahmed
+  * Validation for department name
+  */
+
+  validateData(category?: Category): boolean {
+    let bRet=true;
+
+     //Check for duplicate category name
+      const duplicate = this.categoryList.find(
+        x => ( (x.category?.toLowerCase() === category?.category?.toLowerCase()) && (x.subCategory?.toLowerCase() === category?.subCategory?.toLowerCase()) )
+      ); 
+      if (duplicate && category?.categoryId !== duplicate.categoryId) {
+        Swal.fire({
+          title: 'Category and Sub-Category Name already exists',
+          text: 'Please choose a different Category/Sub-Category name.',
+          icon: 'warning'
+        });
+        return false;
+      }
+
+      //Check for emptry category name
+      if (!category?.category || category.category.trim() === '') {
+        Swal.fire({
+          title: 'Category Name Required',
+          text: 'Please enter a category name.',
+          icon: 'warning'
+        });
+        return false;
+      }
+      //Check for Alphabetic Category name
+      //const alphabeticRegex = /^[A-Za-z\s]+$/;
+      const alphabeticRegex = /^[A-Za-z][A-Za-z0-9\s]*$/;
+      if (!alphabeticRegex.test(category?.category)) {
+        Swal.fire({
+          title: 'Invalid Category Name',
+          text: 'Category name should contain only alpha numeric characters.',
+          icon: 'warning'
+        });
+        return false;
+      }
+      //check for leading ad trailing spaces
+      if (category?.category !== category?.category.trim()) {
+        Swal.fire({
+          title: 'Invalid Category Name',
+          text: 'Category name should not have leading or trailing spaces.',
+          icon: 'warning'
+        });
+        return false;
+      }
+      //Check for special characters in category name
+      const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+      if (specialCharRegex.test(category?.category)) {
+        Swal.fire({
+          title: 'Invalid Category Name',
+          text: 'Category name should not contain special characters.', 
+          icon: 'warning'
+        });
+        return false;
+      }
+      //Check for category name length
+      if (category?.category.length > 50) {
+        Swal.fire({
+          title: 'Invalid Category Name',
+          text: 'Category name should not exceed 50 characters.', 
+          icon: 'warning'
+        });
+        return false;
+      }
+      else{ 
+        return true;
+      }
 
   }
-
 
 }

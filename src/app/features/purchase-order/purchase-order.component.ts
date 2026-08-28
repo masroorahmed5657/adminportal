@@ -5,11 +5,11 @@ import { Supplier, PurchaseOrder, POItems, ProductView, POItemsView, POListRespo
 import { ProductsService } from '../../shared/services/products.service';
 import { PurchaseOrderService } from '../../shared/services/purchase-order.service';
 import { SupplierService } from '../../shared/services/supplier.service';
-import Swal from "sweetalert2";
 import { UtilitiesService } from '../../shared/utilities.service';
 import { FormsModule } from '@angular/forms';
 import { faReceipt, faPrint, faRemove,  faPencil, faSortAlphaUp, faSort, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NotificationService } from '../../shared/services/notification.service';
 
 
 
@@ -81,7 +81,8 @@ export class PurchaseOrderComponent implements OnInit {
     private productService: ProductsService,
     private poService: PurchaseOrderService,
     private router: Router,
-    private utilities: UtilitiesService
+    private utilities: UtilitiesService,
+    private notify: NotificationService
   ) { }
 
   /* ******************************************************** */
@@ -92,32 +93,8 @@ export class PurchaseOrderComponent implements OnInit {
     this.toDate = this.datepipe.transform(new Date(), "yyyy-MM-dd");
 
     this.myScan = '';
-    //UPC scan code at window
-    //auto Scaning Code
-    //  window.addEventListener('keypress',event=> {
 
-    //   const key = event.key;
-    //   const code = event.code;
-    //   if (key==='Enter') {
-
-    //     this.upcSearchWindow(this.myScan);
-    //     //alert(key)
-    //     //console.log('barcodescan:', myScan);
-    //     //myScan= '';
-    //     }
-    //   else {
-    //       this.myScan += key;
-    //       this.myCode += code;
-    //     }
-    //   });
-
-
-    //today date
-    /************* */
-    //this.purchaseListFlag=true;
-    //get the data supplier
-
-        this.fromDate = null;
+    this.fromDate = null;
     this.toDate = null;
     let poResponse: POListResponse = new POListResponse();
 
@@ -136,10 +113,6 @@ export class PurchaseOrderComponent implements OnInit {
 
           this.poService.getMonthly().subscribe((data: POListResponse) => {
             this.purchaseOrderList = data.poList;
-            //poResponse = data;
-            //this.purchaseOrderList = poResponse.poList;
-
-
           });
 
 
@@ -200,36 +173,24 @@ export class PurchaseOrderComponent implements OnInit {
   /* ****************************************************** */
   skuScan = "";
   onKeysku(event: any) {
-    //alert(event.target.value);
-    //delay(3000);
     if (event.code === 'Enter') {
-      //alert(this.myScan);
-      //alert('UPC: '+this.sku);
       this.findProductBySku();
     }
     else {
       this.skuScan = event.target.value;
     }
 
-    //alert(this.myScan);
-
   }
 
   /* ****************************************************** */
   onKeyItem(event: any) {
-    //alert(event.target.value);
-    //delay(3000);
     if (event.code === 'Enter') {
-      //alert(this.myScan);
-      //alert('UPC: '+this.sku);
       this.findProductByItem();
 
     }
     else {
       this.myScan = event.target.value;
     }
-
-    //alert(this.myScan);
 
   }
   /* **************************************************** */
@@ -248,7 +209,7 @@ export class PurchaseOrderComponent implements OnInit {
   //find the data with upc
   findProductByUpc() {
     if (this.mySupplier.supplierCode === undefined || this.mySupplier.supplierCode === null) {
-      Swal.fire('Warning', 'Please Select Supplier');
+      this.notify.warning('Please Select Supplier');
       this.upc = '';
       return;
     }
@@ -265,7 +226,6 @@ export class PurchaseOrderComponent implements OnInit {
 
       rcvdProduct.discount = this.product.discount;
       rcvdProduct.upc = this.upc;
-      //rcvdProduct.receivedQty =
       this.productviewList.push(rcvdProduct);
 
       //Now setup POitems
@@ -289,11 +249,10 @@ export class PurchaseOrderComponent implements OnInit {
     }
 
     if (this.mySupplier.supplierCode === undefined || this.mySupplier.supplierCode === null) {
-      Swal.fire('Warning', 'Please Select Supplier');
+      this.notify.warning('Please Select Supplier');
       this.upc = '';
       return;
     }
-    // alert(upc);
     this.productService.getProductsByUPC(upc).subscribe((data: ProductView) => {
       this.product = data;
       //reset myscan
@@ -307,7 +266,6 @@ export class PurchaseOrderComponent implements OnInit {
       rcvdProduct.unitPrice = this.product.unitPrice;
       rcvdProduct.discount = this.product.discount;
       rcvdProduct.upc = this.upc;
-      //rcvdProduct.receivedQty =
       this.productviewList.push(rcvdProduct);
 
       //Now setup POitems
@@ -322,7 +280,7 @@ export class PurchaseOrderComponent implements OnInit {
   //find the data with sku
   findProductBySku() {
     if (this.mySupplier.supplierCode === undefined || this.mySupplier.supplierCode === null) {
-      Swal.fire('Warning', 'Please Select Supplier');
+      this.notify.warning('Please Select Supplier');
       this.sku = '';
       return;
     }
@@ -337,7 +295,6 @@ export class PurchaseOrderComponent implements OnInit {
       rcvdProduct.unitPrice = this.product.unitPrice;
       rcvdProduct.discount = this.product.discount;
       rcvdProduct.sku = this.sku;
-      //rcvdProduct.receivedQty =
       this.productviewList.push(rcvdProduct);
 
       //Now setup POitems
@@ -352,7 +309,7 @@ export class PurchaseOrderComponent implements OnInit {
   /* ******************************************************** */
   findProductByItem() {
     if (this.mySupplier.supplierId === undefined || this.mySupplier.supplierId === null) {
-      Swal.fire('Warning', 'Please Select Supplier');
+      this.notify.warning('Please Select Supplier');
       this.itemSearch = '';
       return;
     }
@@ -400,7 +357,6 @@ export class PurchaseOrderComponent implements OnInit {
       this.po.supplierId = this.mySupplier.supplierId;
 
     }
-    //alert(this.mySupplier.supplierEmail)
   }
   /* ************************************************************** */
   //clear code function start
@@ -422,38 +378,24 @@ export class PurchaseOrderComponent implements OnInit {
   }//clear code function end
 
   /* ************************************************************ */
-  onDelete(row: any) {
-    //Ask confirmation msg
-    Swal.fire({
-      title: 'Are you sure to delete ' + this.productviewList[row].productId + ' ?',
-      text: 'You can not un delete!!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, keep it'
-    }).then((response: any) => {
-      if (response.value) {
-        if (this.poItems[row].productId != null || this.productviewList[row].productId != undefined) {
-          this.productviewList.splice(row, 1);
-          this.poItems.splice(row, 1);
-        }
-      } else if (response.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire(
-          'Cancelled',
-          'Your Item is safe',
-          'error'
-        );
-      }
-    });
+  async onDelete(row: any) {
+    const confirmed = await this.notify.confirmDelete(
+      'item ' + this.productviewList[row].productId
+    );
+    if (!confirmed) {
+      this.notify.info('Your Item is safe');
+      return;
+    }
+
+    if (this.poItems[row].productId != null || this.productviewList[row].productId != undefined) {
+      this.productviewList.splice(row, 1);
+      this.poItems.splice(row, 1);
+    }
   }
   /* ******************************************************* */
   qtyChange(index: number) {
 
-    //let qty = this.cartForm.get('qty')?.value;
-
     let qty = <HTMLInputElement>(document.getElementById('Qty_' + index));
-
-    //alert('qtyChange'+ qty.value);
 
     this.productviewList[index].quantity = qty.value;
 
@@ -462,8 +404,6 @@ export class PurchaseOrderComponent implements OnInit {
 
   /* ******************************************************* */
   priceChange(index: number) {
-
-    //let qty = this.cartForm.get('qty')?.value;
 
     let price = <HTMLInputElement>(document.getElementById('price_' + index));
 
@@ -475,8 +415,6 @@ export class PurchaseOrderComponent implements OnInit {
   }
   /* ******************************************************* */
   discountChange(index: number) {
-
-    //let qty = this.cartForm.get('qty')?.value;
 
     let discountElem = <HTMLInputElement>(document.getElementById('discount_' + index));
 
@@ -491,9 +429,6 @@ export class PurchaseOrderComponent implements OnInit {
   /* **************************************************************** */
   taxChange(index: number) {
 
-
-    //let qty = this.cartForm.get('qty')?.value;
-
     let taxElem = <HTMLInputElement>(document.getElementById('tax_' + index));
 
     let taxNum = Number(taxElem.value);
@@ -504,13 +439,6 @@ export class PurchaseOrderComponent implements OnInit {
     this.calculateTotalPrice();
   }
 
-  /* ********************************************* */
-  // toFixDecimalNumber(quantity: any, unitPrice: any): number{
-
-  //   let myNumber = Number( quantity * unitPrice).toFixed(2);
-  //   return Number(myNumber);
-
-  // }
   /* ********************************************* */
 
   calculateTotalPrice() {
@@ -591,10 +519,6 @@ export class PurchaseOrderComponent implements OnInit {
     this.po.poDate = this.poDate;
     this.po.poType = this.poType;
     this.po.remarks = this.remarks;
-    //po.subTotal = this.subTotal;
-    //po.discount = this.discount;
-    //po.tax = this.tax;
-    //po.total = this.total;
     this.po.updatedBy = loggedInUser.loginId;
 
 
@@ -605,8 +529,6 @@ export class PurchaseOrderComponent implements OnInit {
     if (this.productviewList.length > 0) {
       //Get and set PurchaseOrder and POItems[]
       let po = new PurchaseOrder();
-      //let poItems: POItems[]=[];
-
 
       this.formToPO();
       let poRequest: PORequest = new PORequest();
@@ -619,11 +541,11 @@ export class PurchaseOrderComponent implements OnInit {
           resp.po;
           if (resp.po !== null) {
             if (resp.po === undefined) {
-              Swal.fire('Error', 'Error in saving Purchase Order', 'error');
+              this.notify.error('Error in saving Purchase Order');
             }
             else {
               if (resp.po.poId !== null) {
-                Swal.fire('Submit', 'You have saved Purchase Order ' + resp.po.poId + ' Succesfully!', 'success');
+                this.notify.success('You have saved Purchase Order ' + resp.po.poId + ' Succesfully!', 'Submit');
 
                 //window.location.reload();
               }
@@ -641,7 +563,6 @@ export class PurchaseOrderComponent implements OnInit {
 
   list() {
     this.purchaseListFlag = true;
-    //this.purchasehide=true;
   }
 
   reset() {
@@ -671,15 +592,13 @@ export class PurchaseOrderComponent implements OnInit {
     poSearch.supplierId = this.mySupplier.supplierId === undefined ? null : this.mySupplier.supplierId;
 
     if (poSearch.poStartDate === null && poSearch.poEndDate === null && poSearch.supplierId === null) {
-      Swal.fire("Warning", "Please Select Search options", "warning");
+      this.notify.warning('Please Select Search options');
       return;
     }
 
     this.poService.getBySearch(poSearch).subscribe((data: POListResponse) => {
       poResponse = data;
       this.purchaseOrderList = poResponse.poList;
-      //this.poItems = poResponse.poItems;
-
     });
 
   }
@@ -692,15 +611,9 @@ export class PurchaseOrderComponent implements OnInit {
   }
 
   rcvProduct(po: any) {
-    //alert(po.poId);
-    // this.cache.setList('orders',purchase);
     this.router.navigate(['receiveProduct/' + po.poId]); //<a routerLink="/shop/6" class="read-more">
 
   }
-
-  //   detail(){
-  //  this.purchaseListFlag=true;
-  //   }
 
 
   /* ************************************************************ */
@@ -825,8 +738,6 @@ export class PurchaseOrderComponent implements OnInit {
                         <tbody style="border: 1px solid black;">`;
 
       let trTag = ``;
-      //this.po.totalQty=0;
-      //this.po.subTotal=0;
       let totalQty = 0;
 
       for (let i = 0; i < this.poItemsViewList.length; i++) {
@@ -847,8 +758,6 @@ export class PurchaseOrderComponent implements OnInit {
                                           </td>
                                       </tr>`;
         totalQty = totalQty + Number(this.poItemsViewList[i].quantity);
-        //this.po.subTotal = this.po.subTotal + this.poItemsViewList[i].grandTotal;
-        //this.po.total = this.po.total - po.discount;
 
       }//for loop for TR
 
@@ -957,61 +866,37 @@ export class PurchaseOrderComponent implements OnInit {
   }
 
   /* ******************************************************** */
-  onDeletePO(row: number, poId:any) {
-    //this.purchaseListFlag=false;
-    //Ask confirmation msg
-    Swal.fire({
-      title: 'Are you sure to delete PO ' + poId + ' ?',
-      text: 'You can not un delete!!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, keep it'
-    }).then((response: any) => {
-      if (response.value) {
-        if (poId != null || poId != undefined) {
+  async onDeletePO(row: number, poId:any) {
+    const confirmed = await this.notify.confirmDelete('PO ' + poId);
+    if (!confirmed) {
+      this.notify.info('Your PO is safe');
+      return;
+    }
 
-          this.poService.delete(poId).subscribe((data: any) => {
-            this.purchaseOrderList.splice(row, 1);
-            this.poItems.splice(row, 1);
-            //this.purchaseOrderList.splice(row, 1);
-            //window.location.reload();
-          })
-
-        }
-      }
-      else if (response.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire(
-          'Cancelled',
-          'Your PO is safe',
-          'error'
-        );
-      }
-    });
-
-
+    if (poId != null || poId != undefined) {
+      this.poService.delete(poId).subscribe((data: any) => {
+        this.purchaseOrderList.splice(row, 1);
+        this.poItems.splice(row, 1);
+      })
+    }
   }
 
   /* ******************************************************** */
   onEdit(row: number) {
-    //this.purchaseListFlag=false;
     let poId = this.purchaseOrderList[row].poId;
     let url = '/layout/purchase-order-edit/' + poId;
 
     this.router.navigate(['/layout/purchase-order-edit/' + poId]);
-    //this.router.navigate(['/layout/purchase-order-add']);
 
 
   }
 
   /* ******************************************************** */
   receive(row: number) {
-    //this.purchaseListFlag=false;
     let poId = this.purchaseOrderList[row].poId;
     let url = '/layout/receive-order-edit/' + poId;
 
     this.router.navigate(['/layout/receive-order-edit/' + poId]);
-    //this.router.navigate(['/layout/purchase-order-add']);
 
 
   }
@@ -1069,20 +954,16 @@ export class PurchaseOrderComponent implements OnInit {
     if (event.keyCode === 18) {
       return;
     }
-    //let myResult = this.wildcardMatchRegExp("Farhan", "**F**");  
 
-    //this.suppliertList.includes(this.selectedSupplierName);
     let pattern = "**" + this.selectedSupplierName + "**";
     pattern = pattern.toLocaleLowerCase();
 
-    //let search = supplier.supplierName.toLowerCase();
     let mySupplier = this.suppliertList[0];
     mySupplier = this.suppliertList.find(supplier => (this.wildcardMatchRegExp(supplier.supplierName, pattern)))!;
 
     this.selectedSupplier = mySupplier?.supplierCode;
     this.mySupplier = mySupplier;
 
-    //console.log(this.selectedSupplier.supplierName);
   }
 
 /* ******************************************************** */
@@ -1095,8 +976,6 @@ export class PurchaseOrderComponent implements OnInit {
       return false;
     }
 
-    // Convert wildcard pattern to a  
-    // regular expression pattern 
     const regexPattern = new RegExp(
       "^" +
       pattern
@@ -1105,8 +984,6 @@ export class PurchaseOrderComponent implements OnInit {
       "$"
     );
 
-    // Test if the text matches the 
-    // regular expression pattern 
     return regexPattern.test(text);
   }
 

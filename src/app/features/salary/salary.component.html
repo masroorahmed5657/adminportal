@@ -1,0 +1,213 @@
+<!-- salary.component.html -->
+<div class="shopify-main-container">
+
+  <!-- Actions row -->
+  <div class="shopify-actions-row">
+    <button type="button" class="btn-shopify btn-shopify--primary" (click)="openAddModal()">
+      <i class="bi bi-plus-circle"></i> Add Salary
+    </button>
+  </div>
+
+  <!-- Empty state -->
+  <div class="shopify-empty" *ngIf="salaryList.length === 0">
+    <h5>No salary records found</h5>
+    <p>Add a salary record to get started.</p>
+  </div>
+
+  <ng-container *ngIf="salaryList.length > 0">
+
+    <!-- Desktop table -->
+    <div class="shopify-table-wrap">
+      <table class="shopify-table">
+        <thead>
+          <tr>
+            <th>Employee ID</th>
+            <th>Basic Salary</th>
+            <th>Allowances</th>
+            <th>Bonuses</th>
+            <th>Deductions</th>
+            <th>Taxes</th>
+            <th>Net Salary</th>
+            <th>Salary Month</th>
+            <th>Payment Mode</th>
+            <th>Status</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let salary of salaryList">
+            <td class="fw-semibold">{{ salary.empId }}</td>
+            <td>{{ salary.basicSalary | currency }}</td>
+            <td>{{ salary.allowances | currency }}</td>
+            <td>{{ salary.bonuses | currency }}</td>
+            <td>{{ salary.deductions | currency }}</td>
+            <td>{{ salary.taxes | currency }}</td>
+            <td class="fw-bold">{{ salary.netSalary | currency }}</td>
+            <td>{{ salary.salaryMonth }}</td>
+            <td>{{ salary.paymentMode }}</td>
+            <td>
+              <span class="shopify-badge"
+                [ngClass]="{
+                  'shopify-badge--success': salary.status === 'PAID',
+                  'shopify-badge--warning': !salary.status || salary.status === 'PENDING',
+                  'shopify-badge--danger': salary.status === 'CANCELLED'
+                }">
+                {{ salary.status || 'PENDING' }}
+              </span>
+            </td>
+            <td>
+              <div class="shopify-table__actions">
+                <button class="btn-shopify btn-shopify--outline btn-shopify--icon" title="Edit"
+                  (click)="onEdit(salary)">
+                  <i class="bi bi-pencil-fill"></i>
+                </button>
+                <button class="btn-shopify btn-shopify--danger btn-shopify--icon" title="Delete"
+                  (click)="onDelete(salary.salaryId)">
+                  <i class="bi bi-trash-fill"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Mobile cards -->
+    <div class="shopify-mobile-list">
+      <div class="shopify-mobile-card" *ngFor="let salary of salaryList">
+        <div class="shopify-mobile-card__row">
+          <div class="fw-bold">Employee #{{ salary.empId }}</div>
+          <span class="shopify-badge"
+            [ngClass]="{
+              'shopify-badge--success': salary.status === 'PAID',
+              'shopify-badge--warning': !salary.status || salary.status === 'PENDING',
+              'shopify-badge--danger': salary.status === 'CANCELLED'
+            }">
+            {{ salary.status || 'PENDING' }}
+          </span>
+        </div>
+        <div class="shopify-mobile-card__field">
+          <span class="shopify-field-label--sm">Net Salary</span>
+          <span class="fw-bold">{{ salary.netSalary | currency }}</span>
+        </div>
+        <div class="shopify-mobile-card__field">
+          <span class="shopify-field-label--sm">Basic</span>
+          <span>{{ salary.basicSalary | currency }}</span>
+        </div>
+        <div class="shopify-mobile-card__field">
+          <span class="shopify-field-label--sm">Allowances</span>
+          <span>{{ salary.allowances | currency }}</span>
+        </div>
+        <div class="shopify-mobile-card__field">
+          <span class="shopify-field-label--sm">Bonuses</span>
+          <span>{{ salary.bonuses | currency }}</span>
+        </div>
+        <div class="shopify-mobile-card__field">
+          <span class="shopify-field-label--sm">Deductions</span>
+          <span>{{ salary.deductions | currency }}</span>
+        </div>
+        <div class="shopify-mobile-card__field">
+          <span class="shopify-field-label--sm">Taxes</span>
+          <span>{{ salary.taxes | currency }}</span>
+        </div>
+        <div class="shopify-mobile-card__field">
+          <span class="shopify-field-label--sm">Month</span>
+          <span>{{ salary.salaryMonth }}</span>
+        </div>
+        <div class="shopify-mobile-card__field">
+          <span class="shopify-field-label--sm">Payment Mode</span>
+          <span>{{ salary.paymentMode }}</span>
+        </div>
+        <div class="shopify-mobile-card__actions">
+          <button class="btn-shopify btn-shopify--outline btn-shopify--sm" (click)="onEdit(salary)">
+            <i class="bi bi-pencil-fill"></i> Edit
+          </button>
+          <button class="btn-shopify btn-shopify--danger btn-shopify--sm" (click)="onDelete(salary.salaryId)">
+            <i class="bi bi-trash-fill"></i> Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </ng-container>
+</div>
+
+<!-- ============================================================
+     ADD / EDIT SALARY MODAL
+     ============================================================ -->
+<ng-container *ngIf="showModal">
+  <div class="shopify-modal-backdrop" (click)="closeModal()"></div>
+  <div class="shopify-modal">
+    <div class="shopify-modal__dialog" style="max-width:720px;">
+      <div class="shopify-modal__header">
+        <h5 class="shopify-modal__title">
+          <i class="bi bi-cash-coin me-2"></i>{{ isEdit ? 'Edit Salary' : 'Add Salary' }}
+        </h5>
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+      <div class="shopify-modal__body">
+        <div class="shopify-grid-3">
+          <div>
+            <label class="shopify-field-label">Employee ID</label>
+            <input type="number" class="shopify-input" [(ngModel)]="formData.empId" name="empId" required>
+          </div>
+          <div>
+            <label class="shopify-field-label">Basic Salary</label>
+            <input type="number" class="shopify-input" [(ngModel)]="formData.basicSalary" name="basicSalary">
+          </div>
+          <div>
+            <label class="shopify-field-label">Allowances</label>
+            <input type="number" class="shopify-input" [(ngModel)]="formData.allowances" name="allowances">
+          </div>
+          <div>
+            <label class="shopify-field-label">Bonuses</label>
+            <input type="number" class="shopify-input" [(ngModel)]="formData.bonuses" name="bonuses">
+          </div>
+          <div>
+            <label class="shopify-field-label">Deductions</label>
+            <input type="number" class="shopify-input" [(ngModel)]="formData.deductions" name="deductions">
+          </div>
+          <div>
+            <label class="shopify-field-label">Taxes</label>
+            <input type="number" class="shopify-input" [(ngModel)]="formData.taxes" name="taxes">
+          </div>
+          <div>
+            <label class="shopify-field-label">Net Salary <span class="shopify-field-label--sm">(auto-calculated if needed)</span></label>
+            <input type="number" class="shopify-input" [(ngModel)]="formData.netSalary" name="netSalary">
+          </div>
+          <div>
+            <label class="shopify-field-label">Salary Month (YYYY-MM)</label>
+            <input type="month" class="shopify-input" [(ngModel)]="formData.salaryMonth" name="salaryMonth">
+          </div>
+          <div>
+            <label class="shopify-field-label">Payment Mode</label>
+            <select class="shopify-select" [(ngModel)]="formData.paymentMode" name="paymentMode">
+              <option value="">Select</option>
+              <option value="CASH">Cash</option>
+              <option value="BANK_TRANSFER">Bank Transfer</option>
+              <option value="CHEQUE">Cheque</option>
+            </select>
+          </div>
+          <div>
+            <label class="shopify-field-label">Payment Date</label>
+            <input type="date" class="shopify-input" [(ngModel)]="formData.paymentDate" name="paymentDate">
+          </div>
+          <div>
+            <label class="shopify-field-label">Status</label>
+            <select class="shopify-select" [(ngModel)]="formData.status" name="status">
+              <option value="PENDING">Pending</option>
+              <option value="PAID">Paid</option>
+              <option value="CANCELLED">Cancelled</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="shopify-modal__footer">
+        <button type="button" class="btn-shopify btn-shopify--primary" (click)="onSave()">
+          <i class="bi bi-save-fill"></i> Save
+        </button>
+        <button type="button" class="btn-shopify btn-shopify--outline" (click)="closeModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</ng-container>

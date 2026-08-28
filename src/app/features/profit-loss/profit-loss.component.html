@@ -1,141 +1,136 @@
-<div class="card border border-2" style="margin-top: 4em;">
+<div class="shopify-main-container">
 
-    <div class="card-body">
-        <div class="row mb-3">
-            <div class="row">
-                <div class="col-12">
-                    <div class="card"
-                        style="background: white; border-radius: 12px; box-shadow: 0 6px 12px rgba(0,0,0,0.1); margin-bottom: 25px; overflow: hidden;">
-                        <div class="card-body border border-2" style="padding: 20px;">
-                            <!-- Date Filters and Search Button -->
-                            <div
-                                style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center; margin-bottom: 20px; justify-content: space-between;">
-                                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                                    <div>
-                                        <label style="font-weight: 600; color: #333; margin-right: 10px;">Start
-                                            Date:</label>
-                                        <input type="date" id="startDate" [(ngModel)]="startDate"
-                                            style="padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px;"
-                                            (change)="startDateChange()">
-                                    </div>
-                                    <div>
-                                        <label style="font-weight: 600; color: #333; margin-right: 10px;">End
-                                            Date:</label>
-                                        <input type="date" id="endDate" [(ngModel)]="endDate"
-                                            style="padding: 10px; border: 2px solid #ddd; border-radius: 6px; margin-right: 5px;"
-                                            (change)="endDateChange()">
-                                    </div>
-                                    <button class="btn btn-success" type="button" (click)="onSearch()"
-                                        style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: transform 0.2s; font-weight: 500;"
-                                        onmouseover="this.style.transform='scale(1.05)'"
-                                        onmouseout="this.style.transform='scale(1)'">Search</button>
-                                </div>
-                                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                                    <button type="button" class="btn btn-info" (click)="exportToExcel()"
-                                        style="background: green; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: transform 0.2s; font-weight: 500;"
-                                        onmouseover="this.style.transform='scale(1.05)'"
-                                        onmouseout="this.style.transform='scale(1)'">Export to Excel</button>
-                                    <button type="button" class="btn btn-info" (click)="exportToPdf()"
-                                        style="background: red; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: transform 0.2s; font-weight: 500;"
-                                        onmouseover="this.style.transform='scale(1.05)'"
-                                        onmouseout="this.style.transform='scale(1)'">Export to PDF</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+  <!-- <h2 class="shopify-page-title">Profit &amp; Loss Report</h2> -->
 
-                    <div  id="excel-table">
-                        <div class="card"
-                            style="background: white; border-radius: 12px; box-shadow: 0 6px 12px rgba(0,0,0,0.1); margin-bottom: 25px; overflow: hidden;">
-                            <div class="card-header"
-                                style="background-color: #1c5eeb3f; color: #2563eb; padding: 15px; text-align: center;">
-                                <h4 class="card-title" style="margin: 0; font-weight: 600;">Profit & Loss Report</h4>
-                            </div>
-                            <div class="card-body" style="padding: 20px;">
-                                <table
-                                    style="width: 100%; border-collapse: separate; border-spacing: 0; background: white;">
-                                    <thead>
-                                        <tr style="background: #f8f9fa; border: 2px solid #ddd;">
-                                            <th
-                                                style="padding: 12px; border: 2px solid #ddd; color: #333; font-weight: 600;">
-                                                Date</th>
-                                            <th
-                                                style="padding: 12px; border: 2px solid #ddd; color: #333; font-weight: 600;">
-                                                Sales</th>
-                                            <th
-                                                style="padding: 12px; border: 2px solid #ddd; color: #333; font-weight: 600;">
-                                                Purchases</th>
-                                            <th
-                                                style="padding: 12px; border: 2px solid #ddd; color: #333; font-weight: 600;">
-                                                Expense</th>
-                                            <th
-                                                style="padding: 12px; border: 2px solid #ddd; color: #333; font-weight: 600;">
-                                                Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <ng-container *ngFor="let order of orderList; let i = index;">
-                                            <tr style="transition: background 0.3s;"
-                                                onmouseover="this.style.background='#f1f3f5'"
-                                                onmouseout="this.style.background='white'">
-                                                <td style="padding: 12px; border: 2px solid #ddd;">{{
-                                                    order.orders?.createDate | date:'dd-mm-yyyy' }}</td>
-                                                <td style="padding: 12px; border: 2px solid #ddd;">{{
-                                                    order.orders?.grandTotal | number:'1.0-0'}}</td>
-                                                <td style="padding: 12px; border: 2px solid #ddd;">{{
-                                                    purchaseOrderList[i].total || 0 | number:'1.0-0'}}</td>
-                                                <td style="padding: 12px; border: 2px solid #ddd;">{{
-                                                    expenseList[i].amount || 0 | number:'1.0-0'}}</td>
-                                                <td style="padding: 12px; border: 2px solid #ddd;">{{
-                                                    order.orders?.grandTotal - (purchaseOrderList[i].total || 0) -
-                                                    (expenseList[i].amount || 0) | number:'1.0-0'}}</td>
-                                            </tr>
-                                        </ng-container>
-                                        <tr style="background: #f8f9fa; transition: background 0.3s;"
-                                            onmouseover="this.style.background='#e9ecef'"
-                                            onmouseout="this.style.background='#f8f9fa'">
-                                            <td colspan="4"
-                                                style="padding: 12px; border: 2px solid #ddd; font-weight: 600;">Total
-                                                Sales</td>
-                                            <td style="padding: 12px; border: 2px solid #ddd;">{{ totalSales |
-                                                number:'1.0-0'}}</td>
-                                        </tr>
-                                        <tr style="background: #f8f9fa; transition: background 0.3s;"
-                                            onmouseover="this.style.background='#e9ecef'"
-                                            onmouseout="this.style.background='#f8f9fa'">
-                                            <td colspan="4"
-                                                style="padding: 12px; border: 2px solid #ddd; font-weight: 600;">Total
-                                                Purchases</td>
-                                            <td style="padding: 12px; border: 2px solid #ddd;">{{ totalPurchases |
-                                                number:'1.0-0'}}</td>
-                                        </tr>
-                                        <tr style="background: #f8f9fa; transition: background 0.3s;"
-                                            onmouseover="this.style.background='#e9ecef'"
-                                            onmouseout="this.style.background='#f8f9fa'">
-                                            <td colspan="4"
-                                                style="padding: 12px; border: 2px solid #ddd; font-weight: 600;">Total
-                                                Expense</td>
-                                            <td style="padding: 12px; border: 2px solid #ddd;">{{ totalExpense |
-                                                number:'1.0-0'}}</td>
-                                        </tr>
-                                        <tr style="background: #f8f9fa; transition: background 0.3s;"
-                                            onmouseover="this.style.background='#e9ecef'"
-                                            onmouseout="this.style.background='#f8f9fa'">
-                                            <td colspan="4"
-                                                style="padding: 12px; border: 2px solid #ddd; font-weight: 600;">
-                                                <b>Grand Total</b></td>
-                                            <td style="padding: 12px; border: 2px solid #ddd;"><b>{{ netIncome |
-                                                    number:'1.0-0'}}</b></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+  <!-- Filter row -->
+  <div class="shopify-card mb-4">
+    <div class="shopify-card__header">Filter</div>
+    <div class="shopify-card__body">
+      <div class="shopify-search-row shopify-search-row--wrap">
+        <div>
+          <label class="shopify-field-label" for="startDate">Start Date</label>
+          <input type="date" class="shopify-input" id="startDate" [(ngModel)]="startDate" (change)="startDateChange()">
+        </div>
+        <div>
+          <label class="shopify-field-label" for="endDate">End Date</label>
+          <input type="date" class="shopify-input" id="endDate" [(ngModel)]="endDate" (change)="endDateChange()">
+        </div>
+      </div>
 
-                </div>
+      <div class="shopify-actions-row mt-3">
+        <button type="button" class="btn-shopify btn-shopify--primary" (click)="onSearch()">
+          <i class="bi bi-search"></i> Search
+        </button>
+        <button type="button" class="btn-shopify btn-shopify--success" (click)="exportToExcel()">
+          <i class="bi bi-file-excel"></i> Export to Excel
+        </button>
+        <button type="button" class="btn-shopify btn-shopify--danger" (click)="exportToPdf()">
+          <i class="bi bi-file-pdf"></i> Export to PDF
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Report -->
+  <div id="excel-table">
+    <div class="shopify-card">
+      <div class="shopify-card__header text-center">Profit &amp; Loss Report</div>
+      <div class="shopify-card__body p-0">
+
+        <!-- Empty state -->
+        <div class="shopify-empty" *ngIf="pagedOrderList.length === 0">
+          <h5>No records found</h5>
+          <p>No orders match this date range.</p>
+        </div>
+
+        <ng-container *ngIf="pagedOrderList.length > 0">
+
+          <!-- Desktop table -->
+          <div class="shopify-table-wrap">
+            <table class="shopify-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Sales</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let order of pagedOrderList; let i = index;">
+                  <td>{{ order.orders?.createDate | date:'dd-MM-yyyy' }}</td>
+                  <td>{{ order.orders?.grandTotal | number:'1.0-0' }}</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr class="shopify-table__totals">
+                  <td>Total Sales</td>
+                  <td>{{ totalSales | number:'1.0-0' }}</td>
+                </tr>
+                <tr class="shopify-table__totals">
+                  <td>Total Purchases</td>
+                  <td>{{ totalPurchases | number:'1.0-0' }}</td>
+                </tr>
+                <tr class="shopify-table__totals">
+                  <td>Total Expense</td>
+                  <td>{{ totalExpense | number:'1.0-0' }}</td>
+                </tr>
+                <tr class="shopify-table__totals shopify-table__totals--success">
+                  <td><b>Grand Total</b></td>
+                  <td><b>{{ netIncome | number:'1.0-0' }}</b></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <!-- Mobile cards -->
+          <div class="shopify-mobile-list">
+            <div class="shopify-mobile-card" *ngFor="let order of pagedOrderList; let i = index;">
+              <div class="shopify-mobile-card__row">
+                <span class="shopify-field-label--sm">Date</span>
+                <span>{{ order.orders?.createDate | date:'dd-MM-yyyy' }}</span>
+              </div>
+              <div class="shopify-mobile-card__row">
+                <span class="shopify-field-label--sm">Sales</span>
+                <span>{{ order.orders?.grandTotal | number:'1.0-0' }}</span>
+              </div>
             </div>
 
-        </div>
+            <div class="shopify-mobile-card shopify-mobile-card--totals">
+              <div class="shopify-mobile-card__row">
+                <span class="shopify-field-label--sm">Total Sales</span>
+                <span>{{ totalSales | number:'1.0-0' }}</span>
+              </div>
+              <div class="shopify-mobile-card__row">
+                <span class="shopify-field-label--sm">Total Purchases</span>
+                <span>{{ totalPurchases | number:'1.0-0' }}</span>
+              </div>
+              <div class="shopify-mobile-card__row">
+                <span class="shopify-field-label--sm">Total Expense</span>
+                <span>{{ totalExpense | number:'1.0-0' }}</span>
+              </div>
+              <div class="shopify-mobile-card__row">
+                <span class="shopify-field-label--sm"><b>Grand Total</b></span>
+                <span><b>{{ netIncome | number:'1.0-0' }}</b></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pagination (Shopify-style Previous / Next) -->
+          <div class="shopify-pager" *ngIf="totalPages > 1">
+            <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="page <= 1"
+              (click)="goToPage(page - 1)">
+              <i class="bi bi-chevron-left"></i> Previous
+            </button>
+            <span class="shopify-pager__info">Page {{ page }} of {{ totalPages }}</span>
+            <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="page >= totalPages"
+              (click)="goToPage(page + 1)">
+              Next <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+
+        </ng-container>
+
+      </div>
     </div>
+  </div>
+
 </div>

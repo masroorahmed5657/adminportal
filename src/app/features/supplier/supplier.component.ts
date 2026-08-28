@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Supplier } from '../../shared/models/model-classes.model';
 import { SupplierService } from '../../shared/services/supplier.service';
-import Swal from "sweetalert2";
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
+import { NotificationService } from '../../shared/services/notification.service';
 
 
 @Component({
@@ -25,10 +25,36 @@ export class SupplierComponent implements OnInit {
   searchCode: string = '';
   searchName: string = '';
 
+  /* ===== Pagination (Shopify-style Previous / Next) ===== */
+  page: number = 1;
+  pageSize: number = 5; // match whatever "rows" value the old p-table used
 
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.suppliertList.length / this.pageSize));
+  }
+
+  get pagedSupplierList(): Supplier[] {
+    const start = (this.page - 1) * this.pageSize;
+    return this.suppliertList.slice(start, start + this.pageSize);
+  }
+
+  // Maps the index of a row *within the current page* back to its
+  // absolute index inside suppliertList — startEdit/onSave/onDelete all
+  // operate on the full-list index.
+  rowIndex(i: number): number {
+    return (this.page - 1) * this.pageSize + i;
+  }
+
+  goToPage(p: number) {
+    if (p < 1 || p > this.totalPages) return;
+    this.page = p;
+    this.activeRow = null;
+  }
 
   constructor(
-    private supplierService: SupplierService) { }
+    private supplierService: SupplierService,
+    private notify: NotificationService
+  ) { }
 
   /* ******************************************************************************** */
   ngOnInit(): void {
@@ -45,6 +71,7 @@ export class SupplierComponent implements OnInit {
       next: (data: Supplier[]) => {
         this.suppliertList = data;
         this.suppliertMasterList = data;
+        this.page = 1; // reset to first page on fresh load
         this.spinnerDataLoad = false; // 👈 Loader stop
       },
       error: (err) => {
@@ -85,40 +112,37 @@ export class SupplierComponent implements OnInit {
       supplier.supplierContact = (document.getElementById('supplierContact-' + row) as HTMLInputElement).value.trim();
       supplier.supplierAddress = (document.getElementById('supplierAddress-' + row) as HTMLInputElement).value.trim();
       supplier.supplierEmail = (document.getElementById('supplierEmail-' + row) as HTMLInputElement).value.trim();
-
-    //   // 🔴 Duplicate check edit case me (apna current row ignore)
-    //   let duplicateFound = this.suppliertList.some(
-    //     (s, i) =>
-    //       i !== row &&
-    //       (
-    //         s.supplierName.toLowerCase() === supplier.supplierName.toLowerCase() ||
-    //         s.supplierCode.toLowerCase() === supplier.supplierCode.toLowerCase()
-    //       )
-    //   );
-    //   if (duplicateFound) {
-    //     Swal.fire('Error', 'Supplier Name or Code Already Exists', 'error');
-    //     return;
-    //   }
-     }
+    }
 
     // ---------------- COMMON VALIDATIONS ----------------
-    if (!supplier.supplierName) 
-      { saveFlag = false; Swal.fire('WARNING', 'Please Enter Supplier Name', 'warning'); }
-    else if (!nameRegex.test(supplier.supplierName)) 
-      { saveFlag = false; Swal.fire('WARNING', 'Invalid Name (letters & numbers only)', 'warning'); }
+    //Check for duplicate supplier name or code
+    const duplicate = this.suppliertList.find(s => s.supplierCode?.toLowerCase() === supplier.supplierCode?.toLowerCase() && s.supplierId !== supplier.supplierId);
 
-    if (!supplier.supplierCode) { saveFlag = false; Swal.fire('WARNING', 'Please Enter Supplier Code', 'warning'); }
-    else if (!codeRegex.test(supplier.supplierCode)) { saveFlag = false; Swal.fire('WARNING', 'Invalid Code (letters & numbers only)', 'warning'); }
+    if (duplicate) {
+      this.notify.error('Supplier Code Already Exists');
+      return;
+    }
 
-    if (!supplier.supplierContact) 
-      { saveFlag = false; Swal.fire('WARNING', 'Please Enter Supplier Contact', 'warning'); }
-    else if (!phoneRegex.test(supplier.supplierContact)) 
-      { saveFlag = false; Swal.fire('WARNING', 'Invalid phone number ', 'warning'); }
+    const duplicateName = this.suppliertList.find(s => s.supplierName?.toLowerCase() === supplier.supplierName?.toLowerCase() && s.supplierId !== supplier.supplierId);
 
-    if (!supplier.supplierAddress) { saveFlag = false; Swal.fire('WARNING', 'Please Enter Supplier Address', 'warning'); }
+    if (duplicateName) {
+      this.notify.error('Supplier Name Already Exists');
+      return;
+    }
 
-    if (!supplier.supplierEmail) { saveFlag = false; Swal.fire('WARNING', 'Please Enter Supplier Email', 'warning'); }
-    else if (!emailRegex.test(supplier.supplierEmail)) { saveFlag = false; Swal.fire('WARNING', 'Invalid Email Format', 'warning'); }
+    if (!supplier.supplierName) { saveFlag = false; this.notify.warning('Please Enter Supplier Name'); }
+    else if (!nameRegex.test(supplier.supplierName)) { saveFlag = false; this.notify.warning('Invalid Name (letters & numbers only)'); }
+
+    if (!supplier.supplierCode) { saveFlag = false; this.notify.warning('Please Enter Supplier Code'); }
+    else if (!codeRegex.test(supplier.supplierCode)) { saveFlag = false; this.notify.warning('Invalid Code (letters & numbers only)'); }
+
+    if (!supplier.supplierContact) { saveFlag = false; this.notify.warning('Please Enter Supplier Contact'); }
+    else if (!phoneRegex.test(supplier.supplierContact)) { saveFlag = false; this.notify.warning('Invalid phone number '); }
+
+    if (!supplier.supplierAddress) { saveFlag = false; this.notify.warning('Please Enter Supplier Address'); }
+
+    if (!supplier.supplierEmail) { saveFlag = false; this.notify.warning('Please Enter Supplier Email'); }
+    else if (!emailRegex.test(supplier.supplierEmail)) { saveFlag = false; this.notify.warning('Invalid Email Format'); }
 
     // ❌ Agar validation fail ho to stop
     if (!saveFlag) return;
@@ -127,26 +151,30 @@ export class SupplierComponent implements OnInit {
     this.supplierService.saveSupplier(supplier).subscribe(
       (data: Supplier) => {
         if (data && data.supplierId != null) {
-          Swal.fire('Submit', `You have saved Supplier ${data.supplierId} successfully!`, 'success').then(() => {
-            if (row >= 0) {
-              this.enabledEdit[row] = false;
-              this.activeRow = null;
-            }
-          });
+          this.notify.success(`You have saved Supplier ${data.supplierId} successfully!`, 'Submit');
 
-          if (row < 0) {
-            this.suppliertList.unshift(data); // add new supplier to top
-            this.addFlag = false;
-          } else {
-            this.suppliertList[row] = { ...data }; // update edited supplier
+          if (row >= 0) {
+            this.enabledEdit[row] = false;
+            this.activeRow = null;
           }
-        } else {
-          Swal.fire('Error', 'Error in saving Supplier', 'error');
+
+          //disable edit mode and refresh list
+          this.enabledEdit = [];
+          this.activeRow = null;
+          this.suppliertList = [...this.suppliertList];
+          this.enabledEdit[row] = false;
+          this.addFlag = false;
+          this.page = 1;
+          this.loadSuppliers(); // Refresh the list after save
+
+        }
+        else {
+          this.notify.error('Error in saving Supplier');
         }
       },
       (error) => {
         console.error('Error saving supplier:', error);
-        Swal.fire('Error', 'There was an issue saving the supplier. Please try again.', 'error');
+        this.notify.error('There was an issue saving the supplier. Please try again.');
       }
     );
   }
@@ -154,40 +182,25 @@ export class SupplierComponent implements OnInit {
 
 
   /* ************************ */
-  onDelete(supplierId: number, row: number) {
-    Swal.fire({
-      title: 'Are you sure want to Delete?',
-      text: 'This action cannot be undone!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, keep it'
-    }).then((response: any) => {
-      if (response.isConfirmed) {
-        this.supplierService.delete(supplierId).subscribe(() => {
-        //this.supplierService.delete(this.suppliertList[row].supplierId).subscribe(() => {
-          // Remove item from the array without reloading page
-          this.suppliertList.splice(row, 1);
+  async onDelete(supplierId: number, row: number) {
+    const confirmed = await this.notify.confirmDelete('this supplier');
+    if (!confirmed) {
+      this.notify.info('Your supplier is safe');
+      return;
+    }
 
-          Swal.fire(
-            'Deleted!',
-            'Supplier has been deleted.',
-            'success'
-          );
-        }, (error) => {
-          Swal.fire(
-            'Error',
-            'Failed to delete supplier. Try again.',
-            'error'
-          );
-        });
-      } else if (response.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire(
-          'Cancelled',
-          'Supplier is safe',
-          'error'
-        );
+    this.supplierService.delete(supplierId).subscribe(() => {
+      // Remove item from the array without reloading page
+      this.suppliertList.splice(row, 1);
+
+      // If we deleted the last item on the last page, step back a page
+      if (this.page > this.totalPages) {
+        this.page = this.totalPages;
       }
+
+      this.notify.success('Supplier has been deleted.');
+    }, (error) => {
+      this.notify.error('Failed to delete supplier. Try again.');
     });
   }
 
@@ -228,7 +241,7 @@ export class SupplierComponent implements OnInit {
       this.fileImport = (files[i]);
     }
     this.supplierService.importSuppliers(this.fileImport).subscribe(() => {
-      Swal.fire('SUCCESS', 'Suppliers uploaded Successfully', 'success');
+      this.notify.success('Suppliers uploaded Successfully');
 
       window.location.reload();
     });
@@ -249,6 +262,8 @@ export class SupplierComponent implements OnInit {
 
       return matchesCode && matchesName;
     });
+
+    this.page = 1; // reset to first page whenever the search changes
   }
 
 

@@ -1,0 +1,15 @@
+@import "../../shared/shopify-theme.scss";
+
+.shopify-pager {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    justify-content: center;
+    margin: 1rem 0;
+}
+
+.shopify-pager__info {
+    font-size: 0.85rem;
+    color: #202223;
+    white-space: nowrap;
+}

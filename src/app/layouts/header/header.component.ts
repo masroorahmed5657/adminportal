@@ -30,6 +30,9 @@ export class HeaderComponent {
     '/layout/inventory-adjustment': 'Inventory',
     '/layout/sales': 'Sales List',
     '/layout/departments': 'Department',
+    
+    '/layout/departmentemployee': 'Department Employee',
+    '/layout/pos': 'POS',
     '/layout/store-hours': 'Store Hours',
     '/layout/employees': 'Employees',
     '/layout/customer': 'Customers',
@@ -56,80 +59,117 @@ export class HeaderComponent {
     '/layout/profit-loss': 'Profit & Loss',
     '/layout/purchase-order-add': 'PO Add',
     '/layout/purchase-order-edit/:purchaseOrderId': 'PO Edit',
+
+    // Resolved merge conflict items
+    '/layout/ezpz-tax': 'Ezpz Tax',
+    '/layout/salary': 'Salary',
+    '/layout/expense': 'Expense',
+    '/layout/ezpz-tax-add': 'Ezpz Tax Add',
+    '/layout/ezpz-tax-edit/:taxId': 'Ezpz Tax Edit',
+    '/layout/ezpz-tax-view/:taxId': 'Ezpz Tax View',
+    '/layout/ezpz-tax-report': 'Ezpz Tax Report',
     '/layout/cashier-shift': 'Cashier Shift',
-    '/layout/device-register': 'Device Register',
-    '/layout/error-logs': 'Error Logs',
-
     
-
+    // ===== Previously missing routes (from app.routes.ts) =====
+    '/layout/device-register': 'Device Register',
+    '/layout/warehouse': 'Warehouse',
+    '/layout/error-logs': 'Error Logs',
+    '/layout/expense-category': 'Expense Category',
+    '/layout/payment': 'Payment',
+    '/layout/order-number': 'Order Number',
+    '/layout/departmentmanager': 'Department Manager',
+    '/layout/add-invoice': 'Add Invoice',
+    '/layout/add-user': 'Add User',
+    '/layout/import-products': 'Import Products',
+    '/layout/list-invoice': 'List Invoice',
+    '/layout/catreports': 'Category Reports',
+    '/layout/reports': 'Reports',
+    '/layout/user-list': 'User List',
+    '/layout/products-master-add': 'Products Master Add',
+    '/layout/products-simple-add': 'Products Simple Add',
+    '/layout/product-add-without-image': 'Product Add',
+    '/layout/product-edit-without-image': 'Product Edit',
+    '/layout/productreports': 'Product Reports',
+    '/layout/products-edit/:productId': 'Products Edit',
+    '/layout/products-master-edit/:productId': 'Products Master Edit',
+    '/layout/products-simple-edit/:productId': 'Products Simple Edit',
+    '/layout/purchase-invoice/:receiveId': 'Purchase Invoice',
+    '/layout/stock-report': 'Stock Report',
+    '/layout/inventory-report': 'Inventory Report',
+    '/layout/home2': 'Home',
 
   };
 
-  constructor(private router: Router, ) { }
+  constructor(private router: Router,) { }
 
   theme: string = 'light';
   headerColor: string = '#FF6713';
 
   ngOnInit(): void {
 
-
-    // Watch for route changes
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
-        this.updatePageTitle((event as NavigationEnd).urlAfterRedirects || (event as NavigationEnd).url);
+        this.updatePageTitle(
+          (event as NavigationEnd).urlAfterRedirects || event.url
+        );
       });
 
-
-      this.showHideMenuBar();
-    // Initialize with current route
-      this.updatePageTitle(this.router.url);
+    this.updatePageTitle(this.router.url);
   }
 
   showHideMenuBar() {
-    this.isSidebarCollapsed = !this.isSidebarCollapsed;
-
     const sidebar = document.getElementById('sidebar');
     const header = document.getElementById('header');
-    const main = document.getElementById('main'); // 🔥 yeh add kiya
+    const main = document.getElementById('main');
 
+    if (window.innerWidth <= 768) {
 
-    // toggle class on sidebar
-    sidebar?.classList.toggle('collapsed', this.isSidebarCollapsed);
+      // Mobile: open/close sidebar
+      sidebar?.classList.toggle('show-sidebar');
 
-    // toggle class on header
-    header?.classList.toggle('sidebar-collapsed', this.isSidebarCollapsed);
+    } else {
 
-    //toggle class on main page
-    //main-content.sidebar-collapsed
-    main?.classList.toggle('sidebar-collapsed', this.isSidebarCollapsed);
+      // Desktop: collapse/expand sidebar
+      this.isSidebarCollapsed = !this.isSidebarCollapsed;
+
+      sidebar?.classList.toggle('collapsed', this.isSidebarCollapsed);
+      header?.classList.toggle('sidebar-collapsed', this.isSidebarCollapsed);
+      main?.classList.toggle('sidebar-collapsed', this.isSidebarCollapsed);
+
+    }
   }
 
   updatePageTitle(url: string): void {
-    //const matchingRoute = Object.keys(this.pageTitles).find(route => url.startsWith(route));
-    //this.currentPageTitle = matchingRoute ? this.pageTitles[matchingRoute] : 'TechMaci';
+    // Strip any query string before matching
+    const cleanUrl = url.split('?')[0];
 
-    this.currentPageTitle = url ? this.pageTitles[url] : 'TechMaci';
+    // 1. Try an exact match first (covers all static routes)
+    if (this.pageTitles[cleanUrl]) {
+      this.currentPageTitle = this.pageTitles[cleanUrl];
+      return;
+    }
 
-    let i=0;
+    // 2. Fall back to matching routes that contain a dynamic ":param"
+    //    segment — e.g. '/layout/products-edit/:productId' should match
+    //    an actual URL like '/layout/products-edit/42'.
+    const matchedKey = Object.keys(this.pageTitles).find(route => {
+      if (!route.includes('/:')) return false;
+      const routeBase = route.split('/:')[0];
+      return cleanUrl.startsWith(routeBase + '/');
+    });
+
+    this.currentPageTitle = matchedKey ? this.pageTitles[matchedKey] : 'TechMaci';
   }
 
   /* ************************************************************** */
   signOut() {
-    //this.cache.set('currentUser', null);
     sessionStorage.removeItem('currentUser');
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('username');
 
     sessionStorage.clear();
 
-    //this.cache.resetAllData();
-
-    //this.isLoggedIn = false;
-    // if (this.isLoggedIn) {
-    //   //this.loginService.logOutUser();
-    //   //this.serverLogout();
-    // }
     this.router.navigate(['login']);
   }
 

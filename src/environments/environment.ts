@@ -2,9 +2,9 @@ export const environment = {
   production: false,
   sessionTimeout: 60,
   enableLog: true,
-  versionNumber: '15.05.2026 00071',
+  versionNumber: '16.08.2026 00075',
   pageSize: 25,
- 
+
   appEnv: 'LCL',
   stripe: '',
 
@@ -36,19 +36,23 @@ export const environment = {
   purchaseQtyAdjFlag: false,
   showSimpleProduct: true,
 
-// logoName: 'assets/images/logos/syed-paint-house-logo.png',
+  // logoName: 'assets/images/logos/syed-paint-house-logo.png',
   // logoName: 'assets/images/logos/logo-scientech.png',
-  logoName: 'assets/images/logos/techmaci-logo2.png',
+  logoName: 'assets/images/logos/logo.png',
   background: 'assets/images/background/admin_portal_background.jpg',
 
+  //apiUrl: 'http://localhost:8080/JOLLIEBEE_API/',
+     apiUrl: 'https://cp.techmaci.com:8443/DEMO_API/',
+  //  apiUrl: 'https://cp.techmaci.com:8443/RESTAURANT_API/',
   // apiUrl: 'https://cp.techmaci.com:8443/FASHION01_API/',
-  apiUrl: 'http://localhost:8080/FASHION01_API/',
+  // apiUrl: 'http://localhost:8080/FASHION01_API/',
+   //apiUrl: 'https://cp.techmaci.com:8443/FASHION_API/',
 
   // apiUrl: 'http://localhost:8080/WDS_API/',
 
-// apiUrl: 'http://localhost:8080/FOODY_API/',
+  // apiUrl: 'http://localhost:8080/FOODY_API/',
 
-// apiUrl: 'http://localhost:8080/PAINT_API/',
+  // apiUrl: 'http://localhost:8080/PAINT_API/',
   // apiUrl: 'http://localhost:8080/CLIENT01_API/',
 
   // apiUrl: 'https://cp.techmaci.com:8443/PAINT01_API/',

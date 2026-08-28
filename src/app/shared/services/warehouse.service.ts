@@ -25,7 +25,7 @@ export class WarehouseService {
   /* **************************************************************** */
   delete(warehouseId: number): Observable<any> {
     // let myUrl = `${this.myUrl}` + `warehouse/delete/` + warehouseId;
-    return this.http.post<any>('warehouse/delete/', warehouseId)
+   return this.http.delete('warehouse/delete/' + warehouseId)
   }
   /* **************************************************************** */
 

@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { HttpHelperService } from './base-header.service';
 import { BaseHttpService } from './base.http.service';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class HttpMethodService extends BaseHttpService {
@@ -61,6 +62,17 @@ export class HttpMethodService extends BaseHttpService {
     );
   }
 
+
+ put<T>(url: string, body: any): Observable<T> {  // ✅ now Observable is defined
+    return this.http.put<T>(url, body, {
+      headers: HttpHelperService.getAuthHeaders()   // ✅ add headers for consistency
+    }).pipe(
+      catchError(error => {
+        console.error('PUT Error:', error);
+        throw error;
+      })
+    );
+  }
   uploadProduct<T>(path: string, file: File, productId:any) {
     const formData = new FormData();
     formData.append('file', file);

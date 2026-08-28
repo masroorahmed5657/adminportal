@@ -35,6 +35,7 @@ export class ReceiveProductComponent implements OnInit {
   faTrash = faTrash;
 
   poFlag = false;
+  isSearching: boolean = false;
   currency = environment.currency;
 
   purchaseOrder: PurchaseOrder = new PurchaseOrder();
@@ -88,7 +89,7 @@ export class ReceiveProductComponent implements OnInit {
 
   }
 
-/* *********************************************************************** */
+  /* *********************************************************************** */
   // convert form to receive object (pull summary fields)
   formToPO() {
     const loggedInUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
@@ -107,20 +108,20 @@ export class ReceiveProductComponent implements OnInit {
     this.receiveProduct.userId = loggedInUser?.loginId;
   }
 
-/* *********************************************************************** */
+  /* *********************************************************************** */
   close() {
     this.router.navigate(['home']);
   }
-/* *********************************************************************** */
+  /* *********************************************************************** */
   clear() {
     // simpler reload
     location.reload();
   }
-/* *********************************************************************** */
+  /* *********************************************************************** */
   // recalc totals for all line items and summary
   recalculateSummary() {
     let subtotal = 0;
-    this.receiveProduct.quantity=0;
+    this.receiveProduct.quantity = 0;
     for (let i = 0; i < this.receiveItemList.length; i++) {
       const it = this.receiveItemList[i];
       // convert numeric fields
@@ -129,7 +130,7 @@ export class ReceiveProductComponent implements OnInit {
       it.discount = Number(it.discount || 0);
       it.tax = Number(it.tax || 0);
 
-      this.receiveProduct.quantity+=it.quantity;
+      this.receiveProduct.quantity += it.quantity;
 
       // base price
       const base = it.quantity * it.unitPrice;
@@ -148,21 +149,21 @@ export class ReceiveProductComponent implements OnInit {
     if (isNaN(this.receiveProduct.total)) this.receiveProduct.total = 0;
   }
 
-/* *********************************************************************** */
+  /* *********************************************************************** */
   discountChange(index: number) {
     if (this.receiveItemList[index]) {
       this.receiveItemList[index].discount = Number(this.receiveItemList[index].discount || 0);
       this.recalculateSummary();
     }
   }
-/* *********************************************************************** */
+  /* *********************************************************************** */
   taxChange(index: number) {
     if (this.receiveItemList[index]) {
       this.receiveItemList[index].tax = Number(this.receiveItemList[index].tax || 0);
       this.recalculateSummary();
     }
   }
-/* *********************************************************************** */
+  /* *********************************************************************** */
   deleteItem(row: number) {
     if (!this.receiveItemList[row]) return;
     Swal.fire({
@@ -183,20 +184,20 @@ export class ReceiveProductComponent implements OnInit {
       }
     });
   }
-/* *********************************************************************** */
+  /* *********************************************************************** */
   changea(items: any) {
     this.mydata = 'ITEM';
   }
-/* *********************************************************************** */
+  /* *********************************************************************** */
   changeb(service: any) {
     this.mydata = 'SERVICE';
   }
-/* *********************************************************************** */
+  /* *********************************************************************** */
   totalDiscountChange() {
     // recalc final total after global discount changed
     this.receiveProduct.total = Number((Number(this.receiveProduct.subTotal || 0) - Number(this.receiveProduct.discount || 0)).toFixed(2));
   }
-/* *********************************************************************** */
+  /* *********************************************************************** */
   invoice(rec: any) {
     // template passes receiveProduct object
     let idToGo = rec && rec.receiveProductId ? rec.receiveProductId : (rec && rec.rcvNumber ? rec.rcvNumber : '');
@@ -207,12 +208,12 @@ export class ReceiveProductComponent implements OnInit {
       this.router.navigate(['/layout/purchase-invoice', idToGo]);
     }
   }
-/* *********************************************************************** */
+  /* *********************************************************************** */
   printPreview() {
     this.ReceiveFlag = false;
     this.ReceivePrintFlag = true;
   }
-/* *********************************************************************** */
+  /* *********************************************************************** */
   pdfSave() {
     const DATA: any = document.getElementById('excel-table');
     if (!DATA) {
@@ -232,12 +233,12 @@ export class ReceiveProductComponent implements OnInit {
       Swal.fire('Error', 'Could not generate PDF', 'error');
     });
   }
-/* *********************************************************************** */
+  /* *********************************************************************** */
   closePrint() {
     this.ReceiveFlag = true;
     this.ReceivePrintFlag = false;
   }
-/* *********************************************************************** */
+  /* *********************************************************************** */
   exportexcel(): void {
     const element = document.getElementById('excel-table');
     if (!element) {
@@ -272,64 +273,50 @@ export class ReceiveProductComponent implements OnInit {
   }
   /* ******************************************************* */
   searchByPo() {
+    if (this.isSearching) {
+      return; // ignore extra clicks while a search is already running
+    }
+    this.isSearching = true;
+
     if (this.poNumber === undefined) {
+      this.isSearching = false;
       return;
     }
 
     //Reset first
-    this.receiveItemList.length=0;
+    this.receiveItemList.length = 0;
 
     this.recieveService.getPOByPONumber(this.poNumber).subscribe((data: PurchaseOrder) => {
       this.purchaseOrder = data;
 
-
       if (this.purchaseOrder !== null || this.purchaseOrder !== undefined) {
-        //First Check if this PO Number already have , receive_product_items Table, 
-        // if not, then 1st time PO is in RCV. So get the data from Purchase_order, po_items table
-
         this.recieveService.getRcvByPOId(this.purchaseOrder.poId).subscribe((data: ReceiveProduct) => {
           this.receiveProduct = data;
 
-          if (this.receiveProduct === null){
-            //CASE-2: RCV PRODUCT NOT FOUND, ONLY PO CREATED
-            //Now get PO Items
+          if (this.receiveProduct === null) {
             this.recieveService.getPoItem(this.purchaseOrder.poId).subscribe((data: POItemsView[]) => {
               this.poItemsViewList = data;
-
-              //Convert purchaseOrder to receiveProduct
-              //Convert poItemsViewList to receiveItemList
               this.receiveProduct = new ReceiveProduct();
-
               this.convertPOToRcv();
               this.convertPoItemsToRcvItems();
-
               this.poFlag = true;
               this.recalculateSummary();
+              this.isSearching = false;   // ✅ ADD — reset here
             });
-
           }
           else if (this.receiveProduct !== null || this.receiveProduct !== undefined) {
-            //CASE-1: RCV PRODUCT EDIT
             this.recieveService.getRcvItem(this.receiveProduct.receiveProductId).subscribe((data: ReceiveProductItemsView[]) => {
               this.receiveItemList = data;
-
               this.poFlag = true;
               this.recalculateSummary();
+              this.isSearching = false;   // ✅ ADD — reset here too
             });
-
           }
-
-
-
-          //this.poFlag = true;
         });
-
-
-
-
-
       }
-
+      else {
+        this.isSearching = false;   // ✅ ADD — reset if purchaseOrder is null/undefined
+      }
     });
   }
   /* ********************************************* */
@@ -368,7 +355,7 @@ export class ReceiveProductComponent implements OnInit {
   convertPoItemsToRcvItems() {
     //Source:poItemsViewList
     //Destination: receiveItemList
-
+    this.receiveItemList.length = 0;
 
     for (let i = 0; i < this.poItemsViewList.length; i++) {
       let rcvItem: ReceiveProductItemsView = new ReceiveProductItemsView();
@@ -405,22 +392,22 @@ export class ReceiveProductComponent implements OnInit {
 
     //const value = (event.target as HTMLInputElement).value;
 
-    if (value===null){
+    if (value === null) {
       return; //do nothing for backspace
     }
 
     if (value < 1) {
-          //0 or below not allowed
-          Swal.fire('WARNING', '0 or negative Qty is not allowed', 'warning');
-          return;
-        }
-     else{
+      //0 or below not allowed
+      Swal.fire('WARNING', '0 or negative Qty is not allowed', 'warning');
+      return;
+    }
+    else {
       this.poItemsViewList[row].quantity = value;
-     //this.poItems[index].quantity = qty.value;
+      //this.poItems[index].quantity = qty.value;
 
-     this.recalculateSummary();
-        //this.calculateTotalPrice();
-     }   
+      this.recalculateSummary();
+      //this.calculateTotalPrice();
+    }
 
 
     // let colName = 'Qty_' + row;
@@ -440,7 +427,7 @@ export class ReceiveProductComponent implements OnInit {
     // }
 
   }//chkNumber
-/* *********************************************************************** */
+  /* *********************************************************************** */
   qtyChange(index: number) {
 
 
@@ -509,7 +496,7 @@ export class ReceiveProductComponent implements OnInit {
       return;
     }
 
-    this.receiveProduct.rcvStatus='RECEIVED';
+    this.receiveProduct.rcvStatus = 'RECEIVED';
 
     //this.formToPO();
     const rcRequest: any = {

@@ -1,28 +1,30 @@
 <!-- ============================================================
      SEARCH + ADD BUTTON
      ============================================================ -->
-<div class="d-flex flex-column flex-md-row align-items-md-end gap-3 mb-4 py-4">
-  <div class="flex-grow-1">
-    <label class="fw-semibold fs-5 mb-2">Search Customer</label>
-    <div class="input-group">
-      <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
-      <input type="search" [(ngModel)]="searchTerm" (input)="onSearchInput()"
-             placeholder="Search by name, email, phone..." class="form-control">
+<div class="shopify-search-row">
+  <div>
+    <label class="shopify-field-label" for="searchTerm">Search Customer</label>
+    <div class="shopify-input-group">
+      <span class="shopify-input-group__prefix"><i class="bi bi-search"></i></span>
+      <input type="search" id="searchTerm" [(ngModel)]="searchTerm" (input)="onSearchInput()"
+        placeholder="Search by name, email, phone..." class="shopify-input">
     </div>
   </div>
-  <button class="btn text-white px-4" style="background-color:#198754" (click)="addCustomer()">
-    <i class="bi bi-person-plus-fill me-1"></i> Add Customer
-  </button>
+  <div class="d-flex align-items-end">
+    <button class="btn-shopify btn-shopify--success" (click)="addCustomer()">
+      <i class="bi bi-person-plus-fill"></i> Add Customer
+    </button>
+  </div>
 </div>
 
 <!-- ============================================================
      LOADING SPINNER
      ============================================================ -->
-<div *ngIf="isLoading" class="text-center py-5">
-  <div class="spinner-border text-primary" role="status">
+<div *ngIf="isLoading" class="shopify-loading">
+  <div class="spinner-border" role="status">
     <span class="visually-hidden">Loading...</span>
   </div>
-  <p class="mt-2 text-muted">Loading customers...</p>
+  <p>Loading customers...</p>
 </div>
 
 <!-- ============================================================
@@ -30,13 +32,19 @@
      ============================================================ -->
 <div *ngIf="!showAddFlag && !isLoading">
 
-  <!-- ── DESKTOP TABLE ── -->
-  <div class="d-none d-md-block">
-    <div class="table-responsive">
-      <table class="table table-bordered table-sm border-dark align-middle mb-0"
-             style="background-color:white; font-size:0.82rem;">
-        <thead class="bg-secondary text-white" style="--bs-bg-opacity:.9;">
-          <tr class="text-center">
+  <!-- Empty state -->
+  <div class="shopify-empty" *ngIf="filteredCustomers.length === 0">
+    <h5>No customers found</h5>
+    <p>No customers match your search.</p>
+  </div>
+
+  <ng-container *ngIf="filteredCustomers.length > 0">
+
+    <!-- ── DESKTOP TABLE ── -->
+    <div class="shopify-table-wrap">
+      <table class="shopify-table">
+        <thead>
+          <tr>
             <th>ID</th>
             <th>First Name</th>
             <th>Last Name</th>
@@ -45,21 +53,18 @@
             <th>Phone 1</th>
             <th>City</th>
             <th>Country</th>
-            <th>Manage</th>
+            <th class="text-center">Manage</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let cust of filteredCustomers | paginate:{itemsPerPage:10,currentPage:p}; let i = index"
-              [ngClass]="{'table-light': i % 2 === 0}">
-            <td class="text-center fw-semibold">{{ cust.custId }}</td>
+          <tr *ngFor="let cust of filteredCustomers | paginate:{itemsPerPage:10,currentPage:p}; let i = index">
+            <td>{{ cust.custId }}</td>
             <td>{{ cust.firstName }}</td>
             <td>{{ cust.lastName }}</td>
-            <td class="text-center">
-              <span class="badge"
-                    [ngClass]="{
-                      'bg-success': cust.custType === 'VIP',
-                      'bg-primary': cust.custType === 'REGULAR',
-                      'bg-warning text-dark': cust.custType === 'WHOLESALE'
+            <td>
+              <span class="shopify-badge" [ngClass]="{
+                      'shopify-badge--success': cust.custType === 'VIP',
+                      'shopify-badge--neutral': cust.custType === 'REGULAR' || cust.custType === 'WHOLESALE'
                     }">
                 {{ cust.custType }}
               </span>
@@ -68,220 +73,217 @@
             <td>{{ cust.phone1 }}</td>
             <td>{{ cust.city }}</td>
             <td>{{ cust.country }}</td>
-            <td class="text-center" style="white-space:nowrap;">
-              <button class="btn btn-sm btn-info me-1" title="View Detail" (click)="viewDetail(cust)">
-                <i class="bi bi-eye-fill"></i>
-              </button>
-              <button class="btn btn-sm btn-primary me-1" title="Edit" (click)="editCustomer(cust)">
-                <i class="bi bi-pencil-fill"></i>
-              </button>
-              <button class="btn btn-sm btn-danger" title="Delete" (click)="onDelete(cust.custId)">
-                <i class="bi bi-trash-fill"></i>
-              </button>
+            <td>
+              <div class="shopify-table__actions">
+                <button class="btn-shopify btn-shopify--outline btn-shopify--icon" title="View Detail"
+                  (click)="viewDetail(cust)">
+                  <i class="bi bi-eye-fill"></i>
+                </button>
+                <button class="btn-shopify btn-shopify--outline btn-shopify--icon" title="Edit"
+                  (click)="editCustomer(cust)">
+                  <i class="bi bi-pencil-fill"></i>
+                </button>
+                <button class="btn-shopify btn-shopify--danger btn-shopify--icon" title="Delete"
+                  (click)="onDelete(cust.custId)">
+                  <i class="bi bi-trash-fill"></i>
+                </button>
+              </div>
             </td>
-          </tr>
-          <tr *ngIf="filteredCustomers.length === 0">
-            <td colspan="9" class="text-center text-muted py-4">No customers found.</td>
           </tr>
         </tbody>
       </table>
+      <div class="shopify-pagination">
+        <!-- [responsive]="false" keeps the page-number buttons always visible
+             instead of ngx-pagination swapping in its own unstyled "current/total"
+             chip, which was the source of the inconsistent styling. -->
+        <pagination-controls (pageChange)="p = $event" [responsive]="false"></pagination-controls>
+      </div>
     </div>
-    <pagination-controls class="text-center mt-3" (pageChange)="p = $event"></pagination-controls>
-  </div>
 
-  <!-- ── MOBILE CARDS ── -->
-  <div class="d-md-none">
-    <div class="card shadow-sm mb-3"
-         *ngFor="let cust of filteredCustomers | paginate:{itemsPerPage:10,currentPage:p}">
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-start mb-1">
-          <h6 class="fw-bold text-primary mb-0">{{ cust.firstName }} {{ cust.lastName }}</h6>
-          <span class="badge"
-                [ngClass]="{
-                  'bg-success': cust.custType === 'VIP',
-                  'bg-primary': cust.custType === 'REGULAR',
-                  'bg-warning text-dark': cust.custType === 'WHOLESALE'
+    <!-- ── MOBILE CARDS ── -->
+    <div class="shopify-mobile-list">
+      <div class="shopify-mobile-card"
+        *ngFor="let cust of filteredCustomers | paginate:{itemsPerPage:10,currentPage:p}">
+        <div class="shopify-mobile-card__row">
+          <h6 class="fw-bold mb-0">{{ cust.firstName }} {{ cust.lastName }}</h6>
+          <span class="shopify-badge" [ngClass]="{
+                  'shopify-badge--success': cust.custType === 'VIP',
+                  'shopify-badge--neutral': cust.custType === 'REGULAR' || cust.custType === 'WHOLESALE'
                 }">
             {{ cust.custType }}
           </span>
         </div>
-        <div class="small text-muted mb-1">ID: {{ cust.custId }}</div>
-        <div class="small"><b>Email:</b> {{ cust.email }}</div>
-        <div class="small"><b>Phone:</b> {{ cust.phone1 }}</div>
-        <div class="small"><b>Location:</b> {{ cust.city }}, {{ cust.country }}</div>
-        <div class="d-flex gap-2 mt-3">
-          <button class="btn btn-sm btn-info flex-fill" (click)="viewDetail(cust)">
+        <div class="shopify-mobile-card__field">
+          <small class="text-muted d-block">ID: {{ cust.custId }}</small>
+          <small class="text-muted d-block">Email: {{ cust.email }}</small>
+          <small class="text-muted d-block">Phone: {{ cust.phone1 }}</small>
+          <small class="text-muted d-block">Location: {{ cust.city }}, {{ cust.country }}</small>
+        </div>
+        <div class="shopify-mobile-card__actions">
+          <button class="btn-shopify btn-shopify--info btn-shopify--sm" (click)="viewDetail(cust)">
             <i class="bi bi-eye-fill"></i> View
           </button>
-          <button class="btn btn-sm btn-primary flex-fill" (click)="editCustomer(cust)">
+          <button class="btn-shopify btn-shopify--outline btn-shopify--sm" (click)="editCustomer(cust)">
             <i class="bi bi-pencil-fill"></i> Edit
           </button>
-          <button class="btn btn-sm btn-danger flex-fill" (click)="onDelete(cust.custId)">
+          <button class="btn-shopify btn-shopify--danger btn-shopify--sm" (click)="onDelete(cust.custId)">
             <i class="bi bi-trash-fill"></i> Delete
           </button>
         </div>
       </div>
+      <div class="shopify-pagination">
+        <pagination-controls (pageChange)="p = $event" [responsive]="false"></pagination-controls>
+      </div>
     </div>
-    <div *ngIf="filteredCustomers.length === 0" class="text-center text-muted py-4">
-      No customers found.
-    </div>
-    <pagination-controls class="text-center" (pageChange)="p = $event"></pagination-controls>
-  </div>
+
+  </ng-container>
 </div>
 
 <!-- ============================================================
      VIEW DETAIL MODAL
      ============================================================ -->
 <ng-container *ngIf="showDetailModal && viewCustomer">
-  <div class="modal-backdrop fade show" style="z-index:1040;" (click)="closeDetail()"></div>
-  <div class="modal fade show d-block" tabindex="-1" style="z-index:1050; overflow-y:auto;">
-    <div class="modal-dialog modal-xl modal-dialog-scrollable">
-      <div class="modal-content">
+  <div class="shopify-modal-backdrop" (click)="closeDetail()"></div>
+  <div class="shopify-modal">
+    <div class="shopify-modal__dialog" style="max-width:900px;">
 
-        <!-- Modal Header -->
-        <div class="modal-header bg-primary text-white">
-          <h5 class="modal-title">
-            <i class="bi bi-person-circle me-2"></i>
-            Customer Detail — {{ viewCustomer.firstName }} {{ viewCustomer.lastName }}
-            <span class="badge bg-light text-primary ms-2">ID: {{ viewCustomer.custId }}</span>
-          </h5>
-          <button type="button" class="btn-close btn-close-white" (click)="closeDetail()"></button>
+      <div class="shopify-modal__header">
+        <h5 class="shopify-modal__title">
+          <i class="bi bi-person-circle me-2"></i>
+          {{ viewCustomer.firstName }} {{ viewCustomer.lastName }}
+          <span class="shopify-badge shopify-badge--neutral ms-2">ID: {{ viewCustomer.custId }}</span>
+        </h5>
+        <button type="button" class="btn-close" (click)="closeDetail()"></button>
+      </div>
+
+      <div class="shopify-modal__body">
+
+        <h6 class="fw-bold border-bottom pb-1 mb-3"><i class="bi bi-person-fill me-1"></i> Basic Information</h6>
+        <div class="shopify-detail-grid mb-4">
+          <dt>Cust ID:</dt>
+          <dd>{{ viewCustomer.custId }}</dd>
+          <dt>Cust Name:</dt>
+          <dd>{{ viewCustomer.custName }}</dd>
+          <dt>First Name:</dt>
+          <dd>{{ viewCustomer.firstName }}</dd>
+          <dt>Last Name:</dt>
+          <dd>{{ viewCustomer.lastName }}</dd>
+          <dt>Type:</dt>
+          <dd>
+            <span class="shopify-badge" [ngClass]="{
+                    'shopify-badge--success': viewCustomer.custType === 'VIP',
+                    'shopify-badge--neutral': viewCustomer.custType === 'REGULAR' || viewCustomer.custType === 'WHOLESALE'
+                  }">
+              {{ viewCustomer.custType }}
+            </span>
+          </dd>
+          <dt>Profession:</dt>
+          <dd>{{ viewCustomer.profession }}</dd>
+          <dt>Priority:</dt>
+          <dd>{{ viewCustomer.priority }}</dd>
+          <dt>Business:</dt>
+          <dd>
+            <span class="shopify-badge"
+              [ngClass]="viewCustomer.businessFlag ? 'shopify-badge--success' : 'shopify-badge--muted'">
+              {{ viewCustomer.businessFlag ? 'Yes' : 'No' }}
+            </span>
+          </dd>
+          <dt>Sales Rep:</dt>
+          <dd>{{ viewCustomer.salesRep }}</dd>
+          <dt>Joining Date:</dt>
+          <dd>{{ viewCustomer.joiningDate | date }}</dd>
         </div>
 
-        <!-- Modal Body -->
-        <div class="modal-body">
-
-          <!-- ── Section 1: Basic Info ── -->
-          <div class="card mb-3 border-primary">
-            <div class="card-header bg-primary text-white py-2 fw-semibold">
-              <i class="bi bi-person-fill me-1"></i> Basic Information
-            </div>
-            <div class="card-body">
-              <div class="row g-2 small">
-                <div class="col-6 col-md-3"><b>Cust ID:</b><br>{{ viewCustomer.custId }}</div>
-                <div class="col-6 col-md-3"><b>Cust Name:</b><br>{{ viewCustomer.custName }}</div>
-                <div class="col-6 col-md-3"><b>First Name:</b><br>{{ viewCustomer.firstName }}</div>
-                <div class="col-6 col-md-3"><b>Last Name:</b><br>{{ viewCustomer.lastName }}</div>
-                <div class="col-6 col-md-3"><b>Type:</b><br>
-                  <span class="badge"
-                        [ngClass]="{
-                          'bg-success': viewCustomer.custType === 'VIP',
-                          'bg-primary': viewCustomer.custType === 'REGULAR',
-                          'bg-warning text-dark': viewCustomer.custType === 'WHOLESALE'
-                        }">
-                    {{ viewCustomer.custType }}
-                  </span>
-                </div>
-                <div class="col-6 col-md-3"><b>Profession:</b><br>{{ viewCustomer.profession }}</div>
-                <div class="col-6 col-md-3"><b>Priority:</b><br>{{ viewCustomer.priority }}</div>
-                <div class="col-6 col-md-3"><b>Business:</b><br>
-                  <span class="badge" [ngClass]="viewCustomer.businessFlag ? 'bg-success' : 'bg-secondary'">
-                    {{ viewCustomer.businessFlag ? 'Yes' : 'No' }}
-                  </span>
-                </div>
-                <div class="col-6 col-md-3"><b>Sales Rep:</b><br>{{ viewCustomer.salesRep }}</div>
-                <div class="col-6 col-md-3"><b>Joining Date:</b><br>{{ viewCustomer.joiningDate | date }}</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- ── Section 2: Contact ── -->
-          <div class="card mb-3 border-success">
-            <div class="card-header bg-success text-white py-2 fw-semibold">
-              <i class="bi bi-telephone-fill me-1"></i> Contact Information
-            </div>
-            <div class="card-body">
-              <div class="row g-2 small">
-                <div class="col-6 col-md-4"><b>Email:</b><br>{{ viewCustomer.email }}</div>
-                <div class="col-6 col-md-4"><b>Phone 1:</b><br>{{ viewCustomer.phone1 }}</div>
-                <div class="col-6 col-md-4"><b>Phone 2:</b><br>{{ viewCustomer.phone2 }}</div>
-                <div class="col-6 col-md-4"><b>Best Way to Contact:</b><br>{{ viewCustomer.bestWay }}</div>
-                <div class="col-6 col-md-4"><b>Best Time:</b><br>{{ viewCustomer.bestTime }}</div>
-                <div class="col-6 col-md-4"><b>Send SMS:</b><br>
-                  <span class="badge" [ngClass]="viewCustomer.sendSmsFlag ? 'bg-success' : 'bg-secondary'">
-                    {{ viewCustomer.sendSmsFlag ? 'Yes' : 'No' }}
-                  </span>
-                </div>
-                <div class="col-6 col-md-4"><b>Send Email:</b><br>
-                  <span class="badge" [ngClass]="viewCustomer.sendEmailFlag ? 'bg-success' : 'bg-secondary'">
-                    {{ viewCustomer.sendEmailFlag ? 'Yes' : 'No' }}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- ── Section 3: Address ── -->
-          <div class="card mb-3 border-warning">
-            <div class="card-header bg-warning text-dark py-2 fw-semibold">
-              <i class="bi bi-house-fill me-1"></i> Primary Address
-            </div>
-            <div class="card-body">
-              <div class="row g-2 small">
-                <div class="col-12 col-md-6"><b>Address:</b><br>{{ viewCustomer.address }}</div>
-                <div class="col-6 col-md-3"><b>City:</b><br>{{ viewCustomer.city }}</div>
-                <div class="col-6 col-md-3"><b>State/Province:</b><br>{{ viewCustomer.stateProvince }}</div>
-                <div class="col-6 col-md-3"><b>Country:</b><br>{{ viewCustomer.country }}</div>
-                <div class="col-6 col-md-3"><b>Postal Code:</b><br>{{ viewCustomer.postalCode }}</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- ── Section 4: Billing Address ── -->
-          <div class="card mb-3 border-info">
-            <div class="card-header bg-info text-white py-2 fw-semibold">
-              <i class="bi bi-credit-card-fill me-1"></i> Billing Address
-            </div>
-            <div class="card-body">
-              <div class="row g-2 small">
-                <div class="col-12 col-md-6"><b>Billing Address:</b><br>{{ viewCustomer.billingAddress }}</div>
-                <div class="col-6 col-md-3"><b>City:</b><br>{{ viewCustomer.billingCity }}</div>
-                <div class="col-6 col-md-3"><b>State/Province:</b><br>{{ viewCustomer.billingStateProvince }}</div>
-                <div class="col-6 col-md-3"><b>Country:</b><br>{{ viewCustomer.billingCountry }}</div>
-                <div class="col-6 col-md-3"><b>Postal Code:</b><br>{{ viewCustomer.billingPostalCode }}</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- ── Section 5: Account & Subscription ── -->
-          <div class="card mb-3 border-secondary">
-            <div class="card-header bg-secondary text-white py-2 fw-semibold">
-              <i class="bi bi-shield-lock-fill me-1"></i> Account & Subscription
-            </div>
-            <div class="card-body">
-              <div class="row g-2 small">
-                <div class="col-6 col-md-4"><b>Login ID:</b><br>{{ viewCustomer.loginId }}</div>
-                <div class="col-6 col-md-4"><b>Sub Plan:</b><br>{{ viewCustomer.subsPlan }}</div>
-                <div class="col-6 col-md-4"><b>Sub Expiry:</b><br>{{ viewCustomer.subsExpiry | date }}</div>
-                <div class="col-6 col-md-4"><b>Discount Amount:</b><br>{{ viewCustomer.discountAmount }}</div>
-                <div class="col-6 col-md-4"><b>Discount %:</b><br>{{ viewCustomer.discountPercentage }}%</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- ── Section 6: System Info ── -->
-          <div class="card mb-0 border-dark">
-            <div class="card-header bg-dark text-white py-2 fw-semibold">
-              <i class="bi bi-clock-history me-1"></i> System Information
-            </div>
-            <div class="card-body">
-              <div class="row g-2 small">
-                <div class="col-6 col-md-3"><b>Created By:</b><br>{{ viewCustomer.createdBy }}</div>
-                <div class="col-6 col-md-3"><b>Created Date:</b><br>{{ viewCustomer.createdDate | date:'medium' }}</div>
-                <div class="col-6 col-md-3"><b>Updated By:</b><br>{{ viewCustomer.updatedBy }}</div>
-                <div class="col-6 col-md-3"><b>Updated Date:</b><br>{{ viewCustomer.updatedDate | date:'medium' }}</div>
-              </div>
-            </div>
-          </div>
-
-        </div><!-- /modal-body -->
-
-        <div class="modal-footer">
-          <button class="btn btn-primary" (click)="editCustomer(viewCustomer); closeDetail()">
-            <i class="bi bi-pencil-fill me-1"></i> Edit This Customer
-          </button>
-          <button class="btn btn-secondary" (click)="closeDetail()">Close</button>
+        <h6 class="fw-bold border-bottom pb-1 mb-3"><i class="bi bi-telephone-fill me-1"></i> Contact Information</h6>
+        <div class="shopify-detail-grid mb-4">
+          <dt>Email:</dt>
+          <dd>{{ viewCustomer.email }}</dd>
+          <dt>Phone 1:</dt>
+          <dd>{{ viewCustomer.phone1 }}</dd>
+          <dt>Phone 2:</dt>
+          <dd>{{ viewCustomer.phone2 }}</dd>
+          <dt>Best Way to Contact:</dt>
+          <dd>{{ viewCustomer.bestWay }}</dd>
+          <dt>Best Time:</dt>
+          <dd>{{ viewCustomer.bestTime }}</dd>
+          <dt>Send SMS:</dt>
+          <dd>
+            <span class="shopify-badge"
+              [ngClass]="viewCustomer.sendSmsFlag ? 'shopify-badge--success' : 'shopify-badge--muted'">
+              {{ viewCustomer.sendSmsFlag ? 'Yes' : 'No' }}
+            </span>
+          </dd>
+          <dt>Send Email:</dt>
+          <dd>
+            <span class="shopify-badge"
+              [ngClass]="viewCustomer.sendEmailFlag ? 'shopify-badge--success' : 'shopify-badge--muted'">
+              {{ viewCustomer.sendEmailFlag ? 'Yes' : 'No' }}
+            </span>
+          </dd>
         </div>
+
+        <h6 class="fw-bold border-bottom pb-1 mb-3"><i class="bi bi-house-fill me-1"></i> Primary Address</h6>
+        <div class="shopify-detail-grid mb-4">
+          <dt>Address:</dt>
+          <dd>{{ viewCustomer.address }}</dd>
+          <dt>City:</dt>
+          <dd>{{ viewCustomer.city }}</dd>
+          <dt>State/Province:</dt>
+          <dd>{{ viewCustomer.stateProvince }}</dd>
+          <dt>Country:</dt>
+          <dd>{{ viewCustomer.country }}</dd>
+          <dt>Postal Code:</dt>
+          <dd>{{ viewCustomer.postalCode }}</dd>
+        </div>
+
+        <h6 class="fw-bold border-bottom pb-1 mb-3"><i class="bi bi-credit-card-fill me-1"></i> Billing Address</h6>
+        <div class="shopify-detail-grid mb-4">
+          <dt>Billing Address:</dt>
+          <dd>{{ viewCustomer.billingAddress }}</dd>
+          <dt>City:</dt>
+          <dd>{{ viewCustomer.billingCity }}</dd>
+          <dt>State/Province:</dt>
+          <dd>{{ viewCustomer.billingStateProvince }}</dd>
+          <dt>Country:</dt>
+          <dd>{{ viewCustomer.billingCountry }}</dd>
+          <dt>Postal Code:</dt>
+          <dd>{{ viewCustomer.billingPostalCode }}</dd>
+        </div>
+
+        <h6 class="fw-bold border-bottom pb-1 mb-3"><i class="bi bi-shield-lock-fill me-1"></i> Account & Subscription
+        </h6>
+        <div class="shopify-detail-grid mb-4">
+          <dt>Login ID:</dt>
+          <dd>{{ viewCustomer.loginId }}</dd>
+          <dt>Sub Plan:</dt>
+          <dd>{{ viewCustomer.subsPlan }}</dd>
+          <dt>Sub Expiry:</dt>
+          <dd>{{ viewCustomer.subsExpiry | date }}</dd>
+          <dt>Discount Amount:</dt>
+          <dd>{{ viewCustomer.discountAmount }}</dd>
+          <dt>Discount %:</dt>
+          <dd>{{ viewCustomer.discountPercentage }}%</dd>
+        </div>
+
+        <h6 class="fw-bold border-bottom pb-1 mb-3"><i class="bi bi-clock-history me-1"></i> System Information</h6>
+        <div class="shopify-detail-grid">
+          <dt>Created By:</dt>
+          <dd>{{ viewCustomer.createdBy }}</dd>
+          <dt>Created Date:</dt>
+          <dd>{{ viewCustomer.createdDate | date:'medium' }}</dd>
+          <dt>Updated By:</dt>
+          <dd>{{ viewCustomer.updatedBy }}</dd>
+          <dt>Updated Date:</dt>
+          <dd>{{ viewCustomer.updatedDate | date:'medium' }}</dd>
+        </div>
+
+      </div>
+
+      <div class="shopify-modal__footer">
+        <button class="btn-shopify btn-shopify--primary" (click)="editCustomer(viewCustomer); closeDetail()">
+          <i class="bi bi-pencil-fill"></i> Edit This Customer
+        </button>
+        <button class="btn-shopify btn-shopify--outline" (click)="closeDetail()">Close</button>
       </div>
     </div>
   </div>
@@ -291,298 +293,255 @@
      ADD / EDIT FORM
      ============================================================ -->
 <div *ngIf="showAddFlag">
-  <div class="container-fluid mt-3 px-0 px-md-3">
-    <div class="card shadow">
-      <div class="card-header py-3"
-           [ngClass]="editMode ? 'bg-warning text-dark' : 'bg-primary text-white'">
-        <h5 class="mb-0">
-          <i class="bi me-2" [ngClass]="editMode ? 'bi-pencil-square' : 'bi-person-plus-fill'"></i>
-          {{ editMode ? 'Edit Customer' : 'Add New Customer' }}
-          <span *ngIf="editMode" class="badge bg-dark ms-2">ID: {{ customer.custId }}</span>
-        </h5>
+
+  <div class="shopify-actions-row">
+    <button class="btn-shopify btn-shopify--outline" (click)="goToList()">
+      <i class="bi bi-arrow-left"></i> Back to List
+    </button>
+  </div>
+
+  <div class="shopify-card">
+    <div class="shopify-card__header">
+      {{ editMode ? 'Edit Customer' : 'Add New Customer' }}
+      <span *ngIf="editMode" class="shopify-badge shopify-badge--neutral ms-2">ID: {{ customer.custId }}</span>
+    </div>
+    <div class="shopify-card__body">
+
+      <h6 class="fw-bold border-bottom pb-1 mb-3">
+        <i class="bi bi-asterisk me-1 text-danger" style="font-size:0.7rem;"></i>
+        Required Information
+      </h6>
+      <div class="shopify-grid-3">
+        <div>
+          <label class="shopify-field-label">First Name <span class="text-danger">*</span></label>
+          <input type="text" class="shopify-input" [(ngModel)]="customer.firstName" placeholder="First name" required>
+        </div>
+        <div>
+          <label class="shopify-field-label">Email <span class="text-danger">*</span></label>
+          <input type="email" class="shopify-input" [(ngModel)]="customer.email" placeholder="email@example.com"
+            required>
+        </div>
+        <div>
+          <label class="shopify-field-label">Phone 1 <span class="text-danger">*</span></label>
+          <input type="text" class="shopify-input" [(ngModel)]="customer.phone1" placeholder="+92-300-0000000" required>
+        </div>
       </div>
-      <div class="card-body">
 
-        <!-- ══════════════════════════════════════
-             REQUIRED FIELDS (always visible)
-             ══════════════════════════════════════ -->
-        <h6 class="text-primary fw-bold border-bottom pb-1 mb-3">
-          <i class="bi bi-asterisk me-1 text-danger" style="font-size:0.7rem;"></i>
-          Required Information
+      <div class="mb-3 mt-3">
+        <button type="button" class="btn-shopify btn-shopify--outline btn-shopify--sm" (click)="showDiv = !showDiv">
+          <i class="bi" [ngClass]="showDiv ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+          {{ showDiv ? 'Hide Additional Details' : 'Show More Details' }}
+        </button>
+        <small class="text-muted ms-2">Last Name, Address, Billing, Subscription & more</small>
+      </div>
+
+      <div [style.display]="showDiv ? 'block' : 'none'">
+
+        <h6 class="fw-bold border-bottom pb-1 mb-3 mt-2"><i class="bi bi-person-fill me-1"></i> Basic Information</h6>
+        <div class="shopify-grid-3">
+          <div>
+            <label class="shopify-field-label">Cust Name</label>
+            <input type="text" class="shopify-input" [(ngModel)]="customer.custName"
+              placeholder="Company / display name">
+          </div>
+          <div>
+            <label class="shopify-field-label">Last Name</label>
+            <input type="text" class="shopify-input" [(ngModel)]="customer.lastName" placeholder="Last name">
+          </div>
+          <div>
+            <label class="shopify-field-label">Customer Type</label>
+            <select class="shopify-select" [(ngModel)]="customer.custType">
+              <option value="REGULAR">Regular</option>
+              <option value="VIP">VIP</option>
+              <option value="WHOLESALE">Wholesale</option>
+            </select>
+          </div>
+          <div>
+            <label class="shopify-field-label">Profession</label>
+            <input type="text" class="shopify-input" [(ngModel)]="customer.profession" placeholder="e.g. Engineer">
+          </div>
+          <div>
+            <label class="shopify-field-label">Priority</label>
+            <input type="number" class="shopify-input" [(ngModel)]="customer.priority" placeholder="0" min="0">
+          </div>
+          <div>
+            <label class="shopify-field-label">Sales Rep</label>
+            <input type="text" class="shopify-input" [(ngModel)]="customer.salesRep" placeholder="Rep name">
+          </div>
+          <div>
+            <label class="shopify-field-label">Joining Date</label>
+            <input type="date" class="shopify-input" [(ngModel)]="customer.joiningDate">
+          </div>
+          <div class="shopify-toggle-row">
+            <span class="shopify-field-label mb-0">Business Customer</span>
+            <label class="shopify-switch">
+              <input type="checkbox" [(ngModel)]="customer.businessFlag">
+              <span class="shopify-switch__slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <h6 class="fw-bold border-bottom pb-1 mb-3 mt-3"><i class="bi bi-telephone-fill me-1"></i> Contact Information
         </h6>
-        <div class="row">
-          <div class="col-md-4 mb-3">
-            <label class="form-label fw-semibold">
-              First Name <span class="text-danger">*</span>
-            </label>
-            <input type="text" class="form-control" [(ngModel)]="customer.firstName"
-                   placeholder="First name" required>
+        <div class="shopify-grid-3">
+          <div>
+            <label class="shopify-field-label">Phone 2</label>
+            <input type="text" class="shopify-input" [(ngModel)]="customer.phone2" placeholder="+92-300-0000000">
           </div>
-          <div class="col-md-4 mb-3">
-            <label class="form-label fw-semibold">
-              Email <span class="text-danger">*</span>
-            </label>
-            <input type="email" class="form-control" [(ngModel)]="customer.email"
-                   placeholder="email@example.com" required>
+          <div>
+            <label class="shopify-field-label">Best Way to Contact</label>
+            <select class="shopify-select" [(ngModel)]="customer.bestWay">
+              <option value="">-- Select --</option>
+              <option *ngFor="let w of bestWayToContactList" [value]="w.code">{{ w.description }}</option>
+            </select>
           </div>
-          <div class="col-md-4 mb-3">
-            <label class="form-label fw-semibold">
-              Phone 1 <span class="text-danger">*</span>
+          <div>
+            <label class="shopify-field-label">Best Time to Contact</label>
+            <select class="shopify-select" [(ngModel)]="customer.bestTime">
+              <option value="">-- Select --</option>
+              <option *ngFor="let t of bestTimeToContactList" [value]="t.code">{{ t.description }}</option>
+            </select>
+          </div>
+          <div class="shopify-toggle-row">
+            <span class="shopify-field-label mb-0">Send SMS</span>
+            <label class="shopify-switch">
+              <input type="checkbox" [(ngModel)]="customer.sendSmsFlag">
+              <span class="shopify-switch__slider"></span>
             </label>
-            <input type="text" class="form-control" [(ngModel)]="customer.phone1"
-                   placeholder="+92-300-0000000" required>
+          </div>
+          <div class="shopify-toggle-row">
+            <span class="shopify-field-label mb-0">Send Email</span>
+            <label class="shopify-switch">
+              <input type="checkbox" [(ngModel)]="customer.sendEmailFlag">
+              <span class="shopify-switch__slider"></span>
+            </label>
           </div>
         </div>
 
-        <!-- ══════════════════════════════════════
-             SHOW MORE TOGGLE
-             ══════════════════════════════════════ -->
-        <div class="mb-3">
-          <button type="button" class="btn btn-outline-secondary btn-sm"
-                  (click)="showDiv = !showDiv">
-            <i class="bi me-1" [ngClass]="showDiv ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
-            {{ showDiv ? 'Hide Additional Details' : 'Show More Details' }}
-          </button>
-          <small class="text-muted ms-2">
-            Last Name, Address, Billing, Subscription & more
-          </small>
+        <h6 class="fw-bold border-bottom pb-1 mb-3 mt-3"><i class="bi bi-house-fill me-1"></i> Primary Address</h6>
+        <div class="shopify-grid-3">
+          <div class="shopify-grid-3__full">
+            <label class="shopify-field-label">Address</label>
+            <textarea rows="2" class="shopify-input" [(ngModel)]="customer.address"
+              placeholder="Street / building..."></textarea>
+          </div>
+          <div>
+            <label class="shopify-field-label">City</label>
+            <input type="text" class="shopify-input" [(ngModel)]="customer.city">
+          </div>
+          <div>
+            <label class="shopify-field-label">State / Province</label>
+            <input type="text" class="shopify-input" [(ngModel)]="customer.stateProvince">
+          </div>
+          <div>
+            <label class="shopify-field-label">Country</label>
+            <input type="text" class="shopify-input" [(ngModel)]="customer.country">
+          </div>
+          <div>
+            <label class="shopify-field-label">Postal Code</label>
+            <input type="text" class="shopify-input" [(ngModel)]="customer.postalCode">
+          </div>
         </div>
 
-        <!-- ══════════════════════════════════════
-             OPTIONAL / ADDITIONAL FIELDS
-             ══════════════════════════════════════ -->
-        <div [style.display]="showDiv ? 'block' : 'none'">
-
-          <!-- ── Basic Info (optional part) ── -->
-          <h6 class="text-primary fw-bold border-bottom pb-1 mb-3 mt-2">
-            <i class="bi bi-person-fill me-1"></i> Basic Information
-          </h6>
-          <div class="row">
-            <div class="col-md-4 mb-3">
-              <label class="form-label fw-semibold">Cust Name</label>
-              <input type="text" class="form-control" [(ngModel)]="customer.custName"
-                     placeholder="Company / display name">
-            </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label fw-semibold">Last Name</label>
-              <input type="text" class="form-control" [(ngModel)]="customer.lastName"
-                     placeholder="Last name">
-            </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label fw-semibold">Customer Type</label>
-              <select class="form-select" [(ngModel)]="customer.custType">
-                <option value="REGULAR">Regular</option>
-                <option value="VIP">VIP</option>
-                <option value="WHOLESALE">Wholesale</option>
-              </select>
-            </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label fw-semibold">Profession</label>
-              <input type="text" class="form-control" [(ngModel)]="customer.profession"
-                     placeholder="e.g. Engineer">
-            </div>
-            <div class="col-md-2 mb-3">
-              <label class="form-label fw-semibold">Priority</label>
-              <input type="number" class="form-control" [(ngModel)]="customer.priority"
-                     placeholder="0" min="0">
-            </div>
-            <div class="col-md-2 mb-3">
-              <label class="form-label fw-semibold">Sales Rep</label>
-              <input type="text" class="form-control" [(ngModel)]="customer.salesRep"
-                     placeholder="Rep name">
-            </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label fw-semibold">Joining Date</label>
-              <input type="date" class="form-control" [(ngModel)]="customer.joiningDate">
-            </div>
-            <div class="col-md-4 mb-3 d-flex align-items-end">
-              <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch"
-                       id="businessFlag" [(ngModel)]="customer.businessFlag">
-                <label class="form-check-label fw-semibold" for="businessFlag">Business Customer</label>
-              </div>
-            </div>
+        <h6 class="fw-bold border-bottom pb-1 mb-3 mt-3"><i class="bi bi-credit-card-fill me-1"></i> Billing Address
+        </h6>
+        <div class="shopify-grid-3">
+          <div class="shopify-grid-3__full">
+            <label class="shopify-field-label">Billing Address</label>
+            <textarea rows="2" class="shopify-input" [(ngModel)]="customer.billingAddress"
+              placeholder="Billing street / building..."></textarea>
           </div>
-
-          <!-- ── Contact (optional part) ── -->
-          <h6 class="text-success fw-bold border-bottom pb-1 mb-3 mt-2">
-            <i class="bi bi-telephone-fill me-1"></i> Contact Information
-          </h6>
-          <div class="row">
-            <div class="col-md-4 mb-3">
-              <label class="form-label fw-semibold">Phone 2</label>
-              <input type="text" class="form-control" [(ngModel)]="customer.phone2"
-                     placeholder="+92-300-0000000">
-            </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label fw-semibold">Best Way to Contact</label>
-              <select class="form-select" [(ngModel)]="customer.bestWay">
-                <option value="">-- Select --</option>
-                <option *ngFor="let w of bestWayToContactList" [value]="w.code">{{ w.description }}</option>
-              </select>
-            </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label fw-semibold">Best Time to Contact</label>
-              <select class="form-select" [(ngModel)]="customer.bestTime">
-                <option value="">-- Select --</option>
-                <option *ngFor="let t of bestTimeToContactList" [value]="t.code">{{ t.description }}</option>
-              </select>
-            </div>
-            <div class="col-md-4 mb-3 d-flex align-items-end gap-4">
-              <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch"
-                       id="sendSms" [(ngModel)]="customer.sendSmsFlag">
-                <label class="form-check-label fw-semibold" for="sendSms">Send SMS</label>
-              </div>
-              <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch"
-                       id="sendEmail" [(ngModel)]="customer.sendEmailFlag">
-                <label class="form-check-label fw-semibold" for="sendEmail">Send Email</label>
-              </div>
-            </div>
+          <div>
+            <label class="shopify-field-label">Billing City</label>
+            <input type="text" class="shopify-input" [(ngModel)]="customer.billingCity">
           </div>
-
-          <!-- ── Primary Address ── -->
-          <h6 class="text-warning fw-bold border-bottom pb-1 mb-3 mt-2">
-            <i class="bi bi-house-fill me-1"></i> Primary Address
-          </h6>
-          <div class="row">
-            <div class="col-md-12 mb-3">
-              <label class="form-label fw-semibold">Address</label>
-              <textarea rows="2" class="form-control" [(ngModel)]="customer.address"
-                        placeholder="Street / building..."></textarea>
-            </div>
-            <div class="col-md-3 mb-3">
-              <label class="form-label fw-semibold">City</label>
-              <input type="text" class="form-control" [(ngModel)]="customer.city">
-            </div>
-            <div class="col-md-3 mb-3">
-              <label class="form-label fw-semibold">State / Province</label>
-              <input type="text" class="form-control" [(ngModel)]="customer.stateProvince">
-            </div>
-            <div class="col-md-3 mb-3">
-              <label class="form-label fw-semibold">Country</label>
-              <input type="text" class="form-control" [(ngModel)]="customer.country">
-            </div>
-            <div class="col-md-3 mb-3">
-              <label class="form-label fw-semibold">Postal Code</label>
-              <input type="text" class="form-control" [(ngModel)]="customer.postalCode">
-            </div>
+          <div>
+            <label class="shopify-field-label">Billing State / Province</label>
+            <input type="text" class="shopify-input" [(ngModel)]="customer.billingStateProvince">
           </div>
-
-          <!-- ── Billing Address ── -->
-          <h6 class="text-info fw-bold border-bottom pb-1 mb-3 mt-2">
-            <i class="bi bi-credit-card-fill me-1"></i> Billing Address
-          </h6>
-          <div class="row">
-            <div class="col-md-12 mb-3">
-              <label class="form-label fw-semibold">Billing Address</label>
-              <textarea rows="2" class="form-control" [(ngModel)]="customer.billingAddress"
-                        placeholder="Billing street / building..."></textarea>
-            </div>
-            <div class="col-md-3 mb-3">
-              <label class="form-label fw-semibold">Billing City</label>
-              <input type="text" class="form-control" [(ngModel)]="customer.billingCity">
-            </div>
-            <div class="col-md-3 mb-3">
-              <label class="form-label fw-semibold">Billing State / Province</label>
-              <input type="text" class="form-control" [(ngModel)]="customer.billingStateProvince">
-            </div>
-            <div class="col-md-3 mb-3">
-              <label class="form-label fw-semibold">Billing Country</label>
-              <input type="text" class="form-control" [(ngModel)]="customer.billingCountry">
-            </div>
-            <div class="col-md-3 mb-3">
-              <label class="form-label fw-semibold">Billing Postal Code</label>
-              <input type="text" class="form-control" [(ngModel)]="customer.billingPostalCode">
-            </div>
+          <div>
+            <label class="shopify-field-label">Billing Country</label>
+            <input type="text" class="shopify-input" [(ngModel)]="customer.billingCountry">
           </div>
-
-          <!-- ── Account & Subscription ── -->
-          <h6 class="text-secondary fw-bold border-bottom pb-1 mb-3 mt-2">
-            <i class="bi bi-shield-lock-fill me-1"></i> Account & Subscription
-          </h6>
-          <div class="row">
-            <div class="col-md-4 mb-3">
-              <label class="form-label fw-semibold">Login ID</label>
-              <input type="text" class="form-control" [(ngModel)]="customer.loginId"
-                     placeholder="Username / Login ID">
-            </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label fw-semibold">Login Password</label>
-              <input type="password" class="form-control" [(ngModel)]="customer.loginPassword"
-                     placeholder="Password">
-            </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label fw-semibold">Subscription Plan</label>
-              <input type="text" class="form-control" [(ngModel)]="customer.subsPlan"
-                     placeholder="e.g. Gold, Silver">
-            </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label fw-semibold">Subscription Expiry</label>
-              <input type="date" class="form-control" [(ngModel)]="customer.subsExpiry">
-            </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label fw-semibold">Discount Amount</label>
-              <div class="input-group">
-                <span class="input-group-text">PKR</span>
-                <input type="number" class="form-control" [(ngModel)]="customer.discountAmount"
-                       placeholder="0" min="0">
-              </div>
-            </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label fw-semibold">Discount %</label>
-              <div class="input-group">
-                <input type="number" class="form-control" [(ngModel)]="customer.discountPercentage"
-                       placeholder="0" min="0" max="100">
-                <span class="input-group-text">%</span>
-              </div>
-            </div>
+          <div>
+            <label class="shopify-field-label">Billing Postal Code</label>
+            <input type="text" class="shopify-input" [(ngModel)]="customer.billingPostalCode">
           </div>
-
-          <!-- ── System Info (edit mode only, read-only) ── -->
-          <ng-container *ngIf="editMode">
-            <h6 class="text-dark fw-bold border-bottom pb-1 mb-3 mt-2">
-              <i class="bi bi-clock-history me-1"></i> System Information
-              <small class="text-muted fw-normal fs-6">(read-only)</small>
-            </h6>
-            <div class="row">
-              <div class="col-md-3 mb-3">
-                <label class="form-label fw-semibold">Created By</label>
-                <input type="text" class="form-control bg-light" [ngModel]="customer.createdBy" readonly>
-              </div>
-              <div class="col-md-3 mb-3">
-                <label class="form-label fw-semibold">Created Date</label>
-                <input type="text" class="form-control bg-light"
-                       [ngModel]="customer.createdDate | date:'medium'" readonly>
-              </div>
-              <div class="col-md-3 mb-3">
-                <label class="form-label fw-semibold">Updated By</label>
-                <input type="text" class="form-control bg-light" [ngModel]="customer.updatedBy" readonly>
-              </div>
-              <div class="col-md-3 mb-3">
-                <label class="form-label fw-semibold">Updated Date</label>
-                <input type="text" class="form-control bg-light"
-                       [ngModel]="customer.updatedDate | date:'medium'" readonly>
-              </div>
-            </div>
-          </ng-container>
-
-        </div><!-- /showDiv -->
-
-        <!-- ── FORM ACTION BUTTONS ── -->
-        <div class="d-flex gap-2 mt-4 pt-2 border-top">
-          <button type="button" class="btn btn-success px-4" (click)="save()" [disabled]="isSaving">
-            <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-1"></span>
-            <i *ngIf="!isSaving" class="bi bi-save-fill me-1"></i>
-            {{ isSaving ? 'Saving...' : 'Save' }}
-          </button>
-          <button type="button" class="btn btn-secondary" (click)="goToList()">
-            <i class="bi bi-arrow-left me-1"></i> Back to List
-          </button>
         </div>
 
-      </div><!-- /card-body -->
-    </div><!-- /card -->
+        <h6 class="fw-bold border-bottom pb-1 mb-3 mt-3"><i class="bi bi-shield-lock-fill me-1"></i> Account &
+          Subscription</h6>
+        <div class="shopify-grid-3">
+          <div>
+            <label class="shopify-field-label">Login ID</label>
+            <input type="text" class="shopify-input" [(ngModel)]="customer.loginId" placeholder="Username / Login ID">
+          </div>
+          <div>
+            <label class="shopify-field-label">Login Password</label>
+            <input type="password" class="shopify-input" [(ngModel)]="customer.loginPassword" placeholder="Password">
+          </div>
+          <div>
+            <label class="shopify-field-label">Subscription Plan</label>
+            <input type="text" class="shopify-input" [(ngModel)]="customer.subsPlan" placeholder="e.g. Gold, Silver">
+          </div>
+          <div>
+            <label class="shopify-field-label">Subscription Expiry</label>
+            <input type="date" class="shopify-input" [(ngModel)]="customer.subsExpiry">
+          </div>
+          <div>
+            <label class="shopify-field-label">Discount Amount</label>
+            <div class="shopify-input-group">
+              <span class="shopify-input-group__prefix">PKR</span>
+              <input type="number" class="shopify-input" [(ngModel)]="customer.discountAmount" placeholder="0" min="0">
+            </div>
+          </div>
+          <div>
+            <label class="shopify-field-label">Discount %</label>
+            <input type="number" class="shopify-input" [(ngModel)]="customer.discountPercentage" placeholder="0" min="0"
+              max="100">
+          </div>
+        </div>
+
+        <ng-container *ngIf="editMode">
+          <h6 class="fw-bold border-bottom pb-1 mb-3 mt-3">
+            <i class="bi bi-clock-history me-1"></i> System Information
+            <small class="text-muted fw-normal fs-6">(read-only)</small>
+          </h6>
+          <div class="shopify-grid-4">
+            <div>
+              <label class="shopify-field-label">Created By</label>
+              <input type="text" class="shopify-input" [ngModel]="customer.createdBy" readonly disabled>
+            </div>
+            <div>
+              <label class="shopify-field-label">Created Date</label>
+              <input type="text" class="shopify-input" [ngModel]="customer.createdDate | date:'medium'" readonly
+                disabled>
+            </div>
+            <div>
+              <label class="shopify-field-label">Updated By</label>
+              <input type="text" class="shopify-input" [ngModel]="customer.updatedBy" readonly disabled>
+            </div>
+            <div>
+              <label class="shopify-field-label">Updated Date</label>
+              <input type="text" class="shopify-input" [ngModel]="customer.updatedDate | date:'medium'" readonly
+                disabled>
+            </div>
+          </div>
+        </ng-container>
+
+      </div>
+
+      <div class="shopify-actions-row mt-4">
+        <button type="button" class="btn-shopify btn-shopify--primary" (click)="save()" [disabled]="isSaving">
+          <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-1"></span>
+          <i *ngIf="!isSaving" class="bi bi-save-fill"></i>
+          {{ isSaving ? 'Saving...' : 'Save' }}
+        </button>
+        <button type="button" class="btn-shopify btn-shopify--outline" (click)="goToList()">
+          <i class="bi bi-arrow-left"></i> Back to List
+        </button>
+      </div>
+
+    </div>
   </div>
 </div>

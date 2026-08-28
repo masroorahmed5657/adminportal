@@ -1,0 +1,137 @@
+<!-- ============================================================
+     ORDERS PAYMENT — SHOPIFY THEME
+     ============================================================ -->
+<div class="shopify-main-container">
+
+  <!-- Filters row -->
+  <div class="shopify-card mb-4">
+    <div class="shopify-card__body">
+      <div class="shopify-search-row">
+        <div>
+          <label class="shopify-field-label" for="startDate">Start Date</label>
+          <input type="date" id="startDate" class="shopify-input" [(ngModel)]="startDate"
+            (change)="startDateChange()">
+        </div>
+        <div>
+          <label class="shopify-field-label" for="endDate">End Date</label>
+          <input type="date" id="endDate" class="shopify-input" [(ngModel)]="endDate" (change)="endDateChange()">
+        </div>
+        <div class="d-flex align-items-end">
+          <button class="btn-shopify btn-shopify--primary" type="button" (click)="onSearch()">
+            <i class="bi bi-search"></i> Search
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loader -->
+  <div class="shopify-loading" *ngIf="spinnerDataLoad">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p>Loading payments...</p>
+  </div>
+
+  <ng-container *ngIf="!spinnerDataLoad">
+
+    <!-- Empty state -->
+    <div class="shopify-empty" *ngIf="orderViewList.length === 0">
+      <h5>No orders found</h5>
+      <p>No payment records match your search.</p>
+    </div>
+
+    <ng-container *ngIf="orderViewList.length > 0">
+
+      <!-- Desktop table -->
+      <div class="shopify-table-wrap">
+        <table class="shopify-table">
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>Cust Name</th>
+              <th>Status</th>
+              <th>Taxes</th>
+              <th>Method</th>
+              <th>Total</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let order of pagedOrderList; let i = index"
+              [ngClass]="{'shopify-row--paid': isPaymentCompleted(order.orderId) === 'paid',
+                          'shopify-row--notpaid': isPaymentCompleted(order.orderId) === 'notpaid'}">
+              <td>{{ order.orderNum }}</td>
+              <td>{{ order.firstName }} {{ order.lastName }}</td>
+              <td>
+                <span class="shopify-badge"
+                  [ngClass]="isPaymentCompleted(order.orderId) === 'paid' ? 'shopify-badge--success' : 'shopify-badge--danger'">
+                  {{ order.paymentStatus }}
+                </span>
+              </td>
+              <td><fa-icon [icon]="faDollar"></fa-icon> {{ order.tax }}</td>
+              <td>{{ order.paymentMethod }}</td>
+              <td><fa-icon [icon]="faDollar"></fa-icon> {{ order.grandTotal }}</td>
+              <td>{{ order.createDate }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile cards -->
+      <div class="shopify-mobile-list">
+        <div class="shopify-mobile-card"
+          [ngClass]="{'shopify-row--paid': isPaymentCompleted(order.orderId) === 'paid',
+                      'shopify-row--notpaid': isPaymentCompleted(order.orderId) === 'notpaid'}"
+          *ngFor="let order of pagedOrderList; let i = index">
+          <div class="shopify-mobile-card__row">
+            <span class="shopify-field-label--sm">No.</span>
+            <span>{{ order.orderNum }}</span>
+          </div>
+          <div class="shopify-mobile-card__row">
+            <span class="shopify-field-label--sm">Customer</span>
+            <span>{{ order.firstName }} {{ order.lastName }}</span>
+          </div>
+          <div class="shopify-mobile-card__row">
+            <span class="shopify-field-label--sm">Status</span>
+            <span class="shopify-badge"
+              [ngClass]="isPaymentCompleted(order.orderId) === 'paid' ? 'shopify-badge--success' : 'shopify-badge--danger'">
+              {{ order.paymentStatus }}
+            </span>
+          </div>
+          <div class="shopify-mobile-card__row">
+            <span class="shopify-field-label--sm">Taxes</span>
+            <span><fa-icon [icon]="faDollar"></fa-icon> {{ order.tax }}</span>
+          </div>
+          <div class="shopify-mobile-card__row">
+            <span class="shopify-field-label--sm">Method</span>
+            <span>{{ order.paymentMethod }}</span>
+          </div>
+          <div class="shopify-mobile-card__row">
+            <span class="shopify-field-label--sm">Total</span>
+            <span><fa-icon [icon]="faDollar"></fa-icon> {{ order.grandTotal }}</span>
+          </div>
+          <div class="shopify-mobile-card__row">
+            <span class="shopify-field-label--sm">Date</span>
+            <span>{{ order.createDate }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination (Shopify-style Previous / Next) -->
+      <div class="shopify-pager" *ngIf="totalPages > 1">
+        <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="p <= 1"
+          (click)="goToPage(p - 1)">
+          <i class="bi bi-chevron-left"></i> Previous
+        </button>
+        <span class="shopify-pager__info">Page {{ p }} of {{ totalPages }}</span>
+        <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="p >= totalPages"
+          (click)="goToPage(p + 1)">
+          Next <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+
+    </ng-container>
+  </ng-container>
+
+</div>

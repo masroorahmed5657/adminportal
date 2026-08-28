@@ -1,328 +1,256 @@
-<!-- Card start -->
-<div class="card border border-2 p-5" *ngIf="showCategoryListFlag">
-    <!-- Search & Buttons Row -->
-    <div *ngIf="!addFlag">
-        <div class="card-body">
-            <!-- Search Inputs Row -->
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="category" class="fw-semibold mb-2">Search Category</label>
-                    <div class="input-group">
-                        <span class="input-group-text">
-                            <i class="bi bi-search"></i>
-                        </span>
-                        <input type="text" class="form-control" placeholder="Search By Category"
-                            [(ngModel)]="searchCategory" (ngModelChange)="categorySearch()" id="category" />
-                    </div>
-                </div>
-                <div class="col-md-6 mt-3 mt-md-0">
-                    <label for="subCategory" class="fw-semibold mb-2">Search Sub
-                        Category</label>
-                    <div class="input-group">
-                        <span class="input-group-text">
-                            <i class="bi bi-search"></i>
-                        </span>
-                        <input type="text" class="form-control" placeholder="Search By Sub Category"
-                            [(ngModel)]="searchSubCategory" (ngModelChange)="categorySearch()" id="subCategory" />
-                    </div>
-                </div>
-            </div>
+<!-- ============================================================
+     CATEGORY — LIST VIEW
+     ============================================================ -->
+<div class="shopify-main-container" *ngIf="showCategoryListFlag && !addFlag">
 
-            <!-- Buttons Row -->
-            <div class="row mb-5">
-                <!-- <div class="col d-flex justify-content-center flex-wrap gap-2"> -->
-                <div class="col d-flex  align-items-center gap-2">                    
-                    <button class="btn btn-add" (click)="addCategory()">
-                        Add Category
-                    </button>
-                    <label for="documents" class="btn btn-upload ">
-                        Upload Category
-                    </label>
+  <!-- <h2 class="shopify-page-title">Categories</h2> -->
 
-                    <input type="file" id="documents" class="d-none" accept=".xlsx,.xls,.csv"
-                        (change)="uploadCategory($event)" multiple />
-
-                </div>
-            </div>
-
-            <!-- Actual Content -->
-            <div *ngIf="!spinnerDataLoad">
-                <!-- Table start -->
-                <div class="table-responsive d-none d-md-block">
-                    <p-table [value]="categoryList" [paginator]="true" [rows]="5" [sortMode]="'multiple'"
-                        sortField="categoryId" [rowsPerPageOptions]="[5,10,20]" responsiveLayout="scroll">
-                        <!-- Header -->
-                        <ng-template pTemplate="header">
-                            <tr>
-                                <th pSortableColumn="categoryId">ID <p-sortIcon field="categoryId"></p-sortIcon></th>
-                                <th pSortableColumn="category">Category <p-sortIcon field="category"></p-sortIcon></th>
-                                <th pSortableColumn="subCategory">SubCategory <p-sortIcon
-                                        field="subCategory"></p-sortIcon></th>
-                                <th>Image</th>
-                                <th>Popular</th>
-                                <th class="text-center">Actions</th>
-                            </tr>
-                        </ng-template>
-                        <!-- Body -->
-                        <ng-template pTemplate="body" let-cat let-row="rowIndex">
-                            <tr [ngClass]="{'table-active': activeRow === row}">
-                                <td>{{ cat.categoryId }}</td>
-                                <td>
-                                    <input type="text" class="form-control" id="category-{{row}}"
-                                        [(ngModel)]="cat.category" [disabled]="!enabledEdit[row]" />
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control" id="subCategory-{{row}}"
-                                        [(ngModel)]="cat.subCategory" [disabled]="!enabledEdit[row]" />
-                                </td>
-                                <td>
-                                    <img [src]="'data:' + cat.imageType + ';base64,' + cat.finalImage" alt=""
-                                        class="avatar-md rounded-circle me-2">
-                                </td>
-                                <td>
-                                    <input class="" type="checkbox" id="popularFlag-{{row}}"
-                                        [(ngModel)]="cat.popularFlag" [disabled]="!enabledEdit[row]">
-
-                                </td>
-                                <td class="text-center">
-                                    <div class="btn-group">
-                                        <!-- Edit -->
-                                        <button *ngIf="!enabledEdit[row]" class="btn btn-edit me-1"
-                                            (click)="startEdit(row)">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <!-- Save -->
-                                        <button *ngIf="enabledEdit[row]" class="btn btn-add me-1"
-                                            (click)="onSave(cat.categoryId, row)">
-                                            <i class="bi bi-check"></i>
-                                        </button>
-                                        <!-- Delete -->
-                                        <button class="btn btn-delete" (click)="onDelete(cat.categoryId, row)">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                        <button class="btn btn-info" (click)="openPopup(row)">
-                                            <i class="bi bi-camera"></i>
-                                        </button>
-
-                                    </div>
-                                </td>
-                            </tr>
-                        </ng-template>
-                        <!-- Empty Message -->
-                        <ng-template pTemplate="emptymessage">
-                            <tr>
-                                <td class="text-center" colspan="5">
-                                    <h5 class="mt-2">Sorry! No Result Found</h5>
-                                    <p class="text-muted mb-0">No categories match your search.
-                                    </p>
-                                </td>
-                            </tr>
-                        </ng-template>
-                    </p-table>
-                </div>
-                <!-- Table end -->
-
-                <!-- Mobile Card View -->
-                <div class="container-fluid d-block d-md-none">
-
-                    <div class="row g-3">
-
-                        <div class="col-12 col-md-6 col-lg-4" *ngFor="let cat of categoryList; let row = index">
-
-                            <div class="card shadow-sm h-100" [ngClass]="{'border-primary': activeRow === row}">
-
-                                <div class="card-body">
-
-                                    <!-- ID -->
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <span class="fw-bold">ID</span>
-                                        <span>{{ cat.categoryId }}</span>
-                                    </div>
-
-                                    <!-- Category -->
-                                    <div class="mb-2">
-                                        <label class="fw-bold">Category</label>
-                                        <input type="text" class="form-control form-control-sm"
-                                            [(ngModel)]="cat.category" [disabled]="!enabledEdit[row]" />
-                                    </div>
-
-                                    <!-- Sub Category -->
-                                    <div class="mb-2">
-                                        <label class="fw-bold">Sub Category</label>
-                                        <input type="text" class="form-control form-control-sm"
-                                            [(ngModel)]="cat.subCategory" [disabled]="!enabledEdit[row]" />
-                                    </div>
-
-                                    <!-- Image -->
-                                    <div class="mb-2 text-center">
-                                        <label class="fw-bold d-block">Image</label>
-                                        <img [src]="'data:' + cat.imageType + ';base64,' + cat.finalImage"
-                                            class="rounded-circle border"
-                                            style="width:70px;height:70px;object-fit:cover;" />
-                                    </div>
-
-                                    <!-- Popular -->
-                                    <div class="form-check mb-3">
-                                        <input class="form-check-input" type="checkbox" [(ngModel)]="cat.popularFlag"
-                                            [disabled]="!enabledEdit[row]" id="popularFlag-{{row}}">
-                                        <label class="form-check-label fw-bold">
-                                            Popular
-                                        </label>
-                                    </div>
-
-                                    <!-- Actions -->
-                                    <div class="d-flex justify-content-end gap-2 flex-wrap">
-
-                                        <button *ngIf="!enabledEdit[row]" class="btn btn-sm btn-primary"
-                                            (click)="startEdit(row)">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-
-                                        <button *ngIf="enabledEdit[row]" class="btn btn-sm btn-success"
-                                            (click)="onSave(cat.categoryId, row)">
-                                            <i class="bi bi-check"></i>
-                                        </button>
-
-                                        <button class="btn btn-sm btn-danger" (click)="onDelete(cat.categoryId, row)">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-
-                                        <button class="btn btn-sm btn-info" (click)="openPopup(row)">
-                                            <i class="bi bi-camera"></i>
-                                        </button>
-
-                                    </div>
-
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <!-- Empty State -->
-                        <div class="col-12 text-center" *ngIf="categoryList.length === 0">
-                            <h5 class="mt-3">Sorry! No Result Found</h5>
-                            <p class="text-muted">No categories match your search.</p>
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- Mobile Card View Ends Here -->
-            </div>
-
-            <!-- Loader -->
-            <div *ngIf="spinnerDataLoad" class="d-flex justify-content-center align-items-center py-5">
-                <div class="spinner-border" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-            </div>
-        </div>
+  <!-- Search row -->
+  <div class="shopify-search-row">
+    <div>
+      <label class="shopify-field-label" for="category">Search Category</label>
+      <div class="shopify-input-group">
+        <span class="shopify-input-group__prefix"><i class="bi bi-search"></i></span>
+        <input type="text" class="shopify-input" placeholder="Search by category" id="category"
+          [(ngModel)]="searchCategory" (ngModelChange)="categorySearch()">
+      </div>
     </div>
-    <!-- Card end -->
-</div>
+    <div>
+      <label class="shopify-field-label" for="subCategory">Search Sub Category</label>
+      <div class="shopify-input-group">
+        <span class="shopify-input-group__prefix"><i class="bi bi-search"></i></span>
+        <input type="text" class="shopify-input" placeholder="Search by sub category" id="subCategory"
+          [(ngModel)]="searchSubCategory" (ngModelChange)="categorySearch()">
+      </div>
+    </div>
+  </div>
 
-<!-- Add Form Row -->
-<div *ngIf="addFlag" >
-    <div class="row mb-4" *ngIf="showCategoryListFlag">
-        <div class="col d-flex justify-content-center flex-wrap gap-2" >
-            <button class="btn btn-back" (click)="backToList()">
-                <i class="bi bi-arrow-left"></i> Back to Category List
+  <!-- Actions row -->
+  <div class="shopify-actions-row">
+    <button class="btn-shopify btn-shopify--primary" (click)="addCategory()">
+      <i class="bi bi-plus-lg"></i> Add Category
+    </button>
+    <label for="documents" class="shopify-file-label">
+      <i class="bi bi-upload"></i> Upload Category
+    </label>
+    <input type="file" id="documents" class="d-none" accept=".xlsx,.xls,.csv" (change)="uploadCategory($event)"
+      multiple>
+  </div>
+
+  <!-- Loader -->
+  <div class="shopify-loading" *ngIf="spinnerDataLoad">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p>Loading categories...</p>
+  </div>
+
+  <ng-container *ngIf="!spinnerDataLoad">
+
+    <!-- Empty state -->
+    <div class="shopify-empty" *ngIf="categoryList.length === 0">
+      <h5>Sorry! No result found</h5>
+      <p>No categories match your search.</p>
+    </div>
+
+    <ng-container *ngIf="categoryList.length > 0">
+
+      <!-- Desktop table -->
+      <div class="shopify-table-wrap">
+        <table class="shopify-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Category</th>
+              <th>Sub Category</th>
+              <th>Image</th>
+              <th>Popular</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let cat of pagedCategoryList; let i = index"
+              [ngClass]="{'is-active': activeRow === rowIndex(i)}">
+              <td>{{ cat.categoryId }}</td>
+              <td>
+                <input type="text" class="shopify-input" id="category-{{rowIndex(i)}}" [(ngModel)]="cat.category"
+                  [disabled]="!enabledEdit[rowIndex(i)]">
+              </td>
+              <td>
+                <input type="text" class="shopify-input" id="subCategory-{{rowIndex(i)}}" [(ngModel)]="cat.subCategory"
+                  [disabled]="!enabledEdit[rowIndex(i)]">
+              </td>
+              <td>
+                <img [src]="'data:' + cat.imageType + ';base64,' + cat.finalImage" alt="" class="shopify-avatar">
+              </td>
+              <td>
+                <label class="shopify-switch">
+                  <input type="checkbox" id="popularFlag-{{rowIndex(i)}}" [(ngModel)]="cat.popularFlag"
+                    [disabled]="!enabledEdit[rowIndex(i)]">
+                  <span class="shopify-switch__slider"></span>
+                </label>
+              </td>
+              <td>
+                <div class="shopify-table__actions">
+                  <button *ngIf="!enabledEdit[rowIndex(i)]" class="btn-shopify btn-shopify--outline btn-shopify--icon"
+                    title="Edit" (click)="startEdit(rowIndex(i))">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button *ngIf="enabledEdit[rowIndex(i)]" class="btn-shopify btn-shopify--success btn-shopify--icon"
+                    title="Save" (click)="onSave(cat.categoryId, rowIndex(i))">
+                    <i class="bi bi-check-lg"></i>
+                  </button>
+                  <button class="btn-shopify btn-shopify--danger btn-shopify--icon" title="Delete"
+                    (click)="onDelete(cat.categoryId, rowIndex(i))">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                  <button class="btn-shopify btn-shopify--outline btn-shopify--icon" title="Image"
+                    (click)="openPopup(rowIndex(i))">
+                    <i class="bi bi-camera"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile cards -->
+      <div class="shopify-mobile-list">
+        <div class="shopify-mobile-card" *ngFor="let cat of pagedCategoryList; let i = index"
+          [ngClass]="{'is-active': activeRow === rowIndex(i)}">
+          <div class="shopify-mobile-card__row">
+            <span class="shopify-field-label--sm">ID</span>
+            <span>{{ cat.categoryId }}</span>
+          </div>
+          <div class="shopify-mobile-card__field">
+            <label class="shopify-field-label--sm">Category</label>
+            <input type="text" class="shopify-input" [(ngModel)]="cat.category" [disabled]="!enabledEdit[rowIndex(i)]">
+          </div>
+          <div class="shopify-mobile-card__field">
+            <label class="shopify-field-label--sm">Sub Category</label>
+            <input type="text" class="shopify-input" [(ngModel)]="cat.subCategory"
+              [disabled]="!enabledEdit[rowIndex(i)]">
+          </div>
+          <div class="shopify-mobile-card__field text-center">
+            <label class="shopify-field-label--sm d-block">Image</label>
+            <img [src]="'data:' + cat.imageType + ';base64,' + cat.finalImage" class="shopify-avatar"
+              style="width:64px;height:64px;">
+          </div>
+          <div class="shopify-toggle-row">
+            <span class="shopify-field-label--sm">Popular</span>
+            <label class="shopify-switch">
+              <input type="checkbox" [(ngModel)]="cat.popularFlag" [disabled]="!enabledEdit[rowIndex(i)]"
+                id="popularFlagM-{{rowIndex(i)}}">
+              <span class="shopify-switch__slider"></span>
+            </label>
+          </div>
+          <div class="shopify-mobile-card__actions">
+            <button *ngIf="!enabledEdit[rowIndex(i)]" class="btn-shopify btn-shopify--outline btn-shopify--sm"
+              (click)="startEdit(rowIndex(i))">
+              <i class="bi bi-pencil"></i> Edit
             </button>
-        </div>
-    </div>
-    <h3>Add Category</h3>
-<div class="card shadow-sm border-2">
-  <div class="card-body">
-
-    <h6 class="fw-bold text-primary mb-3">
-      ➕ Add Category / Sub Category
-    </h6>
-
-    <div class="row g-3 align-items-center">
-
-      <!-- Category -->
-      <div class="col-12 col-md-3">
-        <input type="text"
-               class="form-control"
-               id="category-new"
-               placeholder="Category" />
-      </div>
-
-      <!-- Sub Category -->
-      <div class="col-12 col-md-3">
-        <input type="text"
-               class="form-control"
-               id="subCategory-new"
-               placeholder="Sub Category" />
-      </div>
-
-      <!-- Image Upload -->
-      <div class="col-12 col-md-3">
-        <input type="file"
-               class="form-control"
-               accept="image/*"
-               (change)="selectFile($event)" />
-      </div>
-
-      <!-- Popular Flag -->
-      <div class="col-6 col-md-1 text-center">
-        <div class="form-check mt-2">
-          <input class="form-check-input"
-                 type="checkbox"
-                 id="popularFlag-new">
-          <label class="form-check-label small">
-            Popular
-          </label>
+            <button *ngIf="enabledEdit[rowIndex(i)]" class="btn-shopify btn-shopify--success btn-shopify--sm"
+              (click)="onSave(cat.categoryId, rowIndex(i))">
+              <i class="bi bi-check-lg"></i> Save
+            </button>
+            <button class="btn-shopify btn-shopify--danger btn-shopify--sm"
+              (click)="onDelete(cat.categoryId, rowIndex(i))">
+              <i class="bi bi-trash"></i> Delete
+            </button>
+            <button class="btn-shopify btn-shopify--outline btn-shopify--sm" (click)="openPopup(rowIndex(i))">
+              <i class="bi bi-camera"></i> Image
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- Save Button -->
-      <div class="col-6 col-md-2 d-grid">
-        <button class="btn btn-success"
-                (click)="onSave(-1, -1)">
-          <i class="bi bi-save me-1"></i> Save
+      <!-- Pagination (Shopify-style Previous / Next) -->
+      <div class="shopify-pager" *ngIf="totalPages > 1">
+        <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="page <= 1"
+          (click)="goToPage(page - 1)">
+          <i class="bi bi-chevron-left"></i> Previous
+        </button>
+        <span class="shopify-pager__info">Page {{ page }} of {{ totalPages }}</span>
+        <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="page >= totalPages"
+          (click)="goToPage(page + 1)">
+          Next <i class="bi bi-chevron-right"></i>
         </button>
       </div>
 
-    </div>
+    </ng-container>
+  </ng-container>
+</div>
 
+<!-- ============================================================
+     CATEGORY — ADD FORM
+     ============================================================ -->
+<div class="shopify-main-container" *ngIf="addFlag">
+
+  <div class="shopify-actions-row" *ngIf="showCategoryListFlag">
+    <button class="btn-shopify btn-shopify--outline" (click)="backToList()">
+      <i class="bi bi-arrow-left"></i> Back to Category List
+    </button>
+  </div>
+
+  <div class="shopify-card">
+    <div class="shopify-card__header">Add category / sub category</div>
+    <div class="shopify-card__body">
+      <div class="shopify-grid-4">
+        <div>
+          <label class="shopify-field-label">Category</label>
+          <input type="text" class="shopify-input" id="category-new" placeholder="Category">
+        </div>
+        <div>
+          <label class="shopify-field-label">Sub Category</label>
+          <input type="text" class="shopify-input" id="subCategory-new" placeholder="Sub category">
+        </div>
+        <div>
+          <label class="shopify-field-label">Image</label>
+          <input type="file" class="shopify-input" accept="image/*" (change)="selectFile($event)">
+        </div>
+        <div>
+          <label class="shopify-field-label">&nbsp;</label>
+          <div class="shopify-toggle-row" style="padding-top:0.3rem;">
+            <span>Popular</span>
+            <label class="shopify-switch">
+              <input type="checkbox" id="popularFlag-new">
+              <span class="shopify-switch__slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <button class="btn-shopify btn-shopify--primary" (click)="onSave(-1, -1)">
+          <i class="bi bi-save"></i> Save
+        </button>
+      </div>
+    </div>
   </div>
 </div>
-</div>
-<!----------------------- POPUP   --------------------------------------------------------------------------->
-<div class="modal" tabindex="-1" role="dialog" [ngStyle]="{'display':displayStyle}">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Upload Image</h4>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-12">
-                        <label for="files" class="btn btn-primary">Choose Category image to upload</label>
-                        <input type="file" id="files" name="files" style="visibility:hidden;" accept="image/*"
-                            (change)="selectFile($event)" />
-                    </div>
 
-                    <br>
-                    <div class="col-12">
-                        <img [src]="preview" class="preview" style="width: 200px; margin-left: 25%;">
-                    </div>
-                    <br>
-                    <br>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" (click)="closePopup()">
-                    Close
-                </button>
-                <button type="button" class="btn btn-success" (click)="uploadImage()">
-                    Upload
-                </button>
-            </div>
-        </div>
+<!-- ============================================================
+     IMAGE UPLOAD MODAL
+     ============================================================ -->
+<div class="shopify-modal-backdrop" [ngStyle]="{'display':displayStyle}" (click)="closePopup()"></div>
+<div class="shopify-modal" [ngStyle]="{'display':displayStyle}" tabindex="-1" role="dialog">
+  <div class="shopify-modal__dialog">
+    <div class="shopify-modal__header">
+      <h4 class="shopify-modal__title">Upload Image</h4>
+      <button class="btn-shopify btn-shopify--outline btn-shopify--icon" (click)="closePopup()">✕</button>
     </div>
+    <div class="shopify-modal__body">
+      <label for="files" class="shopify-file-label">
+        <i class="bi bi-upload"></i> Choose category image
+      </label>
+      <input type="file" id="files" name="files" style="display:none;" accept="image/*" (change)="selectFile($event)">
+
+      <img [src]="preview" class="shopify-modal__preview" *ngIf="preview">
+    </div>
+    <div class="shopify-modal__footer">
+      <button type="button" class="btn-shopify btn-shopify--outline" (click)="closePopup()">Close</button>
+      <button type="button" class="btn-shopify btn-shopify--primary" (click)="uploadImage()">Upload</button>
+    </div>
+  </div>
 </div>
-<!------------------------POPUP ENDS--------------------->

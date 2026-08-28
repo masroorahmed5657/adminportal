@@ -1,0 +1,227 @@
+<!-- ============================================================
+     SEARCH + ADD BUTTON
+     ============================================================ -->
+<div class="shopify-main-container" *ngIf="!showAddFlag">
+
+  <div class="shopify-search-row">
+    <div>
+      <label class="shopify-field-label" for="searchTax">Search Tax</label>
+      <div class="shopify-input-group">
+        <span class="shopify-input-group__prefix"><i class="bi bi-search"></i></span>
+        <input type="search" id="searchTax" class="shopify-input" [(ngModel)]="searchTerm" (input)="onSearchInput()"
+          placeholder="Search by name, state code or ID...">
+      </div>
+    </div>
+  </div>
+
+  <div class="shopify-actions-row">
+    <button class="btn-shopify btn-shopify--primary" (click)="add()">
+      <i class="bi bi-plus-circle"></i> Add Tax
+    </button>
+  </div>
+
+  <!-- LOADING -->
+  <div class="shopify-loading" *ngIf="isLoading">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p>Loading tax records...</p>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+
+    <!-- Empty state -->
+    <div class="shopify-empty" *ngIf="filtered.length === 0">
+      <h5>No tax records found</h5>
+      <p>Try adjusting your search.</p>
+    </div>
+
+    <ng-container *ngIf="filtered.length > 0">
+
+      <!-- Desktop table -->
+      <div class="shopify-table-wrap">
+        <table class="shopify-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Tax Name</th>
+              <th>Rate (%)</th>
+              <th>Type</th>
+              <th>State Code</th>
+              <th class="text-center">Manage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let tax of filtered | paginate:{itemsPerPage:10,currentPage:p}">
+              <td>{{ tax.taxId }}</td>
+              <td>{{ tax.name }}</td>
+              <td>{{ tax.tax }}%</td>
+              <td>{{ tax.taxType }}</td>
+              <td>{{ tax.stateCode || '-' }}</td>
+              <td>
+                <div class="shopify-table__actions">
+                  <button class="btn-shopify btn-shopify--outline btn-shopify--icon" title="View Detail"
+                    (click)="view(tax)">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <button class="btn-shopify btn-shopify--outline btn-shopify--icon" title="Edit" (click)="edit(tax)">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button class="btn-shopify btn-shopify--danger btn-shopify--icon" title="Delete"
+                    (click)="onDelete(tax.taxId)">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile cards -->
+      <div class="shopify-mobile-list">
+        <div class="shopify-mobile-card" *ngFor="let tax of filtered | paginate:{itemsPerPage:10,currentPage:p}">
+          <div class="shopify-mobile-card__row">
+            <span class="shopify-field-label--sm">ID</span>
+            <span>{{ tax.taxId }}</span>
+          </div>
+          <h6 class="fw-bold mb-2">{{ tax.name }}</h6>
+          <div class="shopify-mobile-card__row">
+            <span class="shopify-field-label--sm">Rate</span>
+            <span>{{ tax.tax }}%</span>
+          </div>
+          <div class="shopify-mobile-card__row">
+            <span class="shopify-field-label--sm">Type</span>
+            <span>{{ tax.taxType }}</span>
+          </div>
+          <div class="shopify-mobile-card__row">
+            <span class="shopify-field-label--sm">State</span>
+            <span>{{ tax.stateCode || '-' }}</span>
+          </div>
+          <div class="shopify-mobile-card__actions">
+            <button class="btn-shopify btn-shopify--outline btn-shopify--sm" (click)="view(tax)">
+              <i class="bi bi-eye"></i> View
+            </button>
+            <button class="btn-shopify btn-shopify--outline btn-shopify--sm" (click)="edit(tax)">
+              <i class="bi bi-pencil"></i> Edit
+            </button>
+            <button class="btn-shopify btn-shopify--danger btn-shopify--sm" (click)="onDelete(tax.taxId)">
+              <i class="bi bi-trash"></i> Delete
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination (Shopify-style Previous / Next) -->
+      <pagination-template #pt="paginationApi" (pageChange)="p = $event">
+        <div class="shopify-pager">
+          <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="pt.isFirstPage()"
+            (click)="pt.previous()">
+            Previous
+          </button>
+          <span class="shopify-pager__info">Page {{ pt.getCurrent() }} of {{ pt.getLastPage() }}</span>
+          <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="pt.isLastPage()"
+            (click)="pt.next()">
+            Next
+          </button>
+        </div>
+      </pagination-template>
+
+    </ng-container>
+  </ng-container>
+</div>
+
+<!-- ============================================================
+     VIEW DETAIL MODAL
+     ============================================================ -->
+<ng-container *ngIf="showDetailModal && viewItem">
+  <div class="shopify-modal-backdrop" style="display:block;" (click)="closeDetail()"></div>
+  <div class="shopify-modal" style="display:block;" tabindex="-1" role="dialog">
+    <div class="shopify-modal__dialog">
+      <div class="shopify-modal__header">
+        <h4 class="shopify-modal__title">Tax Detail — {{ viewItem.name }}</h4>
+        <button class="btn-shopify btn-shopify--outline btn-shopify--icon" (click)="closeDetail()">✕</button>
+      </div>
+      <div class="shopify-modal__body">
+        <div class="shopify-mobile-card__row">
+          <span class="shopify-field-label--sm">Tax Name</span>
+          <span>{{ viewItem.name }}</span>
+        </div>
+        <div class="shopify-mobile-card__row">
+          <span class="shopify-field-label--sm">Tax Rate</span>
+          <span>{{ viewItem.tax }}%</span>
+        </div>
+        <div class="shopify-mobile-card__row">
+          <span class="shopify-field-label--sm">Tax Type</span>
+          <span>{{ viewItem.taxType }}</span>
+        </div>
+        <div class="shopify-mobile-card__row">
+          <span class="shopify-field-label--sm">State Code</span>
+          <span>{{ viewItem.stateCode || '-' }}</span>
+        </div>
+      </div>
+      <div class="shopify-modal__footer">
+        <button class="btn-shopify btn-shopify--outline" (click)="closeDetail()">Close</button>
+        <button class="btn-shopify btn-shopify--primary" (click)="edit(viewItem); closeDetail()">
+          <i class="bi bi-pencil"></i> Edit
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<!-- ============================================================
+     ADD / EDIT FORM
+     ============================================================ -->
+<div class="shopify-main-container" *ngIf="showAddFlag">
+
+  <div class="shopify-actions-row">
+    <button class="btn-shopify btn-shopify--outline" (click)="goToList()">
+      <i class="bi bi-arrow-left"></i> Back to List
+    </button>
+  </div>
+
+  <div class="shopify-card">
+    <div class="shopify-card__header">
+      {{ editMode ? 'Edit Tax' : 'Add Tax' }}
+      <span *ngIf="editMode">— ID: {{ item.taxId }}</span>
+    </div>
+    <div class="shopify-card__body">
+
+      <div class="shopify-grid-3">
+        <div>
+          <label class="shopify-field-label">Tax Name</label>
+          <input type="text" class="shopify-input" [(ngModel)]="item.name" placeholder="e.g., GST, VAT">
+        </div>
+        <div>
+          <label class="shopify-field-label">Tax Rate (%)</label>
+          <input type="number" class="shopify-input" [(ngModel)]="item.tax" step="0.01" placeholder="e.g., 18">
+        </div>
+        <div>
+          <label class="shopify-field-label">Tax Type</label>
+          <select class="shopify-input" [(ngModel)]="item.taxType">
+            <option value="">Select Type</option>
+            <option value="percentage">Percentage</option>
+            <option value="fixed">Fixed Amount</option>
+          </select>
+        </div>
+        <div>
+          <label class="shopify-field-label">State Code</label>
+          <input type="text" class="shopify-input" [(ngModel)]="item.stateCode" placeholder="e.g., CA, NY, TX">
+        </div>
+      </div>
+
+      <div class="shopify-actions-row mt-3">
+        <button class="btn-shopify btn-shopify--primary" (click)="save()" [disabled]="isSaving">
+          <span *ngIf="isSaving" class="spinner-border spinner-border-sm"></span>
+          <i *ngIf="!isSaving" class="bi bi-save"></i>
+          {{ isSaving ? 'Saving...' : 'Save' }}
+        </button>
+        <button class="btn-shopify btn-shopify--outline" (click)="goToList()">
+          <i class="bi bi-arrow-left"></i> Back to List
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

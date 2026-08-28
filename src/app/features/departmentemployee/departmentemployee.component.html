@@ -1,0 +1,151 @@
+<div class="shopify-main-container">
+
+  <!-- Filter row -->
+  <div class="shopify-search-row">
+    <div>
+      <label class="shopify-field-label" for="filterDeptId">Filter by Department</label>
+      <select class="shopify-select" id="filterDeptId" [(ngModel)]="filterDeptId" (change)="onFilterChange()">
+        <option value="">All Departments</option>
+        <option *ngFor="let d of departmentList" [value]="d.deptId">{{ d.deptName }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Actions row -->
+  <div class="shopify-actions-row">
+    <button type="button" class="btn-shopify btn-shopify--outline" (click)="onClearFilter()">
+      <i class="bi bi-x-circle"></i> Clear
+    </button>
+    <button type="button" class="btn-shopify btn-shopify--primary" (click)="openAddModal()">
+      <i class="bi bi-plus-circle"></i> Assign Employee
+    </button>
+  </div>
+
+  <!-- Empty state -->
+  <div class="shopify-empty" *ngIf="filteredList.length === 0">
+    <h5>No department employees found</h5>
+    <p>Assign an employee to a department to get started.</p>
+  </div>
+
+  <ng-container *ngIf="filteredList.length > 0">
+
+    <!-- Desktop table -->
+    <div class="shopify-table-wrap">
+      <table class="shopify-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Department</th>
+            <th>Employee</th>
+            <th>From Date</th>
+            <th>To Date</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let de of filteredList; let i = index">
+            <td class="fw-semibold">{{ i + 1 }}</td>
+            <td>{{ getDeptName(de.deptId) }}</td>
+            <td>{{ getEmpName(de.empId) }}</td>
+            <td>{{ de.fromDate | date:'dd MMM yyyy' }}</td>
+            <td>
+              <span class="shopify-badge" [ngClass]="de.toDate ? 'shopify-badge--muted' : 'shopify-badge--success'">
+                {{ de.toDate ? (de.toDate | date:'dd MMM yyyy') : 'Present' }}
+              </span>
+            </td>
+            <td>
+              <div class="shopify-table__actions">
+                <button class="btn-shopify btn-shopify--outline btn-shopify--icon" title="Edit" (click)="onEdit(de)">
+                  <i class="bi bi-pencil-fill"></i>
+                </button>
+                <button class="btn-shopify btn-shopify--danger btn-shopify--icon" title="Remove"
+                  (click)="onDelete(de.deptId, de.empId)">
+                  <i class="bi bi-trash-fill"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Mobile cards -->
+    <div class="shopify-mobile-list">
+      <div class="shopify-mobile-card" *ngFor="let de of filteredList">
+        <div class="shopify-mobile-card__row">
+          <div class="fw-bold">{{ getDeptName(de.deptId) }}</div>
+          <span class="shopify-badge" [ngClass]="de.toDate ? 'shopify-badge--muted' : 'shopify-badge--success'">
+            {{ de.toDate ? (de.toDate | date:'dd MMM yyyy') : 'Present' }}
+          </span>
+        </div>
+        <div class="shopify-mobile-card__field">
+          <span class="shopify-field-label--sm">Employee</span>
+          <span>{{ getEmpName(de.empId) }}</span>
+        </div>
+        <div class="shopify-mobile-card__field">
+          <span class="shopify-field-label--sm">From</span>
+          <span>{{ de.fromDate | date:'dd MMM yyyy' }}</span>
+        </div>
+        <div class="shopify-mobile-card__actions">
+          <button class="btn-shopify btn-shopify--outline btn-shopify--sm" (click)="onEdit(de)">
+            <i class="bi bi-pencil-fill"></i> Edit
+          </button>
+          <button class="btn-shopify btn-shopify--danger btn-shopify--sm" (click)="onDelete(de.deptId, de.empId)">
+            <i class="bi bi-trash-fill"></i> Remove
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </ng-container>
+</div>
+
+<!-- ============================================================
+     ASSIGN / EDIT EMPLOYEE MODAL
+     ============================================================ -->
+<ng-container *ngIf="showModal">
+  <div class="shopify-modal-backdrop" (click)="closeModal()"></div>
+  <div class="shopify-modal">
+    <div class="shopify-modal__dialog" style="max-width:520px;">
+      <div class="shopify-modal__header">
+        <h5 class="shopify-modal__title">
+          <i class="bi bi-people-fill me-2"></i>
+          {{ isEdit ? 'Edit' : 'Assign' }} Employee
+        </h5>
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+      <div class="shopify-modal__body">
+        <div class="shopify-grid-3">
+          <div class="shopify-grid-3__full" style="grid-column: 1 / -1;">
+            <label class="shopify-field-label">Department</label>
+            <select class="shopify-select" [(ngModel)]="formData.deptId" [disabled]="isEdit">
+              <option value="">Select Department</option>
+              <option *ngFor="let d of departmentList" [value]="d.deptId">{{ d.deptName }}</option>
+            </select>
+          </div>
+          <div class="shopify-grid-3__full" style="grid-column: 1 / -1;">
+            <label class="shopify-field-label">Employee</label>
+            <select class="shopify-select" [(ngModel)]="formData.empId">
+              <option value="">Select Employee</option>
+              <option *ngFor="let e of employeeList" [value]="e.empId">{{ e.firstName }} {{ e.lastName }}</option>
+            </select>
+          </div>
+          <div>
+            <label class="shopify-field-label">From Date</label>
+            <input type="date" class="shopify-input" [(ngModel)]="formData.fromDate">
+          </div>
+          <div>
+            <label class="shopify-field-label">To Date <span class="shopify-field-label--sm">(optional)</span></label>
+            <input type="date" class="shopify-input" [(ngModel)]="formData.toDate">
+          </div>
+        </div>
+      </div>
+      <div class="shopify-modal__footer">
+        <button class="btn-shopify btn-shopify--primary" (click)="onSave()">
+          <i class="bi bi-save-fill"></i> Save
+        </button>
+        <button class="btn-shopify btn-shopify--outline" (click)="closeModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</ng-container>

@@ -1,0 +1,341 @@
+<!-- ============================================================
+     ORDERS SCREEN — SHOPIFY THEME (Kitchen + List dual mode)
+     ============================================================ -->
+<div class="shopify-main-container">
+
+  <!-- Screen Mode Switch -->
+  <div class="shopify-card mb-3">
+    <div class="shopify-card__body">
+      <div class="shopify-actions-row" style="justify-content: space-between; flex-wrap: wrap;">
+
+        <div class="shopify-status-tabs">
+          <button type="button" class="btn-shopify btn-shopify--sm"
+            [ngClass]="viewMode === 'kitchen' ? 'btn-shopify--primary' : 'btn-shopify--outline'"
+            (click)="setViewMode('kitchen')">
+            <i class="bi bi-grid-3x3-gap"></i> Kitchen Board
+          </button>
+          <button type="button" class="btn-shopify btn-shopify--sm"
+            [ngClass]="viewMode === 'list' ? 'btn-shopify--primary' : 'btn-shopify--outline'"
+            (click)="setViewMode('list')">
+            <i class="bi bi-list-ul"></i> Order List
+          </button>
+        </div>
+
+        <!-- Order Source (only meaningful in List view) -->
+        <div class="d-flex align-items-end gap-2" *ngIf="viewMode === 'list'">
+          <div>
+            <label class="shopify-field-label">Source</label>
+            <div class="shopify-status-tabs">
+              <button type="button" class="btn-shopify btn-shopify--sm"
+                [ngClass]="orderSourceType === 'ONLINE' ? 'btn-shopify--primary' : 'btn-shopify--outline'"
+                (click)="onSourceChange('ONLINE')">ONLINE</button>
+              <button type="button" class="btn-shopify btn-shopify--sm"
+                [ngClass]="orderSourceType === 'POS' ? 'btn-shopify--primary' : 'btn-shopify--outline'"
+                (click)="onSourceChange('POS')">POS</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODE 1: KITCHEN BOARD
+       ============================================================ -->
+  <ng-container *ngIf="viewMode === 'kitchen'">
+
+    <!-- Toolbar -->
+    <div class="shopify-card mb-4">
+      <div class="shopify-card__body">
+        <div class="shopify-actions-row" style="justify-content: space-between; flex-wrap: wrap;">
+
+          <!-- Status Filter -->
+          <div>
+            <label class="shopify-field-label">Status</label>
+            <div class="shopify-status-tabs">
+              <button type="button" class="btn-shopify btn-shopify--sm"
+                [ngClass]="searchType === 1 ? 'btn-shopify--primary' : 'btn-shopify--outline'"
+                (click)="onSearchType(1)">NEW</button>
+              <button type="button" class="btn-shopify btn-shopify--sm"
+                [ngClass]="searchType === 2 ? 'btn-shopify--primary' : 'btn-shopify--outline'"
+                (click)="onSearchType(2)">PRINTED</button>
+              <button type="button" class="btn-shopify btn-shopify--sm"
+                [ngClass]="searchType === 3 ? 'btn-shopify--primary' : 'btn-shopify--outline'"
+                (click)="onSearchType(3)">CLOSED</button>
+            </div>
+          </div>
+
+          <!-- Order Type + Actions -->
+          <div class="d-flex flex-wrap align-items-end gap-2">
+            <div>
+              <label class="shopify-field-label" for="orderType">Order Type</label>
+              <select id="orderType" class="shopify-input" [(ngModel)]="selectedOrderType" (change)="loadOrders()">
+                <option value="DINEIN">DINEIN</option>
+                <option value="PICKUP">PICKUP</option>
+                <option value="DELIEVRY">DELIVERY</option>
+              </select>
+            </div>
+
+            <button class="btn-shopify btn-shopify--outline" (click)="loadOrders()">
+              <i class="bi bi-search"></i> Search
+            </button>
+
+            <button class="btn-shopify btn-shopify--danger" (click)="closeAllPrintedOrders()">
+              <i class="bi bi-x-circle"></i> Close All Orders
+            </button>
+
+            <button class="btn-shopify btn-shopify--outline btn-shopify--icon" title="Toggle view" *ngIf="orderViewList"
+              (click)="isListView = !isListView">
+              <i *ngIf="!isListView" class="bi bi-list-ul"></i>
+              <i *ngIf="isListView" class="bi bi-grid-3x3-gap"></i>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Loader -->
+    <div class="shopify-loading" *ngIf="spinnerDataLoad">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p>Loading orders...</p>
+    </div>
+
+    <ng-container *ngIf="!spinnerDataLoad">
+
+      <!-- Empty state -->
+      <div class="shopify-empty" *ngIf="orderViewList.length < 1">
+        <h5>No Orders in Kitchen</h5>
+        <p>There are no orders matching this filter right now.</p>
+      </div>
+
+      <ng-container *ngIf="orderViewList.length > 0">
+
+        <!-- Orders grid -->
+        <div class="shopify-order-grid" [ngClass]="isListView ? 'is-list' : 'is-grid'">
+
+          <div class="shopify-card shopify-order-card" *ngFor="let order of pagedOrderList; index as i"
+            (click)="goToDetail(order)" style="cursor: pointer;">
+
+            <!-- Timer badge (deliberately overlaps the card's top edge — kept outside the clipped inner wrapper) -->
+            <div class="shopify-order-timer" [ngClass]="getTimerClass(order.createdDate)">
+              ⏱ {{ getElapsedTime(order.createdDate) }}
+            </div>
+
+            <div class="shopify-order-card__inner">
+
+              <!-- Header -->
+              <div class="shopify-card__header shopify-order-card__header">
+                <span class="shopify-order-card__number">#{{ order.orderNumber ?? order.orderId }}</span>
+                <span class="shopify-badge" [ngClass]="{
+                    'shopify-badge--warning': order.orderStatus === 'NEW',
+                    'shopify-badge--info': order.orderStatus === 'PRINTED',
+                    'shopify-badge--success': order.orderStatus === 'CLOSED'
+                  }">
+                  {{ order.orderStatus }}
+                </span>
+              </div>
+
+              <!-- Body -->
+              <div class="shopify-card__body">
+
+                <!-- Meta -->
+                <div class="shopify-order-card__meta">
+                  <span><i class="bi bi-person"></i> {{ order.agentName }}</span>
+                  <span><i class="bi bi-clock"></i> {{ order.time }}</span>
+                  <span class="fw-bold">{{ order.pickupDinein }}</span>
+                </div>
+
+                <hr>
+
+                <!-- Items -->
+                <div class="shopify-order-items">
+                  <div class="shopify-order-item" *ngFor="let item of order.menuList">
+                    <div class="shopify-order-item__main">
+                      {{ item.quantity }} × {{ item.itemName }}
+                      <div *ngIf="item.notes" class="shopify-order-item__notes">
+                        📝 {{ item.notes }}
+                      </div>
+                    </div>
+                    <div *ngIf="item.attributes" class="shopify-badge shopify-badge--muted">
+                      {{ item.attributes }}
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Footer -->
+              <div class="shopify-order-card__footer">
+                <button class="btn-shopify btn-shopify--success w-100"
+                  (click)="closeSingleOrders(order.orderId); $event.stopPropagation()">
+                  <i class="bi bi-check-lg"></i> Complete Order
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Pagination (Shopify-style Previous / Next) -->
+        <div class="shopify-pager" *ngIf="totalPages > 1">
+          <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="p <= 1"
+            (click)="goToPage(p - 1)">
+            <i class="bi bi-chevron-left"></i> Previous
+          </button>
+          <span class="shopify-pager__info">Page {{ p }} of {{ totalPages }}</span>
+          <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="p >= totalPages"
+            (click)="goToPage(p + 1)">
+            Next <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+
+      </ng-container>
+    </ng-container>
+
+  </ng-container>
+
+  <!-- ============================================================
+       MODE 2: ORDER LIST (E-COMMERCE / SHOPIFY STYLE TABLE)
+       ============================================================ -->
+  <ng-container *ngIf="viewMode === 'list'">
+
+    <!-- Search row -->
+    <div class="shopify-card mb-4">
+      <div class="shopify-card__body">
+        <div class="shopify-search-row">
+          <div>
+            <label class="shopify-field-label" for="listSearch">Search</label>
+            <div class="shopify-input-group">
+              <span class="shopify-input-group__prefix"><i class="bi bi-search"></i></span>
+              <input type="text" class="shopify-input" placeholder="Order#, Customer..." id="listSearch"
+                [(ngModel)]="terms">
+            </div>
+          </div>
+          <div class="d-flex align-items-end">
+            <button class="btn-shopify btn-shopify--primary" (click)="loadOrders()">
+              <i class="bi bi-arrow-repeat"></i> Refresh
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loader -->
+    <div class="shopify-loading" *ngIf="spinnerDataLoad">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p>Loading orders...</p>
+    </div>
+
+    <ng-container *ngIf="!spinnerDataLoad">
+
+      <!-- Empty state -->
+      <div class="shopify-empty" *ngIf="filteredOrders.length === 0">
+        <h5>No orders found</h5>
+        <p>No orders match your search or filter.</p>
+      </div>
+
+      <ng-container *ngIf="filteredOrders.length > 0">
+
+        <!-- Desktop table -->
+        <div class="shopify-table-wrap">
+          <table class="shopify-table">
+            <thead>
+              <tr>
+                <th>Order#</th>
+                <th>Customer</th>
+                <th>Status</th>
+                <th>Type</th>
+                <th>Date</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let order of pagedOrderList" style="cursor: pointer;" (click)="goToDetail(order)">
+                <td>#{{ order.orderNumber ?? order.orderId }}</td>
+                <td>{{ order.agentName }}</td>
+                <td>
+                  <span class="shopify-badge" [ngClass]="{
+                      'shopify-badge--warning': order.orderStatus === 'NEW',
+                      'shopify-badge--info': order.orderStatus === 'PRINTED',
+                      'shopify-badge--success': order.orderStatus === 'CLOSED'
+                    }">
+                    {{ order.orderStatus }}
+                  </span>
+                </td>
+                <td>{{ order.pickupDinein }}</td>
+                <td>{{ order.createdDate | date: 'short' }}</td>
+                <td class="text-center">
+                  <button class="btn-shopify btn-shopify--outline btn-shopify--sm"
+                    (click)="goToDetail(order); $event.stopPropagation()">
+                    <i class="bi bi-eye"></i> View
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Mobile cards -->
+        <div class="shopify-mobile-list">
+          <div class="shopify-mobile-card" *ngFor="let order of pagedOrderList" (click)="goToDetail(order)">
+            <div class="shopify-mobile-card__row">
+              <span class="shopify-field-label--sm">Order#</span>
+              <span>#{{ order.orderNumber ?? order.orderId }}</span>
+            </div>
+            <div class="shopify-mobile-card__row">
+              <span class="shopify-field-label--sm">Customer</span>
+              <span>{{ order.agentName }}</span>
+            </div>
+            <div class="shopify-mobile-card__row">
+              <span class="shopify-field-label--sm">Status</span>
+              <span class="shopify-badge" [ngClass]="{
+                  'shopify-badge--warning': order.orderStatus === 'NEW',
+                  'shopify-badge--info': order.orderStatus === 'PRINTED',
+                  'shopify-badge--success': order.orderStatus === 'CLOSED'
+                }">
+                {{ order.orderStatus }}
+              </span>
+            </div>
+            <div class="shopify-mobile-card__row">
+              <span class="shopify-field-label--sm">Type</span>
+              <span>{{ order.pickupDinein }}</span>
+            </div>
+            <div class="shopify-mobile-card__row">
+              <span class="shopify-field-label--sm">Date</span>
+              <span>{{ order.createdDate | date: 'short' }}</span>
+            </div>
+            <div class="shopify-mobile-card__actions">
+              <button class="btn-shopify btn-shopify--outline btn-shopify--sm"
+                (click)="goToDetail(order); $event.stopPropagation()">
+                <i class="bi bi-eye"></i> View
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="shopify-pager" *ngIf="totalPages > 1">
+          <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="p <= 1"
+            (click)="goToPage(p - 1)">
+            <i class="bi bi-chevron-left"></i> Previous
+          </button>
+          <span class="shopify-pager__info">Page {{ p }} of {{ totalPages }}</span>
+          <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="p >= totalPages"
+            (click)="goToPage(p + 1)">
+            Next <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+
+      </ng-container>
+    </ng-container>
+
+  </ng-container>
+
+</div>

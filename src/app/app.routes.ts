@@ -29,7 +29,9 @@ import { ReceiveProductComponent } from './features/receive-product/receive-prod
 import { CatreportsComponent } from './features/reports/catreports/catreports.component';
 import { CommissionReportComponent } from './features/reports/commission-report/commission-report.component';
 import DailySaleReportComponent from './features/reports/daily-sale-report/daily-sale-report.component';
+import { InventoryReportComponent } from './features/reports/inventory-report/inventory-report.component';
 import { ReportsComponent } from './features/reports/reports.component';
+import { StockReportComponent } from './features/reports/stock-report/stock-report.component';
 import { Top10ReportsComponent } from './features/reports/top10-reports/top10-reports.component';
 import { StoreHoursComponent } from './features/store-hours/store-hours.component';
 import { SupplierComponent } from './features/supplier/supplier.component';
@@ -51,9 +53,26 @@ import { DepartmentsComponent } from './features/departments/departments.compone
 import { CashierShiftComponent } from './features/cashier-shift/cashier-shift.component';
 import { DeviceRegisterComponent } from './features/device-register/device-register.component';
 import { ErrorLogsComponent } from './features/error-logs/error-logs.component';
+import { DepartmentComponent } from './features/department/department.component';
+
+// --- NEWLY ADDED MISSING IMPORTS ---
+import { EmployeesComponent } from './features/employees/employees.component';
+import { ExpensesCategoryComponent } from './features/expenses-category/expenses-category.component';
+import { EzpzTaxComponent } from './features/ezpz-tax/ezpz-tax.component';
+import { PaymentComponent } from './features/payment/payment.component';
+import { OrderNumberComponent } from './features/ordernumber/ordernumber.component';
+import { DepartmentManagerComponent } from './features/departmentmanagers/departmentmanagers.component';
+import { BarcodeComponent } from './features/products/barcode/barcode.component';
+import { WarehouseComponent } from './features/warehouse/warehouse.component';
+import { DepartmentEmployeeComponent } from './features/departmentemployee/departmentemployee.component';
+import { SalaryComponent } from './features/salary/salary.component';
+import { OrdersPaymentComponent } from './features/orders-payment/orders-payment.component';
+import { OrderdetailComponent } from './features/orderdetail/orderdetail.component';
+import { OrdersComponent } from './features/orders/orders.component';
+
 
 export const routes: Routes = [
-       {
+    {
         path: '',
         component: LoginComponent
     },
@@ -71,7 +90,7 @@ export const routes: Routes = [
             {
                 path: 'home',
                 component: HomeComponent,
-                canActivate:[AuthGuard]
+                canActivate: [AuthGuard]
             },
             {
                 path: 'add-invoice',
@@ -93,7 +112,6 @@ export const routes: Routes = [
                 path: 'departments',
                 component: DepartmentsComponent
             },
-
             {
                 path: 'customer',
                 component: CustomerComponent
@@ -114,7 +132,10 @@ export const routes: Routes = [
                 path: 'adminuser',
                 component: AdminUserComponent
             },
-
+            {
+                path: 'departments',
+                component: DepartmentComponent
+            },
             {
                 path: 'import-products',
                 component: ImportProductsComponent
@@ -127,7 +148,6 @@ export const routes: Routes = [
                 path: 'invoice',
                 component: InvoiceComponent
             },
-           
             {
                 path: 'list-invoice',
                 component: ListInvoiceComponent
@@ -144,7 +164,6 @@ export const routes: Routes = [
                 path: 'notifications',
                 component: NotificationsComponent
             },
-
             {
                 path: 'product-add-without-image',
                 component: ProductAddWithoutImageComponent
@@ -165,11 +184,11 @@ export const routes: Routes = [
                 path: 'products-add',
                 component: ProductsAddComponent
             },
-             {
+            {
                 path: 'products-master-add',
                 component: ProductMasterAddComponent
             },
-             {
+            {
                 path: 'products-simple-add',
                 component: ProductSimpleAddComponent
             },
@@ -214,6 +233,14 @@ export const routes: Routes = [
                 component: ReportsComponent
             },
             {
+                path: 'inventory-report',
+                component: InventoryReportComponent
+            },
+            {
+                path: 'stock-report',
+                component: StockReportComponent
+            },
+            {
                 path: 'catreports',
                 component: CatreportsComponent
             },
@@ -241,7 +268,6 @@ export const routes: Routes = [
                 path: 'store-hours',
                 component: StoreHoursComponent
             },
-         
             {
                 path: 'supplier',
                 component: SupplierComponent
@@ -265,11 +291,59 @@ export const routes: Routes = [
             {
                 path: 'error-logs',
                 component: ErrorLogsComponent
-            }
-
+            },
+            {
+                path: 'employees',
+                component: EmployeesComponent
+            },
+            {
+                path: 'expense-category',
+                component: ExpensesCategoryComponent
+            },
+            {
+                path: 'ezpz-tax',
+                component: EzpzTaxComponent
+            },
+            {
+                path: 'payment',
+                component: PaymentComponent
+            },
+            {
+                path: 'order-number',
+                component: OrderNumberComponent
+            },
+            {
+                path: 'departmentmanager',
+                component: DepartmentManagerComponent
+            },
+            {
+                path: 'barcode',
+                component: BarcodeComponent
+            },
+            {
+                path: 'warehouse',
+                component: WarehouseComponent
+            },
+            {
+                path: 'departmentemployee',
+                component: DepartmentEmployeeComponent
+            },
+            { 
+                path: 'salary', 
+                component: SalaryComponent 
+            },
+             {
+                path: 'orderdetail',
+                component: OrderdetailComponent,  canActivate:[AuthGuard, ]
+            },
+            {
+                path: 'orders',
+                component: OrdersComponent, canActivate:[AuthGuard, ]
+            },
+            {
+                path: 'orders-payment',
+                component: OrdersPaymentComponent, canActivate:[AuthGuard, ]
+            },
         ]
-
-    },
-
+    }
 ];
-

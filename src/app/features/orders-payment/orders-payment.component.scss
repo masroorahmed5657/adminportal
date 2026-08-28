@@ -1,0 +1,23 @@
+@import "../../shared/shopify-theme.scss";
+
+/* ===== Paid / Not-paid row states ===== */
+.shopify-row--paid {
+  background-color: #e9f7ef !important;
+}
+
+.shopify-row--notpaid {
+  background-color: #fdecea !important;
+}
+
+.shopify-mobile-card.shopify-row--paid,
+.shopify-mobile-card.shopify-row--notpaid {
+  border-left: 4px solid transparent;
+}
+
+.shopify-mobile-card.shopify-row--paid {
+  border-left-color: #0f5132;
+}
+
+.shopify-mobile-card.shopify-row--notpaid {
+  border-left-color: #dc3545;
+}

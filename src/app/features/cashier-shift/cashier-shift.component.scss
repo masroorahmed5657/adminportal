@@ -1,36 +1,116 @@
+@import "../../shared/shopify-theme";
+
 /* cashier-shift.component.scss */
 
-.card {
-  border-radius: 18px;
+.shopify-card {
+  margin-bottom: 0;
 }
 
-.form-control,
-.form-select {
-  border-radius: 10px;
-}
-
-.btn {
-  border-radius: 10px;
-}
-
-.table td,
-.table th {
-  vertical-align: middle;
-}
-
-.badge {
-  font-size: 12px;
-  padding: 6px 10px;
+.shopify-actions-row {
+  justify-content: flex-end;
 }
 
 @media (max-width: 768px) {
-
-  .table {
+  .shopify-table {
     font-size: 13px;
   }
 
-  .btn {
+  .btn-shopify {
     font-size: 13px;
   }
+}
 
+/* ============================================================
+   PAGINATION
+   (same styling as customer.component.scss, for consistency)
+   ============================================================ */
+
+.shopify-pagination {
+  width: 100%;
+  min-height: 54px;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 12px 16px !important;
+  box-sizing: border-box;
+  text-align: center !important;
+}
+
+.shopify-pagination pagination-controls {
+  display: flex !important;
+  width: 100% !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.shopify-pagination ::ng-deep .ngx-pagination {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  list-style: none !important;
+  text-align: center !important;
+}
+
+.shopify-pagination ::ng-deep .ngx-pagination li {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.shopify-pagination ::ng-deep .ngx-pagination a,
+.shopify-pagination ::ng-deep .ngx-pagination button,
+.shopify-pagination ::ng-deep .ngx-pagination .current {
+  min-width: 30px !important;
+  height: 30px !important;
+  padding: 0 9px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1px solid #dfe3e8 !important;
+  border-radius: 6px !important;
+  background: #fff !important;
+  color: #202223 !important;
+  font-size: 12px !important;
+  text-decoration: none !important;
+  box-sizing: border-box !important;
+}
+
+.shopify-pagination ::ng-deep .ngx-pagination .current {
+  background: #202223 !important;
+  border-color: #202223 !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+}
+
+.shopify-pagination ::ng-deep .ngx-pagination a:hover {
+  background: #f6f6f7 !important;
+  color: #202223 !important;
+}
+
+.shopify-pagination ::ng-deep .ngx-pagination .disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+@media (max-width: 768px) {
+  .shopify-pagination {
+    padding: 12px 0 !important;
+  }
+
+  .shopify-pagination ::ng-deep .ngx-pagination {
+    flex-wrap: wrap !important;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .shopify-pagination ::ng-deep .ngx-pagination a,
+  .shopify-pagination ::ng-deep .ngx-pagination button,
+  .shopify-pagination ::ng-deep .ngx-pagination .current {
+    min-width: 28px !important;
+    height: 28px !important;
+    font-size: 11px !important;
+  }
 }

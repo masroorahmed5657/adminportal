@@ -1,79 +1,41 @@
-<!-- <div class="row g-0"> -->
-<!-- Main Content -->
-<!-- Action Buttons -->
+<div class="shopify-page">
 
-<!-- Action Buttons Ends -->
-<div class="card border-2 shadow-sm mt-4">
-    <div class="card-body p-3">
+    <!-- Page Header -->
+    <div class="shopify-page__header">
+        <!-- <h1 class="shopify-page__title"></h1> -->
 
-        <div class="row g-3">
+        <div class="shopify-page__actions">
+            <label for="documents" class="btn-shopify btn-shopify--outline">
+                Upload
+            </label>
+            <input type="file" id="documents" class="d-none" accept=".xlsx,.xls,.csv" (change)="uploadItems($event)">
 
-            <!-- Add Product -->
-            <div class="col-12 col-sm-6 col-lg-2">
-                <button class="btn btn-info d-flex align-items-center justify-content-center gap-2 "
-                    [disabled]="spinnerDataLoad" (click)="onAddProduct()">
-                    <!-- <fa-icon [icon]="faPlusSquare"></fa-icon> -->
-                    <!-- <span> -->
-                    Add Product
-                    <!-- </span> -->
-                </button>
-            </div>
+            <label for="bulkUpload" class="btn-shopify btn-shopify--outline">
+                Bulk Update
+            </label>
+            <input type="file" id="bulkUpload" class="d-none" accept=".xls,.csv" (change)="bulkUpdate($event)">
 
-            <!-- Upload -->
-            <div class="col-12 col-sm-6 col-lg-2">
-                <label for="documents" class="btn btn-primary d-flex align-items-center justify-content-center gap-2 ">
-                    <!-- <fa-icon [icon]="faUpload"></fa-icon> -->
-                    <!-- <span> -->
-                    Upload
-                    <!-- </span> -->
-                </label>
-                <input type="file" id="documents" class="d-none" accept=".xlsx,.xls,.csv" (change)="uploadItems($event)">
-            </div>
+            <button class="btn-shopify btn-shopify--outline" [disabled]="spinnerDataLoad" (click)="generateBarcode()">
+                Generate Barcode
+            </button>
 
-            <!-- Bulk Update -->
-            <div class="col-12 col-sm-6 col-lg-2">
-                <label for="bulkUpload" class="btn btn-primary d-flex align-items-center justify-content-center gap-2">
-                    Bulk Update
-                </label>
-                <input type="file" id="bulkUpload" class="d-none" accept=".xls,.csv" (change)="bulkUpdate($event)">
-            </div>
+            <button class="btn-shopify btn-shopify--outline" [disabled]="spinnerDataLoad" (click)="printBarCode()">
+                Print Barcode
+            </button>
 
-            <!-- Generate Barcode -->
-            <div class="col-12 col-sm-6 col-lg-2">
-                <button class="btn btn-danger d-flex align-items-center justify-content-center gap-2"
-                    [disabled]="spinnerDataLoad" (click)="generateBarcode()">
-                    <!-- <fa-icon [icon]="faBarcode"></fa-icon> -->
-                    <!-- <span> -->
-                    Generate Barcode
-                    <!-- </span> -->
-                </button>
-            </div>
-
-            <!-- Print Barcode -->
-            <div class="col-12 col-sm-6 col-lg-2">
-                <button class="btn btn-warning d-flex align-items-center justify-content-center gap-2"
-                    [disabled]="spinnerDataLoad" (click)="printBarCode()">
-                    <!-- <fa-icon [icon]="faPrint"></fa-icon> -->
-                    <!-- <span> -->
-                    Print Barcode
-                    <!-- </span> -->
-                </button>
-            </div>
-
+            <button class="btn-shopify btn-shopify--primary" [disabled]="spinnerDataLoad" (click)="onAddProduct()">
+                Add product
+            </button>
         </div>
-
     </div>
-</div>
 
-<div class="card border-2 shadow-sm mb-4">
-    <div class="card-body p-3">
+    <!-- Filter / Search Bar -->
+    <div class="shopify-card shopify-filterbar">
+        <div class="shopify-filterbar__row">
 
-        <div class="row g-3">
-
-            <!-- Category -->
-            <div class="col-12 col-sm-6 col-lg-3">
-                <label class="form-label fw-semibold">Category</label>
-                <select [(ngModel)]="selectedCategory" class="form-select" (ngModelChange)="categoryChange()">
+            <div class="shopify-filterbar__item">
+                <label class="shopify-filterbar__label">Category</label>
+                <select [(ngModel)]="selectedCategory" class="shopify-select" (ngModelChange)="categoryChange()">
                     <option value="">All</option>
                     <option *ngFor="let category of categoryList" [value]="category.categoryId">
                         {{ category.category }} - {{ category.subCategory }}
@@ -81,183 +43,171 @@
                 </select>
             </div>
 
-            <!-- Barcode Search -->
-            <div class="col-12 col-sm-6 col-lg-3">
-                <label class="form-label fw-semibold">Barcode</label>
-                <input type="text" class="form-control" placeholder="Search by Barcode" [(ngModel)]="searchUPC"
+            <div class="shopify-filterbar__item">
+                <label class="shopify-filterbar__label">Barcode</label>
+                <input type="text" class="shopify-input" placeholder="Search by barcode" [(ngModel)]="searchUPC"
                     (ngModelChange)="productSearch()">
             </div>
 
-            <!-- SKU Search -->
-            <div class="col-12 col-sm-6 col-lg-3">
-                <label class="form-label fw-semibold">SKU</label>
-                <input type="text" class="form-control" placeholder="Search by SKU" [(ngModel)]="searchSKU"
+            <div class="shopify-filterbar__item">
+                <label class="shopify-filterbar__label">SKU</label>
+                <input type="text" class="shopify-input" placeholder="Search by SKU" [(ngModel)]="searchSKU"
                     (ngModelChange)="productSearch()">
             </div>
 
-            <!-- Name Search -->
-            <div class="col-12 col-sm-6 col-lg-3">
-                <label class="form-label fw-semibold">Product Name</label>
-                <input type="text" class="form-control" placeholder="Search by Product" [(ngModel)]="searchName"
+            <div class="shopify-filterbar__item">
+                <label class="shopify-filterbar__label">Product name</label>
+                <input type="text" class="shopify-input" placeholder="Search by product" [(ngModel)]="searchName"
                     (ngModelChange)="productSearch()">
             </div>
 
-            <!-- Price Search -->
-            <div class="col-12 col-sm-6 col-lg-3">
-                <label class="form-label fw-semibold">Price</label>
-                <input type="number" class="form-control" placeholder="Search by Price" [(ngModel)]="searchPrice"
+            <div class="shopify-filterbar__item">
+                <label class="shopify-filterbar__label">Price</label>
+                <input type="number" class="shopify-input" placeholder="Search by price" [(ngModel)]="searchPrice"
                     (ngModelChange)="productSearch()">
             </div>
 
         </div>
-
     </div>
-</div>
 
-
-<!-- Filters and Search -->
-<!-- <div class="card border border-2 shadow-sm mb-4">
-    <div class="card-body">
-        <div class="row g-3 align-items-end">
-            <div class="col-6 col-md-3">
-                <label class="form-label">Category</label>
-                <select [(ngModel)]="selectedCategory" class="form-select" (ngModelChange)="categoryChange()">
-                    <option value="" selected>All</option>
-                    <option *ngFor="let category of categoryList" [value]="category.categoryId">
-                        {{category.category}}-{{category.subCategory}}
-                    </option>
-                </select>
-            </div>
-            <div class="col-6 col-md-3">
-                <label class="form-label">Barcode Search</label>
-                <input type="text" class="form-control" placeholder="Search by Barcode" [(ngModel)]="searchUPC"
-                    (ngModelChange)="productSearch()">
-            </div>
-            <div class="col-6 col-md-3">
-                <label class="form-label">SKU Search</label>
-                <input type="text" class="form-control" placeholder="Search by SKU" [(ngModel)]="searchSKU"
-                    (ngModelChange)="productSearch()">
-            </div>
-            <div class="col-6 col-md-3">
-                <label class="form-label">Name Search</label>
-                <input type="text" class="form-control" placeholder="Search by Product" [(ngModel)]="searchName"
-                    (ngModelChange)="productSearch()">
-            </div>
-            <div class="col-6 col-md-3">
-                <label class="form-label">Price Search</label>
-                <input type="number" class="form-control" placeholder="Search by Price" [(ngModel)]="searchPrice"
-                    (ngModelChange)="productSearch()">
-            </div>
+    <!-- Loading Spinner -->
+    <div class="shopify-loading" *ngIf="spinnerDataLoad">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
         </div>
+        <p>Loading Products...</p>
     </div>
-</div> -->
 
-<!-- Loading Spinner -->
-<div class="text-center my-5" *ngIf="spinnerDataLoad">
-    <div class="spinner-border" role="status">
-        <span class="visually-hidden">Loading...</span>
-    </div>
-    <p class="mt-2 text-muted">Loading Products...</p>
-</div>
+    <!-- ============ CARD / GRID VIEW ============ -->
+    <div class="shopify-grid" *ngIf="!showProductsList && !spinnerDataLoad">
+        <div class="shopify-product-card"
+            *ngFor="let product of productViewList | paginate: { itemsPerPage: pageSize, currentPage: pageNo, totalItems: productTotalNumber }"
+            (click)="onEditProduct(product)">
 
-<!-- Card View -->
-<div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4" *ngIf="!showProductsList && !spinnerDataLoad">
-    <!-- *ngIf="!showProductsList && !spinnerDataLoad"> -->
-    <div class="col" *ngFor="let product of productViewList | paginate: { itemsPerPage: pageSize, currentPage: pageNo, totalItems: productTotalNumber };">
-        <div class="card h-100 shadow-sm" style="cursor: pointer;" (click)="onEditProduct(product)">
-            <img class="card-img-top" src='data:{{product.imageMimeType}};base64,{{product.productImage}}'
-                alt="{{product.productName}}">
-            <div class="card-body">
-                <h5 class="card-title text-truncate">{{product.productName}}</h5>
-                <p class="card-text text-muted">{{product.sku}}</p>
-                <p class="card-text text-danger fw-bold" *ngIf="lowInventoryFlag && product.quantity < 10">
-                    Qty: {{product.quantity}}
-                </p>
-                <p class="card-text fw-bold text-primary">
-                    <fa-icon [icon]="faDollar"></fa-icon> {{product.unitPrice }}
+            <div class="shopify-product-card__image-wrap">
+                <img class="shopify-product-card__image"
+                    src='data:{{product.imageMimeType}};base64,{{product.productImage}}' alt="{{product.productName}}">
+
+                <span class="shopify-badge shopify-badge--danger" *ngIf="lowInventoryFlag && product.quantity < 10">
+                    Low stock: {{product.quantity}}
+                </span>
+            </div>
+
+            <div class="shopify-product-card__body">
+                <h6 class="shopify-product-card__title">{{product.productName}}</h6>
+                <p class="shopify-product-card__sku">{{product.sku}}</p>
+                <p class="shopify-product-card__price">
+                    <fa-icon [icon]="faDollar"></fa-icon> {{product.unitPrice}}
                 </p>
             </div>
         </div>
-    </div>
-    <div class="mt-4 d-flex justify-content-center">
-                    <pagination-controls (pageChange)="pageNo = $event; onPageChange($event)" class="pagination-sm">
-                    </pagination-controls>
 
-        <!-- <pagination-controls (pageChange)="p = $event" class="pagination-sm"></pagination-controls> -->
+        <div class="shopify-pagination">
+            <pagination-template #p="paginationApi" (pageChange)="pageNo = $event; onPageChange($event)">
+                <div class="shopify-pager">
+                    <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="p.isFirstPage()"
+                        (click)="p.previous()">
+                        <i class="bi bi-chevron-left"></i> Previous
+                    </button>
+                    <span class="shopify-pager__info">Page {{ p.getCurrent() }} of {{ p.getLastPage() }}</span>
+                    <button class="btn-shopify btn-shopify--outline btn-shopify--sm" [disabled]="p.isLastPage()"
+                        (click)="p.next()">
+                        Next <i class="bi bi-chevron-right"></i>
+                    </button>
+                </div>
+            </pagination-template>
+        </div>
     </div>
-</div>
-productTotalNumber: {{productTotalNumber}}
-<!-- Table View -->
-<div class="card border border-2 shadow-sm" *ngIf="showProductsList && !spinnerDataLoad">
-    <div class="card-body p-0">
+
+    <!-- ============ TABLE VIEW ============ -->
+    <div class="shopify-card shopify-table-wrap" *ngIf="showProductsList && !spinnerDataLoad">
         <div class="table-responsive">
-            <table class="table table-hover table-bordered mb-0" sortField="productId">
+            <table class="shopify-table" sortField="productId">
                 <thead>
                     <tr>
-                        <th pSortableColumn="productId" scope="col" style="width: 7%; min-width: 80px;">ID
-
+                        <th pSortableColumn="productId">ID</th>
+                        <th>
+                            <span class="shopify-table__sort" (click)="sort('productName')">Product</span>
                         </th>
-                        <th scope="col" style="width: 15%; min-width: 200px;"><u style="cursor: pointer;"
-                                (click)="sort('productName')">Item</u>
-                            <!-- <fa-icon [icon]="faSortAlphaUp"></fa-icon>     -->
+                        <th>Barcode</th>
+                        <th>SKU</th>
+                        <th>
+                            <span class="shopify-table__sort" (click)="sort('quantity')">Inventory</span>
                         </th>
-                        <th scope="col" style="width: 12%; min-width: 100px;">BarCode</th>
-                        <th scope="col" style="width: 12%; min-width: 200px;">SKU</th>
-                        <th scope="col" style="width: 10%; min-width: 100px;"><u style="cursor: pointer;"
-                                (click)="sort('quantity')">Qty</u></th>
-                        <th scope="col" style="width: 10%; min-width: 100px;"><u style="cursor: pointer;"
-                                (click)="sort('purchasePrice')">Purchase</u></th>
-                        <th scope="col" style="width: 10%; min-width: 100px;"><u style="cursor: pointer;"
-                                (click)="sort('salePrice')">Sale Price</u></th>
-                        <th scope="col" style="width: 8%; min-width: 80px;">Tax%</th>
-                        <th scope="col" style="width: 10%; min-width: 150px;"><u style="cursor: pointer;"
-                                (click)="sort('brandCode')">Brand</u></th>
-                        <th scope="col" style="width: 10%; min-width: 100px;"><u style="cursor: pointer;"
-                                (click)="sort('category')">Category</u></th>
-                        <th scope="col" style="width: 13%; min-width: 140px;" class="text-center">Actions</th>
+                        <th>
+                            <span class="shopify-table__sort" (click)="sort('purchasePrice')">Purchase</span>
+                        </th>
+                        <th>
+                            <span class="shopify-table__sort" (click)="sort('salePrice')">Sale price</span>
+                        </th>
+                        <th>Tax %</th>
+                        <th>
+                            <span class="shopify-table__sort" (click)="sort('brandCode')">Vendor</span>
+                        </th>
+                        <th>
+                            <span class="shopify-table__sort" (click)="sort('category')">Category</span>
+                        </th>
+                        <th class="text-center">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr *ngIf="productNotFound">
-                        <td colspan="10" class="text-center text-danger">
-                            Product not found
-                        </td>
+                        <td colspan="11" class="text-center text-danger">Product not found</td>
                     </tr>
+
                     <tr
                         *ngFor="let product of productViewList | paginate: { itemsPerPage: pageSize, currentPage: pageNo, totalItems: productTotalNumber }; let row = index">
+
                         <td>{{product.productId}}</td>
-                        <td>{{product.productName}}</td>
+
+                        <td>
+                            <div class="shopify-table__product">
+                                <span class="shopify-table__product-name">{{product.productName}}</span>
+                            </div>
+                        </td>
+
                         <td>{{product.upc}}</td>
                         <td>{{product.sku}}</td>
+
                         <td>
-                            <input type="number" class="form-control" [(ngModel)]="product.quantity"
+                            <input type="number" class="shopify-input shopify-input--table"
+                                [(ngModel)]="product.quantity" [disabled]="!enabledEdit[row]">
+                            <span class="shopify-badge shopify-badge--success"
+                                *ngIf="!(lowInventoryFlag && product.quantity < 10)">In stock</span>
+                            <span class="shopify-badge shopify-badge--danger"
+                                *ngIf="lowInventoryFlag && product.quantity < 10">Low stock</span>
+                        </td>
+
+                        <td>
+                            <input type="number" class="shopify-input shopify-input--table"
+                                [(ngModel)]="product.purchasePrice" [disabled]="!enabledEdit[row]">
+                        </td>
+
+                        <td>
+                            <input type="number" class="shopify-input shopify-input--table"
+                                [(ngModel)]="product.salePrice" [disabled]="!enabledEdit[row]">
+                        </td>
+
+                        <td>
+                            <input type="number" class="shopify-input shopify-input--table" [(ngModel)]="product.tax"
                                 [disabled]="!enabledEdit[row]">
                         </td>
-                        <td>
-                            <input type="number" class="form-control" [(ngModel)]="product.purchasePrice"
-                                [disabled]="!enabledEdit[row]">
-                        </td>
-                        <td>
-                            <input type="number" class="form-control" [(ngModel)]="product.salePrice"
-                                [disabled]="!enabledEdit[row]">
-                        </td>
-                        <td>
-                            <input type="number" class="form-control" [(ngModel)]="product.tax"
-                                [disabled]="!enabledEdit[row]">
-                        </td>
+
                         <td>{{product.brandCode}}</td>
                         <td>{{product.category}}</td>
+
                         <td class="text-center">
-                            <div class="btn-group" role="group">
-                                <button *ngIf="!enabledEdit[row]" class="btn btn-primary me-1" (click)="startEdit(row)">
+                            <div class="shopify-table__actions">
+                                <button *ngIf="!enabledEdit[row]" class="shopify-icon-btn" (click)="startEdit(row)"
+                                    title="Edit">
                                     <i class="bi bi-pencil"></i>
                                 </button>
-                                <button *ngIf="enabledEdit[row]" class="btn btn-success me-1"
-                                    (click)="onSave(product.productId, row)">
+                                <button *ngIf="enabledEdit[row]" class="shopify-icon-btn shopify-icon-btn--success"
+                                    (click)="onSave(product.productId, row)" title="Save">
                                     <i class="bi bi-check"></i>
                                 </button>
-
-                                <button class="btn btn-danger btn-md" (click)="onDelete(product.productId, row)">
+                                <button class="shopify-icon-btn shopify-icon-btn--danger"
+                                    (click)="onDelete(product.productId, row)" title="Delete">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </div>
@@ -266,76 +216,194 @@ productTotalNumber: {{productTotalNumber}}
                 </tbody>
             </table>
         </div>
-        <div class="card-footer bg-white text-center border-0">
+
+        <div class="shopify-table-wrap__footer">
+            <span class="shopify-table-wrap__count">Total products: {{productTotalNumber}}</span>
             <pagination-controls (pageChange)="pageNo = $event; onPageChange($event)" class="pagination-sm">
             </pagination-controls>
         </div>
     </div>
-</div>
 
-<!-- Barcode Print Modal -->
-<div class="modal fade" [ngClass]="{'show d-block': modalOpen}" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content shadow-lg">
-            <div class="modal-header">
-                <h5 class="modal-title">Print Barcodes</h5>
-                <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row row-cols-1 row-cols-md-3 g-3">
-                    <div class="col" *ngFor="let product of productViewList; let i=index">
-                        <div class="card h-100 text-center">
-                            <div class="card-body">
-                                <h6 class="card-title text-truncate">{{product.productName}}</h6>
+    <!-- Barcode Print Modal -->
+    <div class="modal fade" [ngClass]="{'show d-block': modalOpen}" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content shopify-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title">Print Barcodes</h5>
+                    <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <!-- Printer Type Selector -->
+                    <div class="d-flex align-items-center mb-3 gap-2">
+                        <label class="fw-bold mb-0">Printer Type:</label>
+                        <select class="shopify-select" style="width:auto;" [(ngModel)]="printerMode">
+                            <option value="normal">Normal Printer (A4 Sheet)</option>
+                            <option value="barcode">Barcode Machine (Thermal Label Printer)</option>
+                        </select>
+                    </div>
+
+                    <!-- Columns per row selector (Only for Normal Printer) -->
+                    <!-- Columns per row selector (Only for Normal Printer) -->
+                    <div class="d-flex flex-wrap align-items-center mb-3 gap-3" *ngIf="printerMode === 'normal'">
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="fw-bold mb-0">Barcodes per row:</label>
+                            <select class="shopify-select" style="width:auto;" [(ngModel)]="printColumns">
+                                <option [value]="2">2</option>
+                                <option [value]="3">3</option>
+                                <option [value]="4">4</option>
+                                <option [value]="5">5</option>
+                            </select>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="fw-bold mb-0">Label Width (mm):</label>
+                            <input type="number" class="shopify-input" style="width:70px;"
+                                [(ngModel)]="normalLabelWidthMM">
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="fw-bold mb-0">Label Height (mm):</label>
+                            <input type="number" class="shopify-input" style="width:70px;"
+                                [(ngModel)]="normalLabelHeightMM">
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="fw-bold mb-0">Column Gap (mm):</label>
+                            <input type="number" class="shopify-input" style="width:70px;" [(ngModel)]="normalColGapMM">
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="fw-bold mb-0">Row Gap (mm):</label>
+                            <input type="number" class="shopify-input" style="width:70px;" [(ngModel)]="normalRowGapMM">
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="fw-bold mb-0">Top Margin (mm):</label>
+                            <input type="number" class="shopify-input" style="width:70px;"
+                                [(ngModel)]="normalTopMarginMM">
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="fw-bold mb-0">Left Margin (mm):</label>
+                            <input type="number" class="shopify-input" style="width:70px;"
+                                [(ngModel)]="normalLeftMarginMM">
+                        </div>
+                    </div>
+                    <div class="mb-2" *ngIf="printerMode === 'normal'">
+                        <small class="text-muted">
+                            Tip: Pehli baar print karne se pehle apni sticker sheet ko scale se naap lein
+                            (ek label ki width/height + do labels ke darmiyan gap + sheet ke top-left se
+                            pehle label tak ka margin) aur upar wale boxes mein wahi values daal dein.
+                            Print dialog mein "Actual Size / 100%" aur margins "None" select karein.
+                        </small>
+                    </div>
+
+                    <!-- Label size (Only for Barcode Machine) -->
+                    <div class="d-flex flex-wrap align-items-center mb-3 gap-3" *ngIf="printerMode === 'barcode'">
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="fw-bold mb-0">Label Width (mm):</label>
+                            <input type="number" class="shopify-input" style="width:80px;" [(ngModel)]="labelWidthMM">
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="fw-bold mb-0">Label Height (mm):</label>
+                            <input type="number" class="shopify-input" style="width:80px;" [(ngModel)]="labelHeightMM">
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="fw-bold mb-0">Labels per row:</label>
+                            <input type="number" class="shopify-input" style="width:70px;" [(ngModel)]="labelsPerRow"
+                                min="1">
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="fw-bold mb-0">Gap between labels (mm):</label>
+                            <input type="number" class="shopify-input" style="width:70px;" [(ngModel)]="labelGapMM"
+                                min="0">
+                        </div>
+                    </div>
+                    <div class="mb-2" *ngIf="printerMode === 'barcode'">
+                        <small class="text-muted">
+                            Tip: "Labels per row" wahi number hona chahiye jitne label physically ek row mein
+                            aap ki machine se saath print hote hain (roll ke hisaab se, jaisa screenshot mein 3 the).
+                        </small>
+                    </div>
+
+                    <!-- Preview grid: Normal Printer Mode -->
+                    <div class="d-grid" *ngIf="printerMode === 'normal'"
+                        [style.grid-template-columns]="'repeat(' + printColumns + ', 1fr)'" style="gap: 12px;">
+                        <div *ngFor="let product of productViewList; let i=index">
+                            <div class="shopify-card text-center p-3">
+                                <h6 class="text-truncate mb-2">{{product.productName}}</h6>
                                 <img src='data:image/png;base64,{{product.firstImage}}' class="img-fluid" alt="Barcode">
-                                <p class="card-text">{{product.upc}}</p>
-                                <p class="card-text fw-bold">Rs. {{product.salePrice | number:'1.2-2'}}</p>
+                                <p class="mb-1 mt-2">{{product.upc}}</p>
+                                <p class="fw-bold mb-1">Rs. {{product.salePrice | number:'1.2-2'}}</p>
                                 <small class="text-muted">GST Included</small>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" (click)="htmlToPrintBarcode()">Print</button>
-                <button type="button" class="btn btn-primary" (click)="modalOpen = false">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Name Search Modal -->
-<div class="modal fade" [ngClass]="{'show d-block': nameSearchModal}" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content shadow-lg">
-            <div class="modal-header">
-                <h5 class="modal-title">Price Check</h5>
-                <button type="button" class="btn-close" (click)="closeNameSearchModal()" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover">
-                        <thead>
-                            <tr>
-                                <th scope="col">SNo.</th>
-                                <th scope="col">Name</th>
-                                <th scope="col">Price</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let product of productViewList; let i=index" style="cursor: pointer;">
-                                <td>{{i+1}}</td>
-                                <td>{{product.productName}}</td>
-                                <td>{{product.salePrice | currency}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <!-- Preview: Barcode Machine Mode (wraps into rows matching physical stock via container width) -->
+                    <div *ngIf="printerMode === 'barcode'" class="p-2" style="background:#eee;">
+                        <div class="d-flex flex-wrap" style="gap: {{labelGapMM}}mm;"
+                            [style.width.mm]="(labelWidthMM * labelsPerRow) + (labelGapMM * (labelsPerRow - 1))">
+                            <div *ngFor="let product of productViewList; let i=index" class="text-center bg-white mb-2"
+                                style="border:1px solid #ccc; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; flex-shrink:0;"
+                                [style.width.mm]="labelWidthMM" [style.height.mm]="labelHeightMM">
+                                <p class="mb-0"
+                                    style="font-size:10px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:95%;">
+                                    {{product.productName}} ({{product.sku}})
+                                </p>
+                                <img src='data:image/png;base64,{{product.firstImage}}'
+                                    style="max-width:90%; height:auto;" alt="Barcode">
+                                <p class="mb-0 fw-bold" style="font-size:12px;">{{product.upc}}</p>
+                                <p class="mb-0 fw-bold" style="font-size:11px;">Rs. {{product.salePrice |
+                                    number:'1.2-2'}}</p>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" (click)="nameSearchModal = false">Close</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn-shopify btn-shopify--outline"
+                        (click)="printerMode === 'barcode' ? printForBarcodeMachine() : htmlToPrintBarcode()">
+                        Print
+                    </button>
+                    <button type="button" class="btn-shopify btn-shopify--primary"
+                        (click)="modalOpen = false">Close</button>
+                </div>
             </div>
         </div>
     </div>
+
+
+    <!-- Name Search Modal -->
+    <div class="modal fade" [ngClass]="{'show d-block': nameSearchModal}" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content shopify-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title">Price Check</h5>
+                    <button type="button" class="btn-close" (click)="closeNameSearchModal()"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="shopify-table">
+                            <thead>
+                                <tr>
+                                    <th>SNo.</th>
+                                    <th>Name</th>
+                                    <th>Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let product of productViewList; let i=index">
+                                    <td>{{i+1}}</td>
+                                    <td>{{product.productName}}</td>
+                                    <td>{{product.salePrice | currency}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-shopify btn-shopify--primary"
+                        (click)="nameSearchModal = false">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
-<!-- </div> -->

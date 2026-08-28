@@ -1,403 +1,363 @@
-<!-- Sticky Action Bar -->
-<div class="sticky-actions " style="margin-top: 4rem;">
-    <div class="container">
-        <div class="d-flex flex-wrap gap-2 align-items-center">
-            <h4 class="mb-0 me-auto">
-                Add Product
-            </h4>
+<!-- Top Header Bar (Shopify style) -->
+<div class="shopify-topbar">
+    <div class="shopify-topbar__inner">
+        <div class="shopify-topbar__breadcrumb">
+            <i class="bi bi-arrow-left" (click)="backToList()" style="cursor:pointer;"></i>
+            <span (click)="backToList()" style="cursor:pointer;">Products</span>
+            <span class="shopify-topbar__sep">/</span>
+            <span class="shopify-topbar__current">Add product</span>
+        </div>
 
-            <button type="button" class="btn btn-success" (click)="onSubmit()">
-                <i class="bi bi-save"></i> Save
-            </button>
-            <button type="button" class="btn btn-primary" (click)="backToList()">
-                <i class="bi bi-arrow-left"></i> Back to List
-            </button>
-            <button type="button" class="btn btn-secondary" (click)="addBrand()">
+        <div class="shopify-topbar__actions">
+            <button type="button" class="btn-shopify btn-shopify--outline" (click)="addBrand()">
                 Brand
             </button>
-            <button type="button" class="btn btn-secondary" (click)="addCategory()">
+            <button type="button" class="btn-shopify btn-shopify--outline" (click)="addCategory()">
                 Category
             </button>
-
+            <button type="button" class="btn-shopify btn-shopify--outline" (click)="backToList()">
+                Discard
+            </button>
+            <button type="button" class="btn-shopify btn-shopify--primary" (click)="onSubmit()">
+                Save
+            </button>
         </div>
     </div>
 </div>
+
 <!-- ************************************************************************************************** -->
 
-<div class="container-fluid">
-    <div class="row">
-    <div *ngIf="brandFlag">
-        <button class="btn btn-lg" (click)="closeBrand()">X Close</button>
-      <app-brands #brandComp (brandSaved)="onBrandSaved()"></app-brands>
+<div class="shopify-add-product">
+
+    <div *ngIf="brandFlag" class="shopify-overlay-panel">
+        <button class="btn-shopify btn-shopify--outline mb-2" (click)="closeBrand()">✕ Close</button>
+        <app-brands #brandComp (brandSaved)="onBrandSaved()"></app-brands>
     </div>
 
-    <div *ngIf="categoryFlag">
-        <button class="btn btn-lg" (click)="closeCategory()">X Close</button>
-      <app-category #categoryComp (categorySaved)="onCategorySaved()"></app-category>
+    <div *ngIf="categoryFlag" class="shopify-overlay-panel">
+        <button class="btn-shopify btn-shopify--outline mb-2" (click)="closeCategory()">✕ Close</button>
+        <app-category #categoryComp (categorySaved)="onCategorySaved()"></app-category>
     </div>
 
-        <!-- <div class="container my-4"> -->
+    <form [formGroup]="productForm">
+        <div class="shopify-add-product__grid">
 
-        <form [formGroup]="productForm">
+            <!-- ============ MAIN (LEFT) COLUMN ============ -->
+            <div class="shopify-add-product__main">
 
-            <!-- ====================== BASIC INFORMATION ====================== -->
-            <h5 class="section-title">Basic Information</h5>
-            <div class="card shadow-sm mb-4">
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <label class="form-label">Product Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" formControlName="productName"
-                                [ngClass]="{ 'is-invalid': submitted && f['productName'].errors }">
-                            <div *ngIf="submitted && f['productName'].errors?.['required']" class="invalid-feedback">
-                                Product Name is required
+                <!-- Title & Description -->
+                <div class="shopify-card">
+                    <div class="shopify-card__body">
+                        <label class="shopify-field-label">Product Name <span class="text-danger">*</span></label>
+                        <input type="text" class="shopify-input" formControlName="productName"
+                            [ngClass]="{ 'is-invalid': submitted && f['productName'].errors }">
+                        <div *ngIf="submitted && f['productName'].errors?.['required']" class="shopify-error">
+                            Product Name is required
+                        </div>
+
+                        <label class="shopify-field-label mt-3">Description</label>
+                        <textarea class="shopify-input" formControlName="productDetails" rows="4"></textarea>
+
+                        <div class="shopify-grid-2 mt-3" *ngIf="!showSimpleProduct">
+                            <div>
+                                <label class="shopify-field-label">Abbreviated Name</label>
+                                <input type="text" class="shopify-input" formControlName="abbrName">
                             </div>
-                        </div>
-
-                        <div class="col-md-2">
-                            <label class="form-label">Category <span class="text-danger">*</span></label>
-                            <select class="form-select" formControlName="categoryId" (change)="categoryProductChange()">
-                                <option *ngFor="let cat of categoryList" [value]="cat.categoryId">
-                                    {{cat.category}} — {{cat.subCategory}}
-                                </option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-2">
-                            <label class="form-label">Brand <span class="text-danger">*</span></label>
-                            <select class="form-select" formControlName="brandId">
-                                <option *ngFor="let b of brandsList" [value]="b.brandId">{{b.brandName}}</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-2">
-                            <label class="form-label">SKU</label>
-                            <input type="text" class="form-control" formControlName="sku">
-                        </div>
-
-                        <div class="col-md-2">
-                            <label class="form-label">Barcode / UPC</label>
-                            <input type="text" class="form-control" formControlName="upc">
-                        </div>
-
-                        <div class="col-md-4" *ngIf="!showSimpleProduct">
-                            <label class="form-label">HSN</label>
-                            <input type="text" class="form-control" formControlName="hsn">
-                        </div>
-
-                        <div class="col-12" *ngIf="!showSimpleProduct">
-                            <label class="form-label">Abbreviated Name</label>
-                            <input type="text" class="form-control" formControlName="abbrName">
-                        </div>
-
-                        <div class="col-4">
-                            <label class="form-label">Description</label>
-                            <textarea class="form-control" formControlName="productDetails" rows="3"></textarea>
-                        </div>
-
-                        <div class="col-md-2">
-                            <label class="form-label">Regular Price (Rs) <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text">Rs</span>
-                                <input type="number" class="form-control" formControlName="unitPrice" min="0">
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Sale / Cut Price (Rs)<span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text">Rs</span>
-                                <input type="number" class="form-control" formControlName="salePrice" min="0">
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Purchase Price (Rs)<span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text">Rs</span>
-                                <input type="number" class="form-control" formControlName="purchasePrice" min="0">
-                            </div>
-                        </div>
-                        <div class="col-md-1">
-                            <label class="form-label">Discount (Rs)</label>
-                            <div class="input-group">
-                                <span class="input-group-text">Rs</span>
-                                <input type="number" class="form-control" formControlName="discount" min="0">
-                            </div>
-                        </div>
-
-                        <div class="col-md-1">
-                            <label class="form-label">Tax (% or Rs)</label>
-                            <input type="text" class="form-control" formControlName="tax">
-                        </div>
-
-
-                    </div>
-                </div>
-            </div>
-
-            <!-- ====================== PRICING ====================== -->
-            <!-- <h5 class="section-title">Pricing</h5>
-            <div class="card shadow-sm mb-4">
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-md-3">
-                            <label class="form-label">Regular Price (Rs) <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text">Rs</span>
-                                <input type="number" class="form-control" formControlName="unitPrice" min="0">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Sale / Cut Price (Rs)<span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text">Rs</span>
-                                <input type="number" class="form-control" formControlName="salePrice" min="0">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Purchase Price (Rs)<span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text">Rs</span>
-                                <input type="number" class="form-control" formControlName="purchasePrice" min="0">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Discount (Rs)</label>
-                            <div class="input-group">
-                                <span class="input-group-text">Rs</span>
-                                <input type="number" class="form-control" formControlName="discount" min="0">
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label">Tax (% or Rs)</label>
-                            <input type="text" class="form-control" formControlName="tax">
-                        </div>
-                    </div>
-                </div>
-            </div> -->
-
-            <!-- ====================== INVENTORY & PHYSICAL ====================== -->
-            <h5 class="section-title">Inventory & Physical Properties</h5>
-            <div class="card shadow-sm mb-4">
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-md-2">
-                            <label class="form-label">Stock Quantity</label>
-                            <input type="number" class="form-control" formControlName="quantity" min="0">
-                        </div>
-                        <div class="col-md-3" *ngIf="!showSimpleProduct">
-                            <label class="form-label">Case / Pack Quantity</label>
-                            <input type="number" class="form-control" formControlName="qtyCase" min="0">
-                        </div>
-                        <div class="col-md-3" *ngIf="!showSimpleProduct">
-                            <label class="form-label">Made in</label>
-                            <input type="text" class="form-control" formControlName="madein">
-                        </div>
-                        <div class="col-md-3" *ngIf="!showSimpleProduct">
-                            <label class="form-label">Weight</label>
-                            <input type="number" step="0.01" class="form-control" formControlName="weight">
-                        </div>
-
-                        <div class="col-md-1" >
-                            <label class="form-label">Unit</label>
-                            <select class="form-select" formControlName="unitName">
-                                <option value="liter">Liter</option>
-                                <option value="kg">Kg</option>
-                                <option value="pcs">Pieces</option>
-                                <option value="feet">Feet</option>
-                                <option value="inches">Inches</option>
-                                <option value="meter">Meter</option>
-
-                                <!-- ... more options -->
-                            </select>
-                        </div>
-                        <div class="col-md-2" >
-                            <label class="form-label">Expiry Date</label>
-                            <input type="date" class="form-control" formControlName="expiryDate">
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Dimension</label>
-                            <input type="text" class="form-control" formControlName="physicalDimension">
-                        </div>
-                        <div class="d-flex flex-wrap gap-4 col-md-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" formControlName="popularFlag" id="popular">
-                            <label class="form-check-label" for="popular"><strong>Popular</strong></label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" formControlName="productStatus" id="active">
-                            <label class="form-check-label" for="active"><strong>Active</strong></label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" formControlName="sellinPcs" id="sellPcs">
-                            <label class="form-check-label" for="sellPcs"><strong>Sell in Pieces</strong></label>
-                        </div>
-                    </div>                        
-                    </div>
-                </div>
-            </div>
-
-            <!-- ====================== FLAGS ====================== -->
-            <!-- <h5 class="section-title">Product Flags</h5>
-            <div class="card shadow-sm mb-4">
-                <div class="card-body">
-                    <div class="d-flex flex-wrap gap-4">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" formControlName="popularFlag" id="popular">
-                            <label class="form-check-label" for="popular"><strong>Popular</strong></label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" formControlName="productStatus" id="active">
-                            <label class="form-check-label" for="active"><strong>Active</strong></label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" formControlName="sellinPcs" id="sellPcs">
-                            <label class="form-check-label" for="sellPcs"><strong>Sell in Pieces</strong></label>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
-
-            <!-- ====================== ATTRIBUTES ====================== -->
-            <h5 class="section-title" *ngIf="!showSimpleProduct">Attributes / Variants</h5>
-            <div class="card shadow-sm mb-4" *ngIf="!showSimpleProduct">
-                <div class="card-body">
-
-                    <!-- Using ngb-tabset instead of plain Bootstrap tabs -->
-
-                    <div class="card shadow-sm mb-4">
-                        <div class="card-body">
-                            <ul class="nav nav-tabs mb-3" id="attrTabs" role="tablist">
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link active" id="sizes-tab" data-bs-toggle="tab"
-                                        data-bs-target="#sizes" type="button" (click)="tabClick(1)">Sizes</button>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="colors-tab" data-bs-toggle="tab"
-                                        data-bs-target="#colors" type="button" (click)="tabClick(2)">Colors</button>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="additional-tab" data-bs-toggle="tab"
-                                        data-bs-target="#additional" type="button"
-                                        (click)="tabClick(3)">Additional</button>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="extra-tab" data-bs-toggle="tab" data-bs-target="#extra"
-                                        type="button" (click)="tabClick(4)">Extra</button>
-                                </li>
-                            </ul>
-
-                            <div class="tab-content">
-                                <div class="tab-pane fade show active" id="sizes" *ngIf="sizeFlag">
-                                    <div class="row g-2">
-                                        <div class="col-md-3" *ngFor="let i of [1,2,3,4,5,6,7]">
-                                            <input class="form-control" type="text"
-                                                formControlName="packagingAttributes{{i}}" placeholder="Size {{i}}">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="tab-pane fade show active" id="colors" *ngIf="colorFlag">
-                                    <div class="row g-2">
-                                        <div class="col-md-3" *ngFor="let i of [1,2,3,4,5,6,7]">
-                                            <input class="form-control" type="text"
-                                                formControlName="extraAttributes{{i}}" placeholder="Color {{i}}">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="tab-pane fade show active" id="additional" *ngIf="additionalFlag">
-                                    <div class="row g-2">
-                                        <div class="col-md-3" *ngFor="let i of [1,2,3,4,5,6,7]">
-                                            <input class="form-control" type="text"
-                                                formControlName="optionsAttributes{{i}}" placeholder="Option {{i}}">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="tab-pane fade show active" id="extra" *ngIf="extrasFlag">
-                                    <div class="row g-2">
-                                        <div class="col-md-3" *ngFor="let i of [1,2,3,4,5,6,7]">
-                                            <input class="form-control" type="text"
-                                                formControlName="cuttingAttributes{{i}}" placeholder="Extra {{i}}">
-                                        </div>
-                                    </div>
-                                </div>
+                            <div>
+                                <label class="shopify-field-label">HSN</label>
+                                <input type="text" class="shopify-input" formControlName="hsn">
                             </div>
                         </div>
                     </div>
-
-
-
-
                 </div>
-            </div>
-            <!-- ====================== MEDIA ====================== -->
-            <h5 class="section-title">Images, Video & Documents</h5>
-            <div class="card shadow-sm mb-4">
-                <div class="card-body">
-                    <!-- Images -->
-                    <div class="" *ngIf="showImageFlag">
-                        <!-- <h6>Product Images</h6> -->
-                        <div class="dropzone mb-3" (click)="fileInput.click()"
+
+                <!-- Media -->
+                <div class="shopify-card" *ngIf="showImageFlag">
+                    <div class="shopify-card__body">
+                        <label class="shopify-field-label">Media</label>
+
+                        <div class="shopify-dropzone" (click)="fileInput.click()"
                             *ngIf="editProduct.productImage===null || editProduct.productImage===undefined">
                             <input #fileInput type="file" accept="image/*" style="display:none;"
                                 (change)="selectFile($event)" multiple>
-                            <i class="bi bi-cloud-arrow-up fs-1 text-primary d-block mb-2"></i>
-                            <p class="mb-1">Click or drag images here</p>
-                            <small class="text-muted">PNG, JPG, max 5MB each</small>
+                            <div class="shopify-dropzone__actions">
+                                <span class="btn-shopify btn-shopify--outline">Upload new</span>
+                                <span class="shopify-dropzone__or">Select existing</span>
+                            </div>
+                            <small class="text-muted d-block mt-2">Accepts images, videos, or 3D models</small>
                         </div>
 
-                        <div class="row g-3">
-                            <div class="col" *ngFor="let preview of previewList; index as i">
-                                <div class="card shadow-sm border-0 view overlay" id="myRemoveButton-{{i}}">
-                                    <img [src]="preview" class="card-img-top" style="padding-right: 2px;"
-                                        alt="Product Image">
-                                    <div class="card-body text-center">
-                                        <button class="btn btn-danger btn-sm d-flex mx-auto gap-2"
-                                            (click)="removeImage(i)">
-                                            <fa-icon [icon]="faRemove"></fa-icon> Remove Image
-                                        </button>
-                                    </div>
+                        <div class="shopify-media-grid" *ngIf="previewList?.length">
+                            <div class="shopify-media-item" *ngFor="let preview of previewList; index as i"
+                                id="myRemoveButton-{{i}}">
+                                <img [src]="preview" alt="Product Image">
+                                <button class="shopify-media-item__remove" (click)="removeImage(i)" title="Remove">
+                                    <fa-icon [icon]="faRemove"></fa-icon>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Video -->
+                        <div *ngIf="showProductVideoFlag" class="mt-4">
+                            <label class="shopify-field-label">Product Video</label>
+                            <div *ngIf="videoUrl" class="mb-2">
+                                <video controls class="w-100" style="max-height:280px; border-radius:8px;">
+                                    <source [src]="videoUrl" type="video/mp4">
+                                </video>
+                                <button class="btn-shopify btn-shopify--outline mt-2" (click)="removeVideo()">Remove Video</button>
+                            </div>
+                            <input type="file" accept="video/mp4" (change)="onFileSelected($event)">
+                        </div>
+
+                        <!-- Documents -->
+                        <div *ngIf="showProductDocumentFlag" class="mt-4">
+                            <label class="shopify-field-label">Attached Documents</label>
+                            <input type="file" accept=".pdf,.doc,.docx,.xls" multiple (change)="onDocumentSelected($event)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category (functional, informational block) -->
+                <div class="shopify-card">
+                    <div class="shopify-card__body">
+                        <label class="shopify-field-label">Category <span class="text-danger">*</span></label>
+                        <select class="shopify-select" formControlName="categoryId" (change)="categoryProductChange()">
+                            <option *ngFor="let cat of categoryList" [value]="cat.categoryId">
+                                {{cat.category}} — {{cat.subCategory}}
+                            </option>
+                        </select>
+                        <small class="text-muted d-block mt-2">
+                            Determines tax rates and helps organize products for search and filters
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Price -->
+                <div class="shopify-card">
+                    <div class="shopify-card__body">
+                        <label class="shopify-field-label">Pricing</label>
+                        <div class="shopify-grid-3">
+                            <div>
+                                <label class="shopify-field-label">Regular Price <span class="text-danger">*</span></label>
+                                <div class="shopify-input-group">
+                                    <span class="shopify-input-group__prefix">Rs</span>
+                                    <input type="number" class="shopify-input" formControlName="unitPrice" min="0">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="shopify-field-label">Sale / Cut Price <span class="text-danger">*</span></label>
+                                <div class="shopify-input-group">
+                                    <span class="shopify-input-group__prefix">Rs</span>
+                                    <input type="number" class="shopify-input" formControlName="salePrice" min="0">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="shopify-field-label">Purchase Price <span class="text-danger">*</span></label>
+                                <div class="shopify-input-group">
+                                    <span class="shopify-input-group__prefix">Rs</span>
+                                    <input type="number" class="shopify-input" formControlName="purchasePrice" min="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="shopify-grid-2 mt-3">
+                            <div>
+                                <label class="shopify-field-label">Discount</label>
+                                <div class="shopify-input-group">
+                                    <span class="shopify-input-group__prefix">Rs</span>
+                                    <input type="number" class="shopify-input" formControlName="discount" min="0">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="shopify-field-label">Tax (% or Rs)</label>
+                                <input type="text" class="shopify-input" formControlName="tax">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inventory -->
+                <div class="shopify-card">
+                    <div class="shopify-card__body">
+                        <label class="shopify-field-label">Inventory</label>
+
+                        <div class="shopify-grid-3">
+                            <div>
+                                <label class="shopify-field-label">SKU</label>
+                                <input type="text" class="shopify-input" formControlName="sku">
+                            </div>
+                            <div>
+                                <label class="shopify-field-label">Barcode / UPC</label>
+                                <input type="text" class="shopify-input" formControlName="upc">
+                            </div>
+                            <div>
+                                <label class="shopify-field-label">Stock Quantity</label>
+                                <input type="number" class="shopify-input" formControlName="quantity" min="0">
+                            </div>
+                        </div>
+
+                        <div class="shopify-grid-3 mt-3" *ngIf="!showSimpleProduct">
+                            <div>
+                                <label class="shopify-field-label">Case / Pack Quantity</label>
+                                <input type="number" class="shopify-input" formControlName="qtyCase" min="0">
+                            </div>
+                            <div>
+                                <label class="shopify-field-label">Made in</label>
+                                <input type="text" class="shopify-input" formControlName="madein">
+                            </div>
+                            <div>
+                                <label class="shopify-field-label">Weight</label>
+                                <input type="number" step="0.01" class="shopify-input" formControlName="weight">
+                            </div>
+                        </div>
+
+                        <div class="shopify-grid-3 mt-3">
+                            <div>
+                                <label class="shopify-field-label">Unit</label>
+                                <select class="shopify-select" formControlName="unitName">
+                                    <option value="liter">Liter</option>
+                                    <option value="kg">Kg</option>
+                                    <option value="pcs">Pieces</option>
+                                    <option value="feet">Feet</option>
+                                    <option value="inches">Inches</option>
+                                    <option value="meter">Meter</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="shopify-field-label">Expiry Date</label>
+                                <input type="date" class="shopify-input" formControlName="expiryDate">
+                            </div>
+                            <div>
+                                <label class="shopify-field-label">Dimension</label>
+                                <input type="text" class="shopify-input" formControlName="physicalDimension">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Variants / Attributes -->
+                <div class="shopify-card" *ngIf="!showSimpleProduct">
+                    <div class="shopify-card__body">
+                        <label class="shopify-field-label">Attributes / Variants</label>
+
+                        <ul class="shopify-tabs" id="attrTabs" role="tablist">
+                            <li class="shopify-tabs__item" role="presentation">
+                                <button class="shopify-tabs__link active" id="sizes-tab" data-bs-toggle="tab"
+                                    data-bs-target="#sizes" type="button" (click)="tabClick(1)">Sizes</button>
+                            </li>
+                            <li class="shopify-tabs__item" role="presentation">
+                                <button class="shopify-tabs__link" id="colors-tab" data-bs-toggle="tab"
+                                    data-bs-target="#colors" type="button" (click)="tabClick(2)">Colors</button>
+                            </li>
+                            <li class="shopify-tabs__item" role="presentation">
+                                <button class="shopify-tabs__link" id="additional-tab" data-bs-toggle="tab"
+                                    data-bs-target="#additional" type="button" (click)="tabClick(3)">Additional</button>
+                            </li>
+                            <li class="shopify-tabs__item" role="presentation">
+                                <button class="shopify-tabs__link" id="extra-tab" data-bs-toggle="tab"
+                                    data-bs-target="#extra" type="button" (click)="tabClick(4)">Extra</button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content mt-3">
+                            <div class="tab-pane fade show active" id="sizes" *ngIf="sizeFlag">
+                                <div class="shopify-grid-4">
+                                    <input class="shopify-input" type="text" *ngFor="let i of [1,2,3,4,5,6,7]"
+                                        formControlName="packagingAttributes{{i}}" placeholder="Size {{i}}">
                                 </div>
                             </div>
 
+                            <div class="tab-pane fade show active" id="colors" *ngIf="colorFlag">
+                                <div class="shopify-grid-4">
+                                    <input class="shopify-input" type="text" *ngFor="let i of [1,2,3,4,5,6,7]"
+                                        formControlName="extraAttributes{{i}}" placeholder="Color {{i}}">
+                                </div>
+                            </div>
 
+                            <div class="tab-pane fade show active" id="additional" *ngIf="additionalFlag">
+                                <div class="shopify-grid-4">
+                                    <input class="shopify-input" type="text" *ngFor="let i of [1,2,3,4,5,6,7]"
+                                        formControlName="optionsAttributes{{i}}" placeholder="Option {{i}}">
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade show active" id="extra" *ngIf="extrasFlag">
+                                <div class="shopify-grid-4">
+                                    <input class="shopify-input" type="text" *ngFor="let i of [1,2,3,4,5,6,7]"
+                                        formControlName="cuttingAttributes{{i}}" placeholder="Extra {{i}}">
+                                </div>
+                            </div>
                         </div>
-                    </div>
-
-                    <!-- Video -->
-                    <div *ngIf="showProductVideoFlag" class="mb-4">
-                        <h6>Product Video</h6>
-                        <div *ngIf="videoUrl" class="mb-3">
-                            <video controls class="w-100" style="max-height:320px;">
-                                <source [src]="videoUrl" type="video/mp4">
-                            </video>
-                            <button class="btn btn-sm btn-danger mt-2" (click)="removeVideo()">Remove Video</button>
-                        </div>
-                        <input type="file" accept="video/mp4" (change)="onFileSelected($event)">
-                    </div>
-
-                    <!-- Documents -->
-                    <div *ngIf="showProductDocumentFlag">
-                        <h6>Attached Documents</h6>
-                        <input type="file" accept=".pdf,.doc,.docx,.xls" multiple (change)="onDocumentSelected($event)">
-                        <!-- Show list / previews of selectedDocumentList & documentUrls -->
                     </div>
                 </div>
+
             </div>
+            <!-- ============ END MAIN COLUMN ============ -->
 
-        </form>
 
+            <!-- ============ SIDEBAR (RIGHT) COLUMN ============ -->
+            <div class="shopify-add-product__sidebar">
 
-    </div>
+                <!-- Status -->
+                <div class="shopify-card">
+                    <div class="shopify-card__body">
+                        <label class="shopify-field-label">Status</label>
+                        <div class="shopify-toggle-row">
+                            <span>Active</span>
+                            <label class="shopify-switch">
+                                <input type="checkbox" formControlName="productStatus" id="active">
+                                <span class="shopify-switch__slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
 
+                <!-- Publishing / Flags -->
+                <div class="shopify-card">
+                    <div class="shopify-card__body">
+                        <label class="shopify-field-label">Publishing</label>
+
+                        <div class="shopify-toggle-row">
+                            <span>Popular product</span>
+                            <label class="shopify-switch">
+                                <input type="checkbox" formControlName="popularFlag" id="popular">
+                                <span class="shopify-switch__slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="shopify-toggle-row">
+                            <span>Sell in pieces</span>
+                            <label class="shopify-switch">
+                                <input type="checkbox" formControlName="sellinPcs" id="sellPcs">
+                                <span class="shopify-switch__slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Organization -->
+                <div class="shopify-card">
+                    <div class="shopify-card__body">
+                        <label class="shopify-field-label">Product organization</label>
+
+                        <label class="shopify-field-label shopify-field-label--sm">Brand</label>
+                        <select class="shopify-select" formControlName="brandId">
+                            <option *ngFor="let b of brandsList" [value]="b.brandId">{{b.brandName}}</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+            <!-- ============ END SIDEBAR ============ -->
+
+        </div>
+    </form>
 </div>
 
-<!-- ***************************************************************************** -->
-<div class="text-center my-5" *ngIf="spinnerDataLoad">
+<!-- Loading Spinner -->
+<div class="shopify-loading" *ngIf="spinnerDataLoad">
     <div class="spinner-border" role="status">
         <span class="visually-hidden">Saving...</span>
     </div>
-    <p class="mt-2 text-muted">Saving Products...</p>
+    <p>Saving Products...</p>
 </div>

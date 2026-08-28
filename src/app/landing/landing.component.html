@@ -1,0 +1,33 @@
+<div class="landing">
+
+  <header class="landing__header">
+    <div class="landing__header-inner">
+      <div class="landing__brand">
+        <img src="{{logoName}}" alt="Logo" class="landing__logo">
+        <span>EZPZ Inventory</span>
+      </div>
+      <button class="landing__login-btn" (click)="goToLogin()">
+        <i class="ri-login-box-line me-1"></i> Login
+      </button>
+    </div>
+  </header>
+
+  <section class="landing__hero">
+    <h1>Modern Inventory Management, Simplified</h1>
+    <p>Track stock, manage purchase orders, and stay ahead of expiring products — all in one place.</p>
+    <button class="landing__cta" (click)="goToLogin()">Get Started</button>
+  </section>
+
+  <section class="landing__features">
+    <div class="landing__feature-card" *ngFor="let f of features">
+      <i class="{{f.icon}}"></i>
+      <h3>{{f.title}}</h3>
+      <p>{{f.desc}}</p>
+    </div>
+  </section>
+
+  <footer class="landing__footer">
+    <span>Version: {{versionNumber}}</span>
+  </footer>
+
+</div>

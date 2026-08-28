@@ -1,11 +1,69 @@
-/* Default (sidebar open) */
-.main-content {
+/* ===============================
+   DEFAULT DESKTOP LAYOUT
+================================ */
+
+.app-body {
   margin-left: 280px;
-  padding: 20px;
-  transition: all 0.3s ease;
+  min-height: 100vh;
+  transition: margin-left 0.3s ease;
 }
 
-/* Jab sidebar collapse ho */
-.main-content.sidebar-collapsed {
+.app-body.sidebar-collapsed {
   margin-left: 80px;
+}
+
+#mainPage {
+  padding: 20px;
+  padding-top: 84px;
+  /* 64px fixed header + 20px spacing */
+}
+
+
+/* ===============================
+   TABLET
+================================ */
+
+@media (max-width: 992px) {
+
+  .app-body {
+    margin-left: 80px;
+  }
+
+}
+
+
+/* ===============================
+   MOBILE - iPhone 12 Pro
+================================ */
+
+@media (max-width: 768px) {
+
+  .app-body,
+  .app-body.sidebar-collapsed {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  #mainPage {
+    width: 100%;
+    padding: 12px;
+    padding-top: 76px;
+    /* 64px fixed header + 12px spacing */
+  }
+
+}
+
+
+/* ===============================
+   SMALL MOBILE
+================================ */
+
+@media (max-width: 480px) {
+
+  #mainPage {
+    padding: 10px;
+    padding-top: 74px;
+    /* 64px fixed header + 10px spacing */
+  }
+
 }

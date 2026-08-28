@@ -1,0 +1,57 @@
+@import "../../../shared/shopify-theme.scss";
+
+.barcode-component {
+  max-width: 900px;
+  margin: 32px auto;
+  padding: 0 16px;
+
+  .shopify-card {
+    padding: 28px 32px;
+  }
+
+  .shopify-table img {
+    display: block;
+    margin: 0 auto;
+  }
+
+  .modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
+  // Form fields row
+  .barcode-form-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .barcode-form-row .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  // Buttons row
+  .barcode-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 0 12px;
+
+    .shopify-card {
+      padding: 20px;
+    }
+
+    .barcode-form-row,
+    .barcode-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+}

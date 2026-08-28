@@ -1,0 +1,145 @@
+<!-- ============================================================
+     ORDER DETAIL — SHOPIFY THEME
+     ============================================================ -->
+<div class="shopify-main-container" id="excel-table">
+
+  <div class="shopify-card">
+
+    <!-- Header -->
+    <div class="shopify-card__header shopify-order-detail__header">
+      <span class="shopify-order-detail__title">
+        <fa-icon [icon]="faClipboardList"></fa-icon> {{ projectName }}
+      </span>
+      <span class="shopify-badge shopify-badge--info">Status: {{ orders.orderStatus }}</span>
+      <span class="shopify-order-detail__ordernum">Order#: {{ orders.orderNum ?? orders.orderId }}</span>
+    </div>
+
+    <div class="shopify-card__body">
+
+      <!-- Customer + Summary -->
+      <div class="shopify-order-detail__grid">
+
+        <div>
+          <h6 class="shopify-field-label">Customer</h6>
+          <p class="shopify-order-detail__text">{{ customer.firstName }} {{ customer.lastName }}</p>
+
+          <h6 class="shopify-field-label">Address</h6>
+          <p class="shopify-order-detail__text">{{ customer.address }}, {{ customer.city }}, {{ customer.postalCode }}</p>
+
+          <h6 class="shopify-field-label">Email</h6>
+          <p class="shopify-order-detail__text">{{ customer.email }}</p>
+
+          <h6 class="shopify-field-label">Phone</h6>
+          <p class="shopify-order-detail__text">{{ customer.phone1 }}</p>
+        </div>
+
+        <div>
+          <h6 class="shopify-field-label">Order Summary</h6>
+          <ul class="shopify-summary-list">
+            <li><span>Date</span><span>{{ orders.createDate | date: 'shortDate' }}</span></li>
+            <li><span>SubTotal</span><span>${{ total }}</span></li>
+            <li><span>Shipping</span><span>${{ (orders.shippingHandling ?? 0).toFixed(2) }}</span></li>
+            <li><span>Taxes</span><span>${{ (orders.tax ?? 0).toFixed(2) }}</span></li>
+            <li class="shopify-summary-list__total"><span>Total</span><span>${{ getTotalPrice(orders.grandTotal) }}</span></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Desktop table -->
+      <div class="shopify-table-wrap d-none d-md-block">
+        <table class="shopify-table">
+          <thead>
+            <tr>
+              <th>SNo.</th>
+              <th>Items</th>
+              <th>Image</th>
+              <th>SKU</th>
+              <th>Quantity</th>
+              <th>Price</th>
+              <th colspan="2" class="hide-on-print">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let items of ordersItemsList; index as i">
+              <td class="text-center">{{ i + 1 }}</td>
+              <td>{{ items.productName }} <span *ngIf="items.notes">({{ items.notes }})</span></td>
+              <td class="text-center">
+                <img class="shopify-order-detail__thumb"
+                  src="data:{{items.imageMimeType}};base64,{{items.productImage}}" alt="image">
+              </td>
+              <td>{{ items.sku }}</td>
+              <td>{{ items.quantity }}</td>
+              <td>${{ items.unitPrice }}</td>
+              <td class="hide-on-print">
+                <button class="btn-shopify btn-shopify--outline btn-shopify--sm w-100"
+                  (click)="onUpdateStatus(orders, items.orderItemId, 'CLOSED')">Close</button>
+              </td>
+              <td class="hide-on-print">
+                <button class="btn-shopify btn-shopify--danger btn-shopify--sm w-100"
+                  (click)="onUpdateStatus(orders, items.orderItemId, 'CANCEL')">Cancel</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile cards -->
+      <div class="shopify-mobile-list d-md-none">
+        <div class="shopify-mobile-card" *ngFor="let items of ordersItemsList; index as i">
+
+          <div class="shopify-mobile-card__row">
+            <strong>#{{ i + 1 }}</strong>
+            <span class="shopify-badge shopify-badge--muted">{{ items.sku }}</span>
+          </div>
+
+          <div class="shopify-order-detail__mobile-item">
+            <img class="shopify-order-detail__thumb"
+              [src]="'data:' + items.imageMimeType + ';base64,' + items.productImage" alt="image">
+            <div>
+              <div class="fw-semibold">{{ items.productName }}</div>
+              <small class="text-muted" *ngIf="items.notes">({{ items.notes }})</small>
+            </div>
+          </div>
+
+          <div class="shopify-order-detail__mobile-stats">
+            <div>
+              <div class="shopify-field-label--sm">Quantity</div>
+              <div class="fw-bold">{{ items.quantity }}</div>
+            </div>
+            <div>
+              <div class="shopify-field-label--sm">Price</div>
+              <div class="fw-bold">${{ items.unitPrice }}</div>
+            </div>
+          </div>
+
+          <div class="shopify-table__actions hide-on-print">
+            <button class="btn-shopify btn-shopify--outline btn-shopify--sm flex-fill"
+              (click)="onUpdateStatus(orders, items.orderItemId, 'CLOSED')">Close</button>
+            <button class="btn-shopify btn-shopify--danger btn-shopify--sm flex-fill"
+              (click)="onUpdateStatus(orders, items.orderItemId, 'CANCEL')">Cancel</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="shopify-order-detail__actions hide-on-print">
+        <button class="btn-shopify btn-shopify--success" (click)="printThermal(orders, customer, ordersItemsList)">
+          <i class="bi bi-receipt"></i> Thermal Print
+        </button>
+        <button class="btn-shopify btn-shopify--primary" (click)="print()">
+          <i class="bi bi-printer"></i> Print Doc
+        </button>
+        <button class="btn-shopify btn-shopify--outline" (click)="updatecart($event)">
+          <i class="bi bi-arrow-repeat"></i> Update Cart
+        </button>
+        <button class="btn-shopify btn-shopify--outline" (click)="backToList()">
+          <i class="bi bi-arrow-left"></i> Back to List
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

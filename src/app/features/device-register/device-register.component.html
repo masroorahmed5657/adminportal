@@ -1,137 +1,65 @@
 <!-- device-register.component.html -->
 
-<div class="container-fluid py-3">
+<div class="shopify-page-wrapper">
 
-  <!-- PAGE HEADER -->
-  <div class="row mb-3">
+  <div class="shopify-main-container">
 
-    <div class="col-12 d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+    <!-- ===========================
+         ADD / EDIT DEVICE FORM
+    ============================ -->
+    <div class="shopify-card mb-3" *ngIf="showAddForm">
 
-      <div>
-        <h3 class="fw-bold mb-1">
-          Device Register Management
-        </h3>
-
-        <small class="text-muted">
-          EZPZ Admin Portal - Add / Edit / Delete / List Devices
-        </small>
+      <div class="shopify-card__header">
+        {{ device.device_id ? 'Edit Device' : 'Add New Device' }}
       </div>
 
-      <button class="btn btn-primary mt-3 mt-md-0"
-              (click)="resetForm()">
+      <div class="shopify-card__body">
 
-        <i class="bi bi-plus-circle me-2"></i>
-        Add Device
-      </button>
+        <div class="shopify-grid-3">
 
-    </div>
+          <div>
+            <label class="shopify-field-label">Device Name</label>
+            <input type="text" class="shopify-input" placeholder="Enter Device Name" [(ngModel)]="device.device_name">
+          </div>
 
-  </div>
+          <div>
+            <label class="shopify-field-label">Branch ID</label>
+            <input type="number" class="shopify-input" placeholder="Enter Branch ID" [(ngModel)]="device.branch_id">
+          </div>
 
-  <div class="row g-3">
-
-    <!-- FORM SECTION -->
-    <div class="col-12 col-lg-4">
-
-      <div class="card border-0 shadow-sm rounded-4">
-
-        <div class="card-header bg-white border-0 pt-3">
-
-          <h5 class="mb-0">
-            {{ device.device_id ? 'Edit Device' : 'New Device' }}
-          </h5>
+          <div>
+            <label class="shopify-field-label">Device UUID</label>
+            <input type="text" class="shopify-input" placeholder="Enter Device UUID" [(ngModel)]="device.device_uuid">
+          </div>
 
         </div>
 
-        <div class="card-body">
+        <div class="shopify-toggle-row mt-3" style="max-width:220px;">
+          <span class="shopify-field-label mb-0">Active Device</span>
 
-          <!-- DEVICE NAME -->
-          <div class="mb-3">
+          <label class="shopify-switch">
+            <input type="checkbox" [ngModel]="device.active_flag == 1"
+              (ngModelChange)="device.active_flag = $event ? 1 : 0">
+            <span class="shopify-switch__slider"></span>
+          </label>
+        </div>
 
-            <label class="form-label fw-semibold">
-              Device Name
-            </label>
+        <div class="d-flex gap-2 mt-4">
 
-            <input type="text"
-                   class="form-control"
-                   placeholder="Enter Device Name"
-                   [(ngModel)]="device.device_name">
+          <button class="btn-shopify btn-shopify--success" (click)="saveDevice()">
+            <i class="bi bi-check-circle"></i>
+            {{ device.device_id ? 'Update Device' : 'Save Device' }}
+          </button>
 
-          </div>
+          <button class="btn-shopify btn-shopify--outline" (click)="resetForm()">
+            <i class="bi bi-arrow-clockwise"></i>
+            Reset
+          </button>
 
-          <!-- BRANCH ID -->
-          <div class="mb-3">
-
-            <label class="form-label fw-semibold">
-              Branch ID
-            </label>
-
-            <input type="number"
-                   class="form-control"
-                   placeholder="Enter Branch ID"
-                   [(ngModel)]="device.branch_id">
-
-          </div>
-
-          <!-- DEVICE UUID -->
-          <div class="mb-3">
-
-            <label class="form-label fw-semibold">
-              Device UUID
-            </label>
-
-            <input type="text"
-                   class="form-control"
-                   placeholder="Enter Device UUID"
-                   [(ngModel)]="device.device_uuid">
-
-          </div>
-
-          <!-- ACTIVE FLAG -->
-          <div class="mb-3">
-
-            <label class="form-label fw-semibold d-block">
-              Status
-            </label>
-
-            <div class="form-check form-switch">
-
-              <input class="form-check-input"
-                     type="checkbox"
-                     [checked]="device.active_flag == 1"
-                     
-                     >
-                     <!-- (change)="device.active_flag = $event.target.checked ? 1 : 0" -->
-
-              <label class="form-check-label">
-                Active Device
-              </label>
-
-            </div>
-
-          </div>
-
-          <!-- BUTTONS -->
-          <div class="d-grid gap-2 d-md-flex">
-
-            <button class="btn btn-success flex-fill"
-                    (click)="saveDevice()">
-
-              <i class="bi bi-check-circle me-2"></i>
-
-              {{ device.device_id ? 'Update' : 'Save' }}
-
-            </button>
-
-            <button class="btn btn-secondary flex-fill"
-                    (click)="resetForm()">
-
-              <i class="bi bi-arrow-clockwise me-2"></i>
-              Reset
-
-            </button>
-
-          </div>
+          <button class="btn-shopify btn-shopify--danger" (click)="cancelForm()">
+            <i class="bi bi-x-circle"></i>
+            Cancel
+          </button>
 
         </div>
 
@@ -139,180 +67,112 @@
 
     </div>
 
-    <!-- LIST SECTION -->
-    <div class="col-12 col-lg-8">
+    <!-- ===========================
+         DEVICE LIST
+    ============================ -->
+    <div class="shopify-card">
 
-      <div class="card border-0 shadow-sm rounded-4">
+      <div class="shopify-card__header d-flex justify-content-between align-items-center">
 
-        <div class="card-header bg-white border-0 pt-3">
+        <span>Devices List</span>
 
-          <div class="row g-2 align-items-center">
+        <div class="d-flex align-items-center gap-2">
 
-            <div class="col-12 col-md-6">
-              <h5 class="mb-0">
-                Devices List
-              </h5>
-            </div>
+          <input type="text" class="shopify-input" style="max-width:240px;" placeholder="Search Device..."
+            [(ngModel)]="searchText">
 
-            <div class="col-12 col-md-6">
-
-              <input type="text"
-                     class="form-control"
-                     placeholder="Search Device..."
-                     [(ngModel)]="searchText">
-
-            </div>
-
-          </div>
+          <button class="btn-shopify btn-shopify--primary" (click)="openAddDevice()">
+            <i class="bi bi-plus-circle"></i>
+            Add Device
+          </button>
 
         </div>
 
-        <div class="card-body">
+      </div>
 
-          <!-- DESKTOP TABLE -->
-          <div class="table-responsive d-none d-md-block">
+      <div class="shopify-card__body">
 
-            <table class="table table-hover align-middle">
+        <!-- Desktop Table -->
+        <div class="shopify-table-wrap">
 
-              <thead class="table-light">
+          <table class="shopify-table">
 
-                <tr>
-                  <th>#</th>
-                  <th>Device Name</th>
-                  <th>Branch ID</th>
-                  <th>Device UUID</th>
-                  <th>Status</th>
-                  <th class="text-center">Actions</th>
-                </tr>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Device Name</th>
+                <th>Branch ID</th>
+                <th>Device UUID</th>
+                <th>Status</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
 
-              </thead>
-
-              <tbody>
-
-                <tr *ngFor="let item of filteredDevices(); let i = index">
-
-                  <td>
-                    {{ i + 1 }}
-                  </td>
-
-                  <td>
-                    <div class="fw-semibold">
-                      {{ item.device_name }}
-                    </div>
-                  </td>
-
-                  <td>
-                    {{ item.branch_id }}
-                  </td>
-
-                  <td>
-                    <small class="text-muted">
-                      {{ item.device_uuid }}
-                    </small>
-                  </td>
-
-                  <td>
-
-                    <span class="badge"
-                          [ngClass]="item.active_flag == 1
-                          ? 'bg-success'
-                          : 'bg-danger'">
-
-                      {{ item.active_flag == 1 ? 'ACTIVE' : 'INACTIVE' }}
-
-                    </span>
-
-                  </td>
-
-                  <td class="text-center">
-
-                    <button class="btn btn-primary btn-sm me-2"
-                            (click)="editDevice(item)">
-
+            <tbody>
+              <tr *ngFor="let item of filteredDevices(); let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>
+                  <div class="fw-semibold">{{ item.device_name }}</div>
+                </td>
+                <td>{{ item.branch_id }}</td>
+                <td><small class="text-muted">{{ item.device_uuid }}</small></td>
+                <td>
+                  <span class="shopify-badge"
+                    [ngClass]="item.active_flag == 1 ? 'shopify-badge--success' : 'shopify-badge--neutral'">
+                    {{ item.active_flag == 1 ? 'ACTIVE' : 'INACTIVE' }}
+                  </span>
+                </td>
+                <td>
+                  <div class="shopify-table__actions">
+                    <button class="btn-shopify btn-shopify--primary btn-shopify--icon" (click)="editDevice(item)">
                       <i class="bi bi-pencil-square"></i>
                     </button>
-
-                    <button class="btn btn-danger btn-sm"
-                            (click)="deleteDevice(item)">
-
+                    <button class="btn-shopify btn-shopify--danger btn-shopify--icon" (click)="deleteDevice(item)">
                       <i class="bi bi-trash"></i>
                     </button>
-
-                  </td>
-
-                </tr>
-
-              </tbody>
-
-            </table>
-
-          </div>
-
-          <!-- MOBILE CARD VIEW -->
-          <div class="d-block d-md-none">
-
-            <div class="card border mb-3 shadow-sm rounded-4"
-                 *ngFor="let item of filteredDevices()">
-
-              <div class="card-body">
-
-                <div class="d-flex justify-content-between align-items-start">
-
-                  <div>
-
-                    <h6 class="mb-1">
-                      {{ item.device_name }}
-                    </h6>
-
-                    <small class="text-muted d-block">
-                      Branch ID: {{ item.branch_id }}
-                    </small>
-
-                    <small class="text-muted d-block">
-                      UUID: {{ item.device_uuid }}
-                    </small>
-
                   </div>
+                </td>
+              </tr>
+            </tbody>
 
-                  <span class="badge"
-                        [ngClass]="item.active_flag == 1
-                        ? 'bg-success'
-                        : 'bg-danger'">
+          </table>
 
-                    {{ item.active_flag == 1 ? 'ACTIVE' : 'INACTIVE' }}
+        </div>
 
-                  </span>
+        <!-- Mobile View -->
+        <div class="shopify-mobile-list">
 
-                </div>
+          <div class="shopify-mobile-card" *ngFor="let item of filteredDevices()">
 
-                <hr>
+            <div class="shopify-mobile-card__row">
+              <h6 class="mb-0 fw-semibold">{{ item.device_name }}</h6>
+              <span class="shopify-badge"
+                [ngClass]="item.active_flag == 1 ? 'shopify-badge--success' : 'shopify-badge--neutral'">
+                {{ item.active_flag == 1 ? 'ACTIVE' : 'INACTIVE' }}
+              </span>
+            </div>
 
-                <div class="d-flex justify-content-between">
+            <div class="shopify-mobile-card__field">
+              <small class="text-muted d-block">Branch ID: {{ item.branch_id }}</small>
+              <small class="text-muted d-block">UUID: {{ item.device_uuid }}</small>
+            </div>
 
-                  <button class="btn btn-primary btn-sm"
-                          (click)="editDevice(item)">
-
-                    <i class="bi bi-pencil-square me-1"></i>
-                    Edit
-
-                  </button>
-
-                  <button class="btn btn-danger btn-sm"
-                          (click)="deleteDevice(item)">
-
-                    <i class="bi bi-trash me-1"></i>
-                    Delete
-
-                  </button>
-
-                </div>
-
-              </div>
-
+            <div class="shopify-mobile-card__actions">
+              <button class="btn-shopify btn-shopify--outline btn-shopify--sm" (click)="editDevice(item)">
+                <i class="bi bi-pencil-square me-1"></i> Edit
+              </button>
+              <button class="btn-shopify btn-shopify--danger btn-shopify--sm" (click)="deleteDevice(item)">
+                <i class="bi bi-trash me-1"></i> Delete
+              </button>
             </div>
 
           </div>
 
+        </div>
+
+        <div class="shopify-empty" *ngIf="filteredDevices().length === 0">
+          <h5>No devices found</h5>
+          <p class="mb-0">Click <strong>Add Device</strong> to create your first device.</p>
         </div>
 
       </div>

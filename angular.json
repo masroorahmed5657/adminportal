@@ -39,7 +39,8 @@
               "src/assets/css/styles.css",
               "src/assets/scss/bootstrap.scss",
               "src/assets/scss/custom.scss",
-              "src/assets/scss/app.scss", "src/assets/scss/icons.scss"
+              "src/assets/scss/app.scss", "src/assets/scss/icons.scss",
+              "node_modules/sweetalert2/dist/sweetalert2.min.css"
               
             ],
             "scripts": []
@@ -49,8 +50,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "8MB",
-                  "maximumError": "8MB"
+                   "maximumWarning": "10mb",
+    "maximumError": "12mb"
                 },
                 {
                   "type": "anyComponentStyle",

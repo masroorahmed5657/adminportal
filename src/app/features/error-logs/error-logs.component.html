@@ -1,5 +1,122 @@
 <!-- error-logs.component.html -->
 
+<<<<<<< HEAD
+<div class="shopify-page-wrapper">
+
+  <!-- TOP BAR -->
+  <!-- <div class="shopify-topbar">
+    <div class="shopify-topbar__inner">
+
+      <!-- <div>
+        <div class="shopify-topbar__current">Error Logs</div>
+        <small class="text-muted">EZPZ Admin Portal - Error Monitoring &amp; Logs</small>
+      </div>
+
+      <div class="shopify-topbar__actions">
+        <input type="text" class="shopify-input" placeholder="Search Error Logs..." [(ngModel)]="searchText">
+      </div> -->
+
+\ -->
+
+  <div class="shopify-main-container">
+
+    <!-- LIST SECTION -->
+    <div class="shopify-card">
+
+      <div class="shopify-card__header d-flex justify-content-between align-items-center">
+        <span>Error Logs List</span>
+        <span class="shopify-badge shopify-badge--danger">
+          {{ filteredLogs().length }} Errors
+        </span>
+      </div>
+
+      <div class="shopify-card__body">
+
+        <!-- DESKTOP TABLE -->
+        <div class="shopify-table-wrap">
+
+          <table class="shopify-table">
+
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Class</th>
+                <th>Method</th>
+                <th>Error Message</th>
+                <th>Log Time</th>
+                <th class="text-center">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let item of filteredLogs(); let i = index">
+
+                <td>{{ i + 1 }}</td>
+
+                <td>
+                  <div class="fw-semibold" style="color:#2563eb;">
+                    {{ item.class_name }}
+                  </div>
+                </td>
+
+                <td>
+                  <small class="text-muted">{{ item.method_name }}</small>
+                </td>
+
+                <td>
+                  <div class="fw-semibold" style="color:#c0272d;">
+                    {{ item.error_msg }}
+                  </div>
+                </td>
+
+                <td>
+                  {{ item.log_time | date:'dd-MMM-yyyy hh:mm:ss a' }}
+                </td>
+
+                <td>
+                  <div class="shopify-table__actions">
+                    <button class="btn-shopify btn-shopify--outline btn-shopify--icon" (click)="viewLog(item)">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                    <button class="btn-shopify btn-shopify--danger btn-shopify--icon" (click)="deleteLog(item)">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </td>
+
+              </tr>
+            </tbody>
+
+          </table>
+
+        </div>
+
+        <!-- MOBILE CARD VIEW -->
+        <div class="shopify-mobile-list">
+
+          <div class="shopify-mobile-card" *ngFor="let item of filteredLogs()">
+
+            <div class="shopify-mobile-card__field">
+              <div class="fw-semibold" style="color:#2563eb;">{{ item.class_name }}</div>
+              <small class="text-muted d-block">{{ item.method_name }}</small>
+            </div>
+
+            <div class="shopify-mobile-card__field fw-semibold" style="color:#c0272d;">
+              {{ item.error_msg }}
+            </div>
+
+            <div class="shopify-mobile-card__field">
+              <small class="text-muted">{{ item.log_time | date:'dd-MMM-yyyy hh:mm:ss a' }}</small>
+            </div>
+
+            <div class="shopify-mobile-card__actions">
+              <button class="btn-shopify btn-shopify--outline btn-shopify--sm" (click)="viewLog(item)">
+                <i class="bi bi-eye me-1"></i> View
+              </button>
+              <button class="btn-shopify btn-shopify--danger btn-shopify--sm" (click)="deleteLog(item)">
+                <i class="bi bi-trash me-1"></i> Delete
+              </button>
+=======
 <div class="container-fluid py-3">
 
   <!-- PAGE HEADER -->
@@ -189,12 +306,21 @@
 
               </button>
 
+>>>>>>> e99ff1c95dd1b66647fe96478b0f65a98b54e6de
             </div>
 
           </div>
 
         </div>
 
+<<<<<<< HEAD
+        <div class="shopify-empty" *ngIf="filteredLogs().length === 0">
+          <h5>No error logs found</h5>
+          <p class="mb-0">Everything looks clean right now.</p>
+        </div>
+
+=======
+>>>>>>> e99ff1c95dd1b66647fe96478b0f65a98b54e6de
       </div>
 
     </div>
@@ -204,6 +330,57 @@
 </div>
 
 <!-- MODAL -->
+<<<<<<< HEAD
+<ng-container *ngIf="selectedLog">
+
+  <div class="shopify-modal-backdrop" (click)="closeModal()"></div>
+
+  <div class="shopify-modal">
+    <div class="shopify-modal__dialog">
+
+      <div class="shopify-modal__header">
+        <h5 class="shopify-modal__title">Error Details</h5>
+        <button class="btn-close" (click)="closeModal()"></button>
+      </div>
+
+      <div class="shopify-modal__body">
+
+        <div class="mb-3">
+          <label class="shopify-field-label">Class Name</label>
+          <div style="color:#2563eb;">{{ selectedLog.class_name }}</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="shopify-field-label">Method Name</label>
+          <div>{{ selectedLog.method_name }}</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="shopify-field-label">Error Message</label>
+          <div class="fw-semibold" style="color:#c0272d;">{{ selectedLog.error_msg }}</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="shopify-field-label">Stack Message</label>
+          <div class="stack-box">{{ selectedLog.stack_msg }}</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="shopify-field-label">Log Time</label>
+          <div>{{ selectedLog.log_time | date:'dd-MMM-yyyy hh:mm:ss a' }}</div>
+        </div>
+
+      </div>
+
+      <div class="shopify-modal__footer">
+        <button class="btn-shopify btn-shopify--outline" (click)="closeModal()">Close</button>
+      </div>
+
+    </div>
+  </div>
+
+</ng-container>
+=======
 <div class="custom-modal-backdrop"
      *ngIf="selectedLog">
 
@@ -294,3 +471,4 @@
   </div>
 
 </div>
+>>>>>>> e99ff1c95dd1b66647fe96478b0f65a98b54e6de

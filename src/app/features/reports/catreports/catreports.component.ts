@@ -8,11 +8,14 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { RouterModule } from '@angular/router';
 import { ChartComponent, NgApexchartsModule } from "ng-apexcharts";
+
 import { CommonModule } from '@angular/common';
+import { ApexAxisChartSeries } from 'ng-apexcharts';
 
 @Component({
   selector: 'app-catreports',
-  imports: [FooterComponent,RouterModule,NgApexchartsModule,CommonModule],
+  //imports: [FooterComponent, RouterModule, ChartComponent, CommonModule],
+  imports: [FooterComponent, RouterModule, NgApexchartsModule, CommonModule],
   templateUrl: './catreports.component.html',
   styleUrl: './catreports.component.scss'
 })

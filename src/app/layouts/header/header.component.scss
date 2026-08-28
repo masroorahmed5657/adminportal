@@ -1,49 +1,113 @@
-/* Admin Header */
+@import "../../shared/shopify-theme.scss";
+
 .admin-header {
   position: fixed;
   top: 0;
   left: 0;
-  height: 70px;
-  z-index: 999;
-  color: #1e293b;
-  background-color: white;
-  border-bottom: 1px solid rgba(128, 128, 128, 0.403);
+  height: 64px;
+  z-index: 1001;
   display: flex;
   align-items: center;
   padding: 0 20px;
-  transition: all 0.3s ease;
 
-  margin-left: 280px;             /* default open sidebar */
+  color: var(--title-color);
+  background-color: var(--body-color);
+  border-bottom: 1px solid #e1e3e5;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+
+  margin-left: 280px;
   width: calc(100% - 280px);
+  transition: margin-left 0.3s ease, width 0.3s ease, background-color 0.4s, color 0.4s;
 }
 
-/* jab sidebar collapse ho */
 .admin-header.sidebar-collapsed {
   margin-left: 80px;
   width: calc(100% - 80px);
 }
 
-/* header ke andar ke elements */
 .admin-header__container {
   width: 100%;
   height: 100%;
 }
 
-.admin-header__title span {
-  font-size: 1.25rem;
-}
-
-.admin-header__brand {
-  text-align: center;
-}
-
+/* ===== Toggle button ===== */
 .admin-header__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
   background: transparent;
   border-radius: 8px;
-  border: 1px solid rgba(128, 128, 128, 0.403);
-  transition: transform 0.2s;
+  border: 1px solid #c9cccf;
+  color: var(--title-color);
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.admin-header__toggle i {
+  font-size: 1.25rem;
+  line-height: 1;
 }
 
 .admin-header__toggle:hover {
-  transform: scale(1.04);
+  background: rgba(128, 128, 128, 0.15);
+  transform: translateY(-1px);
+}
+
+.admin-header__toggle:active {
+  transform: translateY(0);
+}
+
+/* ===== Title ===== */
+.admin-header__title span {
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--title-color);
+}
+
+/* ===== Brand / logo area ===== */
+.admin-header__brand {
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+.admin-header__logo {
+  height: 32px;
+  width: auto;
+  display: block;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .admin-header {
+    margin-left: 0;
+    width: 100%;
+    padding: 0 14px;
+  }
+
+  .admin-header.sidebar-collapsed {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .admin-header__title span {
+    font-size: 0.95rem;
+  }
+
+  .admin-header__logo {
+    height: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-header__title {
+    display: none; // hide page title on very small screens, toggle + logo still show
+  }
+
+  .admin-header__logo {
+    height: 24px;
+  }
 }

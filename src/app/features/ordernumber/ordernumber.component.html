@@ -1,0 +1,145 @@
+<div class="shopify-main-container">
+
+  <!-- Actions row -->
+  <!-- <div class="shopify-actions-row">
+    <button type="button" class="btn-shopify btn-shopify--primary" (click)="openAddModal()">
+      <i class="bi bi-plus-circle"></i> Generate Order Number
+    </button>
+  </div> -->
+
+  <!-- Search row -->
+  <!--
+  <div class="shopify-search-row">
+    <div>
+      <label class="shopify-field-label" for="orderNumberSearch">Order Number</label>
+      <div class="shopify-input-group">
+        <span class="shopify-input-group__prefix"><i class="bi bi-search"></i></span>
+        <input type="text" class="shopify-input" id="orderNumberSearch" placeholder="Search order number..."
+          [(ngModel)]="search.orderNumber">
+      </div>
+    </div>
+    <div>
+      <label class="shopify-field-label" for="orderTypeSearch">Order Type</label>
+      <select class="shopify-select" id="orderTypeSearch" [(ngModel)]="search.orderType">
+        <option value="">All</option>
+        <option *ngFor="let t of orderTypeList" [value]="t.id">{{ t.text }}</option>
+      </select>
+    </div>
+  </div>
+  <div class="shopify-actions-row">
+    <button type="button" class="btn-shopify btn-shopify--outline" (click)="onClear()">
+      <i class="bi bi-x-circle"></i> Clear
+    </button>
+    <button type="button" class="btn-shopify btn-shopify--primary" (click)="onSearch()">
+      <i class="bi bi-search"></i> Search
+    </button>
+  </div>
+  -->
+
+  <!-- Empty state -->
+  <div class="shopify-empty" *ngIf="orderList.length === 0">
+    <h5>No orders found</h5>
+    <p>Order numbers will appear here once configured.</p>
+  </div>
+
+  <ng-container *ngIf="orderList.length > 0">
+
+    <!-- Desktop table -->
+    <div class="shopify-table-wrap d-none d-md-block">
+      <table class="shopify-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Order Number</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="fw-semibold">{{ orderList[0]?.orderNumPk }}</td>
+            <td>
+              <input type="number" class="shopify-input" id="orderNum-0" [(ngModel)]="orderList[0].orderNum" />
+            </td>
+            <td class="text-center">
+              <div class="shopify-table__actions">
+                <button class="btn-shopify btn-shopify--outline btn-shopify--icon" title="Save"
+                  (click)="onSave()">
+                  <i class="bi bi-pencil-fill"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Mobile cards -->
+    <div class="shopify-mobile-list d-block d-md-none">
+      <div class="shopify-mobile-card" *ngFor="let o of orderList">
+        <div class="shopify-mobile-card__row">
+          <div class="fw-bold">#{{ o.orderNum }}</div>
+        </div>
+        <div class="shopify-mobile-card__actions">
+          <button class="btn-shopify btn-shopify--outline btn-shopify--sm" (click)="onEdit(o)">
+            <i class="bi bi-pencil-fill"></i> Edit
+          </button>
+          <button class="btn-shopify btn-shopify--danger btn-shopify--sm" (click)="onDelete(o.orderNumPk)">
+            <i class="bi bi-trash-fill"></i> Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </ng-container>
+
+  <!-- View Modal -->
+  <ng-container *ngIf="showViewModal && selectedOrder">
+    <div class="shopify-modal-backdrop" (click)="closeViewModal()"></div>
+    <div class="shopify-modal">
+      <div class="shopify-modal__dialog" style="max-width:560px;">
+        <div class="shopify-modal__header">
+          <h5 class="shopify-modal__title"><i class="bi bi-eye-fill me-2"></i>Order Details</h5>
+          <button type="button" class="btn-close" (click)="closeViewModal()"></button>
+        </div>
+        <div class="shopify-modal__body">
+          <div class="shopify-detail-grid">
+            <dt>Order Number:</dt>
+            <dd>#{{ selectedOrder.orderNum }}</dd>
+          </div>
+        </div>
+        <div class="shopify-modal__footer">
+          <button class="btn-shopify btn-shopify--outline" (click)="closeViewModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Add/Edit Modal -->
+  <ng-container *ngIf="showModal">
+    <div class="shopify-modal-backdrop" (click)="closeModal()"></div>
+    <div class="shopify-modal">
+      <div class="shopify-modal__dialog" style="max-width:560px;">
+        <div class="shopify-modal__header">
+          <h5 class="shopify-modal__title">
+            <i class="bi bi-hash me-2"></i>{{ isEdit ? 'Edit' : 'Add' }} Order
+          </h5>
+          <button type="button" class="btn-close" (click)="closeModal()"></button>
+        </div>
+        <div class="shopify-modal__body">
+          <div class="shopify-grid-3">
+            <div class="shopify-grid-3__full" style="grid-column: 1 / -1;">
+              <label class="shopify-field-label">Order Number</label>
+              <input type="text" class="shopify-input" [(ngModel)]="formData.orderNum" placeholder="Order Number" />
+            </div>
+          </div>
+        </div>
+        <div class="shopify-modal__footer">
+          <button class="btn-shopify btn-shopify--primary" (click)="onSave()">
+            <i class="bi bi-save-fill"></i> Save
+          </button>
+          <button class="btn-shopify btn-shopify--outline" (click)="closeModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

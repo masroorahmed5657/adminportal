@@ -1,0 +1,143 @@
+<div class="shopify-main-container">
+  <h2 class="shopify-page-title">Inventory Report</h2>
+
+  <div class="shopify-card mb-4">
+    <div class="shopify-card__header">Filter</div>
+    <div class="shopify-card__body">
+      <div class="inventory-report__filter-grid">
+        <div>
+          <label class="shopify-field-label" for="inventory-category">Category</label>
+          <select id="inventory-category" class="shopify-select" [(ngModel)]="selectedCategoryId">
+            <option value="">Select a category</option>
+            <option *ngFor="let category of categoryList" [value]="category.categoryId">
+              {{ category.category }}
+            </option>
+          </select>
+        </div>
+
+        <div>
+          <label class="shopify-field-label" for="inventory-threshold">Low-stock threshold</label>
+          <input id="inventory-threshold" class="shopify-input" type="number" min="0"
+                 [(ngModel)]="lowStockThreshold">
+        </div>
+
+        <div class="inventory-report__checkbox">
+          <label class="shopify-field-label" for="low-stock-only">Inventory scope</label>
+          <label class="shopify-toggle-row inventory-report__toggle-row">
+            <input id="low-stock-only" type="checkbox" [(ngModel)]="lowStockOnly">
+            <span>Low-stock items only</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="shopify-actions-row mb-0">
+        <button class="btn-shopify btn-shopify--primary" type="button" (click)="loadInventory()" [disabled]="loading">
+          <i class="bi bi-search"></i> {{ loading ? 'Loading...' : 'View Inventory' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="shopify-card mb-4" *ngIf="hasLoadedReport">
+    <div class="shopify-card__header inventory-report__report-header">
+      <span><i class="bi bi-clipboard-data"></i> Current Inventory</span>
+      <span class="shopify-badge shopify-badge--neutral">{{ filteredProducts.length }} items</span>
+    </div>
+    <div class="shopify-card__body">
+      <div class="inventory-report__search-row">
+        <div>
+          <label class="shopify-field-label" for="inventory-search">Search loaded inventory</label>
+          <input id="inventory-search" class="shopify-input" type="search"
+                 placeholder="Search by product name or SKU" [(ngModel)]="searchText" (ngModelChange)="resetPage()">
+        </div>
+      </div>
+
+      <div class="inventory-report__summary">
+        <div>
+          <span>Items shown</span>
+          <strong>{{ filteredProducts.length }}</strong>
+        </div>
+        <div>
+          <span>Cost value</span>
+          <strong>{{ totalInventoryCost | number:'1.2-2' }}</strong>
+        </div>
+        <div>
+          <span>Sale value</span>
+          <strong>{{ totalInventorySaleValue | number:'1.2-2' }}</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="shopify-table-wrap" *ngIf="filteredProducts.length > 0; else noInventory">
+      <table class="shopify-table">
+        <thead>
+          <tr>
+            <th>Product Name</th>
+            <th>SKU</th>
+            <th>Current Quantity</th>
+            <th>Purchase Price</th>
+            <th>Sale Price</th>
+            <th>Cost Value</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let product of pagedProducts">
+            <td>{{ product.productName || '—' }}</td>
+            <td>{{ product.sku || '—' }}</td>
+            <td>{{ product.quantity ?? 0 }}</td>
+            <td>{{ hasPrice(product.purchasePrice) ? (product.purchasePrice | number:'1.2-2') : '—' }}</td>
+            <td>{{ hasPrice(product.salePrice) ? (product.salePrice | number:'1.2-2') : '—' }}</td>
+            <td>{{ inventoryCost(product) | number:'1.2-2' }}</td>
+            <td>
+              <span class="shopify-badge inventory-report__status" [ngClass]="{
+                'inventory-report__status--out': inventoryStatus(product) === 'Out of Stock',
+                'inventory-report__status--low': inventoryStatus(product) === 'Low Stock',
+                'inventory-report__status--in': inventoryStatus(product) === 'In Stock'
+              }">
+                {{ inventoryStatus(product) }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="shopify-mobile-list" *ngIf="filteredProducts.length > 0">
+      <div class="shopify-mobile-card" *ngFor="let product of pagedProducts">
+        <div class="shopify-mobile-card__row"><span class="shopify-field-label--sm">Product</span><strong>{{ product.productName || '—' }}</strong></div>
+        <div class="shopify-mobile-card__row"><span class="shopify-field-label--sm">SKU</span><span>{{ product.sku || '—' }}</span></div>
+        <div class="shopify-mobile-card__row"><span class="shopify-field-label--sm">Current quantity</span><span>{{ product.quantity ?? 0 }}</span></div>
+        <div class="shopify-mobile-card__row"><span class="shopify-field-label--sm">Purchase price</span><span>{{ hasPrice(product.purchasePrice) ? (product.purchasePrice | number:'1.2-2') : '—' }}</span></div>
+        <div class="shopify-mobile-card__row"><span class="shopify-field-label--sm">Cost value</span><strong>{{ inventoryCost(product) | number:'1.2-2' }}</strong></div>
+        <div class="shopify-mobile-card__row"><span class="shopify-field-label--sm">Status</span><span class="shopify-badge inventory-report__status" [ngClass]="{
+          'inventory-report__status--out': inventoryStatus(product) === 'Out of Stock',
+          'inventory-report__status--low': inventoryStatus(product) === 'Low Stock',
+          'inventory-report__status--in': inventoryStatus(product) === 'In Stock'
+        }">{{ inventoryStatus(product) }}</span></div>
+      </div>
+    </div>
+
+    <div class="shopify-pager" *ngIf="totalPages > 1">
+      <button class="btn-shopify btn-shopify--outline btn-shopify--sm" type="button" [disabled]="page <= 1" (click)="goToPage(page - 1)"><i class="bi bi-chevron-left"></i> Previous</button>
+      <span class="shopify-pager__info">Page {{ page }} of {{ totalPages }}</span>
+      <button class="btn-shopify btn-shopify--outline btn-shopify--sm" type="button" [disabled]="page >= totalPages" (click)="goToPage(page + 1)">Next <i class="bi bi-chevron-right"></i></button>
+    </div>
+
+    <ng-template #noInventory>
+      <div class="shopify-empty"><h5>No inventory found</h5><p>No inventory items match the selected filters.</p></div>
+    </ng-template>
+  </div>
+
+  <div class="shopify-card" *ngIf="!hasLoadedReport && !loading && !errorMessage">
+    <div class="shopify-empty"><h5>View current inventory</h5><p>Select a category and choose View Inventory to load its current stock snapshot.</p></div>
+  </div>
+
+  <div class="shopify-card inventory-report__error-card" *ngIf="errorMessage">
+    <div class="shopify-card__body"><p class="shopify-error mb-0"><i class="bi bi-exclamation-circle"></i> {{ errorMessage }}</p></div>
+  </div>
+
+  <div class="shopify-loading" *ngIf="loading">
+    <div class="spinner-border" role="status" aria-label="Loading inventory"></div>
+  </div>
+</div>

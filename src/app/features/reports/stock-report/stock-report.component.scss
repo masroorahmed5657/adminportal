@@ -1,0 +1,77 @@
+@import "../../../shared/shopify-theme.scss";
+
+.stock-report__notice {
+  border-color: #e1e3e5;
+}
+
+.stock-report__notice p {
+  color: #6d7175;
+  line-height: 1.55;
+}
+
+.stock-report__schema {
+  background: #fff;
+}
+
+.stock-report__body {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+}
+
+.stock-report__icon {
+  align-items: center;
+  background: #f1f2f4;
+  border-radius: 50%;
+  color: #1a1a1a;
+  display: flex;
+  font-size: 1.4rem;
+  height: 52px;
+  justify-content: center;
+  margin-bottom: 0.9rem;
+  width: 52px;
+}
+
+.stock-report__body h5 {
+  color: #1a1a1a;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.45rem;
+}
+
+.stock-report__requirement-copy {
+  color: #6d7175;
+  line-height: 1.55;
+  margin: 0 0 1rem;
+}
+
+.stock-report__columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.stock-report__columns span {
+  align-items: center;
+  background: #fafbfb;
+  border: 1px solid #e1e3e5;
+  border-radius: 8px;
+  color: #202223;
+  display: inline-flex;
+  font-size: 0.875rem;
+  font-weight: 500;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+}
+
+.stock-report__columns i {
+  color: #6d7175;
+}
+
+@media (max-width: 576px) {
+  .stock-report__body {
+    padding: 2rem 1rem;
+  }
+}

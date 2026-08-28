@@ -1,3 +1,5 @@
+@import "../../shared/shopify-theme";
+
 /* error-logs.component.scss */
 
 .card {
@@ -33,7 +35,6 @@
 }
 
 .custom-modal-backdrop {
-
   position: fixed;
   top: 0;
   left: 0;
@@ -51,7 +52,6 @@
 }
 
 .custom-modal {
-
   background: #fff;
 
   width: 95%;
@@ -67,8 +67,17 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
-@media (max-width: 768px) {
+/* Fix overlap with fixed admin header */
+:host ::ng-deep .shopify-topbar {
+  top: 70px;
+  z-index: 998;
+}
 
+:host ::ng-deep .shopify-main-container {
+  margin-top: 50px;
+}
+
+@media (max-width: 768px) {
   .table {
     font-size: 13px;
   }
@@ -80,5 +89,4 @@
   .custom-modal {
     padding: 15px;
   }
-
 }
